@@ -1,1 +1,8 @@
+# ENVIRONMENT
+
 venv
+.env
+
+# DATABASE
+
+*migrations/
