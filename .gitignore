@@ -6,3 +6,9 @@ venv
 # DATABASE
 
 *migrations/
+
+# CACHE
+
+.vscode
+.DS_Store
+*__pycache__*
