@@ -1,3 +1,4 @@
 django==5.0.6
 pandas
 psycopg2
+django-cors-headers
