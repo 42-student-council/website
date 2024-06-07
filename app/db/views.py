@@ -4,8 +4,8 @@ from django.http import JsonResponse
 def get_data(request):
     data = {
         "Header": {
-            "Title": "42 Vienna Student Council",
-            "Subtitle": "Official Website",
+            "title": "Student Council",
+            "paragraph": "Official Website of the 42 Vienna Student Council",
         },
     }
     return JsonResponse(data)

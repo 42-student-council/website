@@ -1,6 +1,6 @@
 body,
 html {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Futura PT Book", sans-serif;
   text-rendering: optimizeLegibility !important;
   -webkit-font-smoothing: antialiased !important;
   color: #777;
@@ -11,7 +11,7 @@ html {
 h2,
 h3,
 h4 {
-  font-family: "Raleway", sans-serif;
+  font-family: "Futura PT Book", sans-serif;
 }
 h2 {
   text-transform: uppercase;
@@ -81,7 +81,7 @@ hr {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 #menu a.navbar-brand {
-  font-family: "Raleway", sans-serif;
+  font-family: "Futura PT Book", sans-serif;
   font-size: 24px;
   font-weight: 700;
   color: #333;
@@ -163,11 +163,11 @@ hr {
   font-size: 18px;
 }
 .btn-custom {
-  font-family: "Raleway", sans-serif;
+  font-family: "Futura PT Book", sans-serif;
   text-transform: uppercase;
   color: #fff;
-  background-color: #5ca9fb;
-  background-image: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background-color: #000000;
+  background-image: linear-gradient(to right, #6d6d6d 0%, #343434 100%);
   padding: 14px 34px;
   letter-spacing: 1px;
   margin: 0;
@@ -184,7 +184,7 @@ hr {
 .btn-custom.active {
   color: #fff;
   background-image: none;
-  background-color: #6372ff;
+  background-color: #000000;
 }
 .btn:active,
 .btn.active {
@@ -208,31 +208,32 @@ a:focus,
   display: table;
   width: 100%;
   padding: 0;
-  background: url(../img/intro-bg.jpg) center center no-repeat;
-  background-color: #e5e5e5;
+  /* background: url(../img/landing-page.png) center center no-repeat; */
+  background-color: #ffffff;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
   -o-background-size: cover;
 }
 .intro .overlay {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 .intro h1 {
-  font-family: "Raleway", sans-serif;
-  color: #fff;
-  font-size: 82px;
-  font-weight: 700;
+  font-family: "Futura PT Book", sans-serif;
+  color: #000000;
+  font-size: 90px;
+  font-weight: 800;
   text-transform: uppercase;
-  margin-top: 0;
+  margin-top: -100px;
   margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 .intro h1 span {
   font-weight: 800;
   color: #5ca9fb;
 }
 .intro p {
-  color: #fff;
+  color: #000000;
   font-size: 22px;
   font-weight: 300;
   line-height: 30px;
@@ -501,16 +502,16 @@ header .intro-text {
 #contact .btn-custom {
   margin: 30px 0;
   background: transparent;
-  border: 2px solid #fff;
+  border: 2px solid #000000;
 }
 #contact .btn-custom:hover {
   color: #1f386e;
-  background: #fff;
+  background: #000000;
 }
 label {
   font-size: 12px;
   font-weight: 400;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Futura PT Book", sans-serif;
   float: left;
 }
 #contact .form-control {

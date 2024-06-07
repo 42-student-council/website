@@ -26,7 +26,7 @@ const App = () => {
       try {
         const result = await axios(`${API_BASE_URL}/data/`);
         setLandingPageData(result.data);
-        console.log('Dat fetched:', result.data);
+        console.log('Data fetched:', result.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
