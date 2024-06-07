@@ -16,4 +16,4 @@ COPY . /code/
 RUN rm Dockerfile
 
 
-RUN chmod 777 ./scripts/entrypoint.sh
+RUN chmod 777 ./startup/entrypoint.sh

@@ -21,7 +21,7 @@ services:
         POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
         POSTGRES_PORT: ${POSTGRES_PORT}
     working_dir: /code/app
-    command: sh ./scripts/entrypoint.sh
+    command: sh ./startup/entrypoint.sh
     restart: always
     volumes:
       - .:/code
@@ -31,6 +31,16 @@ services:
       - db
     env_file:
       - .env
+  
+  react:
+    build:
+      context: ./app/front
+      dockerfile: Dockerfile
+    volumes:
+      - ./front:/front
+    ports:
+      - "3000:3000"
+    command: npm start
 
 volumes:
   db:
