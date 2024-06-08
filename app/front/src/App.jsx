@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Navigation } from "./components/navigation";
-import { Header } from "./components/header";
-import { About } from "./components/about";
-import { Issue } from "./components/issue";
-import { Contact } from "./components/contact";
-import SmoothScroll from "smooth-scroll";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Navigation } from './components/navigation';
+import { Header } from './components/header';
+import { About } from './components/about';
+import { Issue } from './components/issue';
+import { Contact } from './components/contact';
+import SmoothScroll from 'smooth-scroll';
+import './App.css';
 
 export const scroll = new SmoothScroll('a[href*="#"]', {
     speed: 1000,
@@ -22,9 +22,9 @@ const App = () => {
             try {
                 const result = await axios(`${API_BASE_URL}/data/`);
                 setLandingPageData(result.data);
-                console.log("Data fetched:", result.data);
+                console.log('Data fetched:', result.data);
             } catch (error) {
-                console.error("Error fetching data:", error);
+                console.error('Error fetching data:', error);
             }
         };
 

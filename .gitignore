@@ -12,3 +12,7 @@ venv
 .vscode
 .DS_Store
 *__pycache__*
+
+# UTILS
+
+node_modules/
