@@ -7,6 +7,7 @@ const initialState = {
     intraLogin: '',
     message: '',
 };
+
 export const Contact = ({ data = { title: 'loading...', paragraph: 'loading...' } }) => {
     const title = formatParagraph(data.title);
     const paragraph = formatParagraph(data.paragraph);
@@ -66,6 +67,7 @@ export const Contact = ({ data = { title: 'loading...', paragraph: 'loading...' 
                                                 placeholder='Intra Login'
                                                 required
                                                 onChange={handleChange}
+                                                value={intraLogin}
                                             />
                                             <p className='help-block text-danger'></p>
                                         </div>
@@ -80,6 +82,7 @@ export const Contact = ({ data = { title: 'loading...', paragraph: 'loading...' 
                                         placeholder='Message'
                                         required
                                         onChange={handleChange}
+                                        value={message}
                                     ></textarea>
                                     <p className='help-block text-danger'></p>
                                 </div>

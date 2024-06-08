@@ -1,39 +1,70 @@
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+from .models import Issue
+import json
 
 
-def get_data(request):
-    data = {
-        "Header": {
-            "title": "Student Council",
-            "paragraph": "Official Website of the 42 Vienna Student Council",
-        },
-        "About": {
-            "title": "What is the Student Council?",
-            "paragraph": """
-            We are students who have been elected by our peers to represent them in the school's decision making process.
-            This is a platform for you to anonymously share your thoughts, ideas, and concerns with us.
-            """,
-            "why": """
-            Because we want everyone to be heard.
-            Because we want transparent communication.
-            Because we want to make a difference.
-            """,
-        },
-        "Issue": {
-            "title": "Something You want to change?",
-            "paragraph": """
-            Fill out the form below to raise an issue.
-            This can be anything from a broken toilet to a new school policy.
-            This process is completely anonymous.
-            """,
-        },
-        "Contact": {
-            "title": "Want to talk to us directly?",
-            "paragraph": """
-            Please fill out the form below.
-            We will get back to you as soon as possible.
-            """,
-        },
-    }
-    return JsonResponse(data)
+def get_frontend_data(request):
+    if request.method == "GET":
+        with open("./db/frontend-data/frontend-data.json") as f:
+            data = json.load(f)
+        return JsonResponse(data)
+
+
+class CreateIssueView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        issue = Issue.objects.create(
+            title=data["title"],
+            description=data["description"],
+            created_at=data["created_at"],
+        )
+        return JsonResponse({"id": issue.id})
+
+
+class IssueListView(View):
+    def get(self, request):
+        issues = list(Issue.objects.values())
+        response = JsonResponse(issues, safe=False)
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
+
+    def options(self, request, *args, **kwargs):
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(require_http_methods(["GET"]), name="dispatch")
+@method_decorator(xframe_options_exempt, name="dispatch")
+class IssueView(View):
+    def get(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+            response = JsonResponse(
+                {
+                    "id": issue.id,
+                    "title": issue.title,
+                    "description": issue.description,
+                }
+            )
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
+        except Issue.DoesNotExist:
+            response = JsonResponse({"error": "Issue not found"}, status=404)
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
+
+    def options(self, request, *args, **kwargs):
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
