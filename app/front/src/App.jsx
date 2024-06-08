@@ -20,7 +20,7 @@ const App = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await axios(`${API_BASE_URL}/data/`);
+                const result = await axios(`${API_BASE_URL}/frontend-data/`);
                 setLandingPageData(result.data);
                 console.log('Data fetched:', result.data);
             } catch (error) {

@@ -3,5 +3,5 @@ from django.urls import path
 from db import views
 
 urlpatterns = [
-    path("api/data/", views.get_data, name="get_data"),
+    path("api/frontend-data/", views.get_frontend_data, name="get_frontend_data"),
 ]
