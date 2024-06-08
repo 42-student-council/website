@@ -10,7 +10,7 @@ export const Issues = () => {
     useEffect(() => {
         const fetchIssues = async () => {
             try {
-                const result = await axios.get(`${API_BASE_URL}/issue/view/all/`);
+                const result = await axios.get(`${API_BASE_URL}/issues/view/all/`);
                 setIssues(result.data);
                 console.log('Issues fetched:', result.data);
             } catch (error) {
@@ -26,13 +26,13 @@ export const Issues = () => {
     }, [issues]);
 
     return (
-        <div className="issues-container">
+        <div className='issues-container'>
             <h2>All Issues</h2>
             <ul>
                 {issues.length > 0 ? (
                     issues.map((issue) => (
                         <li key={issue.id}>
-                            <Link to={`/issues/${issue.id}`} className="issue-link">
+                            <Link to={`/issues/${issue.id}`} className='issue-link'>
                                 {issue.id}. {issue.title}
                             </Link>
                         </li>

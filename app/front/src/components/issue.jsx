@@ -10,7 +10,7 @@ export const Issue = () => {
     useEffect(() => {
         const fetchIssue = async () => {
             try {
-                const result = await axios.get(`${API_BASE_URL}/issue/view/${id}`);
+                const result = await axios.get(`${API_BASE_URL}/issues/view/${id}/`);
                 setIssue(result.data);
                 console.log('Issue fetched:', result.data);
             } catch (error) {
@@ -27,7 +27,9 @@ export const Issue = () => {
 
     return (
         <div>
-            <h2>{issue.id}.{issue.title}</h2>
+            <h2>
+                {issue.id}. {issue.title}
+            </h2>
             <p>{issue.description}</p>
         </div>
     );
