@@ -12,6 +12,7 @@ import {
 } from './ui/sheet';
 import { MenuIcon, Home, Info, TriangleAlert, MessageCircle } from 'lucide-react';
 import { NavLink } from '@remix-run/react';
+import classNames from 'classnames';
 
 const navItems = [
     {
@@ -41,7 +42,16 @@ function MainNav() {
         <div className='mr-4 hidden gap-2 md:flex'>
             {navItems.map((item, index) => (
                 <Button key={index} variant='link'>
-                    {item.label}
+                    <NavLink
+                        to={item.href}
+                        className={({ isActive, isPending }) => {
+                            return classNames({
+                                underline: isActive,
+                            });
+                        }}
+                    >
+                        {item.label}
+                    </NavLink>
                 </Button>
             ))}
         </div>
@@ -70,7 +80,11 @@ function MobileNav() {
                             <NavLink
                                 key={index}
                                 to={item.href}
-                                className='mb-4 flex flex-row items-center'
+                                className={({ isActive, isPending }) => {
+                                    return classNames('mb-4 flex flex-row items-center', {
+                                        underline: isActive,
+                                    });
+                                }}
                                 onClick={() => {
                                     setOpen(false);
                                 }}
