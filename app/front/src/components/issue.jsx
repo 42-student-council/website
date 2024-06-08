@@ -8,9 +8,29 @@ export const Issue = ({ data = { title: 'loading...', paragraph: 'loading...' } 
     const [issueTitle, setIssueTitle] = useState('');
     const [description, setDescription] = useState('');
 
+    const createIssue = (issue) => {
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+        fetch(`${API_BASE_URL}/issue/create/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(issue),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        setIssues([...issues, { title, description }]);
+        const newIssue = { title: issueTitle, description, created_at: new Date().toISOString() };
+        createIssue(newIssue);
+        setIssues([...issues, newIssue]);
         setIssueTitle('');
         setDescription('');
     };
