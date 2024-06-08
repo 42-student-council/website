@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navigation } from './components/navigation';
 import { Header } from './components/header';
 import { About } from './components/about';
 import { Issue } from './components/issue';
+import { Issues } from './components/issues';
 import { Contact } from './components/contact';
 import SmoothScroll from 'smooth-scroll';
 import './App.css';
@@ -32,13 +34,23 @@ const App = () => {
     }, [API_BASE_URL]);
 
     return (
-        <div>
+        <Router>
             <Navigation />
-            <Header data={landingPageData.Header} />
-            <About data={landingPageData.About} />
-            <Issue data={landingPageData.Issue} />
-            <Contact data={landingPageData.Contact} />
-        </div>
+            <Routes>
+                <Route
+                    path='/'
+                    element={
+                        <>
+                            <Header data={landingPageData.Header} />
+                            <About data={landingPageData.About} />
+                            <Contact data={landingPageData.Contact} />
+                        </>
+                    }
+                />
+                <Route path='/issues' element={<Issues />} />
+                <Route path='/issues/:id' element={<Issue />} />
+            </Routes>
+        </Router>
     );
 };
 

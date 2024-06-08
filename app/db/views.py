@@ -27,4 +27,4 @@ def view_all_issues(request):
     if request.method == "GET":
         issues = Issue.objects.all()
         data = [{"id": issue.id, "title": issue.title, "description": issue.description} for issue in issues]
-        return JsonResponse(data)
+        return JsonResponse(data, safe=False)

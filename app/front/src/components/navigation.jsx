@@ -1,19 +1,36 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Navigation = (props) => {
+    const navigate = useNavigate();
+
     const handleNavClick = (e, target) => {
         e.preventDefault();
-        const element = document.querySelector(target);
-        const offset = 100;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
 
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth',
-        });
+        const scrollToElement = () => {
+            const element = document.querySelector(target.slice(1));
+            if (element) {
+                const offset = 100;
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = element.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth',
+                });
+            } else {
+                console.error('Element not found');
+            }
+        };
+
+        if (window.location.pathname !== '/') {
+            navigate('/');
+            setTimeout(scrollToElement, 100); // Adjust the timeout as needed
+        } else {
+            scrollToElement();
+        }
     };
 
     return (
@@ -38,17 +55,16 @@ export const Navigation = (props) => {
                 <div className='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
                     <ul className='nav navbar-nav navbar-right'>
                         <li>
-                            <a href='#about' className='page-scroll' onClick={(e) => handleNavClick(e, '#about')}>
+                            <a href='/#about' className='page-scroll' onClick={(e) => handleNavClick(e, '/#about')}>
                                 About
                             </a>
                         </li>
+                        <li></li>
                         <li>
-                            <a href='#issue' className='page-scroll' onClick={(e) => handleNavClick(e, '#issue')}>
-                                Raise an issue
-                            </a>
+                            <Link to='/issues'>View Issues</Link>
                         </li>
                         <li>
-                            <a href='#contact' className='page-scroll' onClick={(e) => handleNavClick(e, '#contact')}>
+                            <a href='/#contact' className='page-scroll' onClick={(e) => handleNavClick(e, '/#contact')}>
                                 Contact
                             </a>
                         </li>
