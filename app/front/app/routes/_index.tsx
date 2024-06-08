@@ -1,6 +1,5 @@
 import type { MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import landingPageImg from '~/../public/img/landing-page.png?url';
 import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Button } from '~/components/ui/button';
@@ -31,7 +30,7 @@ export default function Index() {
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
                 <img
-                    src={landingPageImg}
+                    src='/img/landing-page.png'
                     alt='Landing Page'
                     className='mx-4 mb-4 rounded md:size-6/12 shadow-md md:shadow-2xl'
                 />
