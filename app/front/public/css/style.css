@@ -1,5 +1,5 @@
 html {
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
     color: #777;
@@ -10,7 +10,7 @@ html {
 h2,
 h3,
 h4 {
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
 }
 h2 {
     text-transform: uppercase;
@@ -80,14 +80,14 @@ hr {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 #menu a.navbar-brand {
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
     font-size: 24px;
     font-weight: 700;
     color: #6d6d6d;
     text-transform: uppercase;
 }
 #menu.navbar-default .navbar-nav > li > a {
-    font-family: "Lato", sans-serif;
+    font-family: 'Lato', sans-serif;
     text-transform: uppercase;
     color: #555;
     font-size: 15px;
@@ -104,7 +104,7 @@ hr {
     width: 0;
     height: 2px;
     background: linear-gradient(to right, #6d6d6d 0%, #343434 100%);
-    content: "";
+    content: '';
     transition: width 0.2s;
 }
 #menu.navbar-default .navbar-nav > li > a:hover:after {
@@ -125,7 +125,7 @@ hr {
     width: 100% !important;
     height: 2px !important;
     background: linear-gradient(to right, #6d6d6d 0%, #343434 100%) !important;
-    content: "" !important;
+    content: '' !important;
     transition: width 0.2s !important;
 }
 .navbar-toggle {
@@ -150,7 +150,7 @@ hr {
 }
 .section-title h2::after {
     position: absolute;
-    content: "";
+    content: '';
     background: linear-gradient(to right, #343434 0%, #6d6d6d 100%);
     height: 4px;
     width: 60px;
@@ -162,7 +162,7 @@ hr {
     font-size: 18px;
 }
 .btn-custom {
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
     text-transform: uppercase;
     color: #fff;
     background-color: #000000;
@@ -218,7 +218,7 @@ a:focus,
     background: rgba(255, 255, 255, 0.2);
 }
 .intro h1 {
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
     color: #000000;
     font-size: 90px;
     font-weight: 800;
@@ -275,7 +275,7 @@ header .intro-text {
 }
 #about h2::after {
     position: absolute;
-    content: "";
+    content: '';
     background: linear-gradient(to right, #343434 0%, #6d6d6d 100%);
     height: 4px;
     width: 60px;
@@ -289,8 +289,8 @@ header .intro-text {
     padding: 0;
 }
 #about .about-text li:before {
-    content: "\f00c";
-    font-family: "FontAwesome";
+    content: '\f00c';
+    font-family: 'FontAwesome';
     color: #343434;
     font-size: 11px;
     font-weight: 300;
@@ -321,7 +321,7 @@ header .intro-text {
 }
 #services .section-title h2::after {
     position: absolute;
-    content: "";
+    content: '';
     background: rgba(255, 255, 255, 0.3);
     height: 4px;
     width: 60px;
@@ -473,7 +473,7 @@ header .intro-text {
 }
 #contact .section-title h2::after {
     position: absolute;
-    content: "";
+    content: '';
     background: rgba(255, 255, 255, 0.3);
     height: 4px;
     width: 60px;
@@ -506,7 +506,7 @@ header .intro-text {
 label {
     font-size: 12px;
     font-weight: 400;
-    font-family: "Futura PT Book", sans-serif;
+    font-family: 'Futura PT Book', sans-serif;
     float: left;
 }
 #contact .form-control {
