@@ -4,8 +4,8 @@ import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 
+// TODO: Get dynamically from backend
 export const loader: LoaderFunction = async () => {
     const res: LoaderData = [];
 
