@@ -15,7 +15,7 @@ jobs:
         run: npm install
       - name: Run Prettier
         id: prettier
-        run: npx prettier --config .prettierrc --check "**/*.{js,jsx,html,css,scss}"
+        run: npx prettier --config .prettierrc --check "**/*.{js,jsx,ts,tsx,html,css,scss}"
       - name: Display Prettier Output
         if: failure()
         run: cat $GITHUB_WORKSPACE/.github/workflows/prettier.log
