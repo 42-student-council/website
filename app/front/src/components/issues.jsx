@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import '../App.css';
 
 export const Issues = () => {
     const [issues, setIssues] = useState([]);
@@ -9,7 +10,7 @@ export const Issues = () => {
     useEffect(() => {
         const fetchIssues = async () => {
             try {
-                const result = await axios(`${API_BASE_URL}/issue/view/all/`);
+                const result = await axios.get(`${API_BASE_URL}/issue/view/all/`);
                 setIssues(result.data);
                 console.log('Issues fetched:', result.data);
             } catch (error) {
@@ -20,18 +21,25 @@ export const Issues = () => {
         fetchIssues();
     }, [API_BASE_URL]);
 
+    useEffect(() => {
+        console.log('Issues state updated:', issues);
+    }, [issues]);
+
     return (
-        <div>
+        <div className="issues-container">
             <h2>All Issues</h2>
             <ul>
-                {issues.map((issue) => (
-                    <li key={issue.id}>
-                        <Link to={`/issues/${issue.id}`}>
-                            <h3>{issue.title}</h3>
-                        </Link>
-                        <p>{issue.description}</p>
-                    </li>
-                ))}
+                {issues.length > 0 ? (
+                    issues.map((issue) => (
+                        <li key={issue.id}>
+                            <Link to={`/issues/${issue.id}`} className="issue-link">
+                                {issue.id}. {issue.title}
+                            </Link>
+                        </li>
+                    ))
+                ) : (
+                    <li>No issues found</li>
+                )}
             </ul>
         </div>
     );

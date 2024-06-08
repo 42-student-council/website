@@ -27,7 +27,7 @@ export const Navigation = (props) => {
 
         if (window.location.pathname !== '/') {
             navigate('/');
-            setTimeout(scrollToElement, 100); // Adjust the timeout as needed
+            setTimeout(scrollToElement, 100);
         } else {
             scrollToElement();
         }
@@ -47,7 +47,7 @@ export const Navigation = (props) => {
                         <span className='sr-only'>Toggle navigation</span> <span className='icon-bar'></span>{' '}
                         <span className='icon-bar'></span> <span className='icon-bar'></span>{' '}
                     </button>
-                    <a className='navbar-brand page-scroll' href='#page-top'>
+                    <a className='navbar-brand page-scroll' href='/#page-top'>
                         Student Council
                     </a>{' '}
                 </div>
