@@ -4,6 +4,7 @@ For the frontend we use [Remix](https://remix.run/).
 
 - 📖 [Remix docs](https://remix.run/docs)
 - [Tailwind CSS docs](https://tailwindcss.com/docs)
+- [shadcn/ui docs](https://ui.shadcn.com/docs)
 
 ## Development
 
