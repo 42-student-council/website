@@ -23,6 +23,12 @@ export const loader: LoaderFunction = async ({ request }) => {
             headers: { authorization: `Bearer ${res.access_token}` },
         }).then((res) => res.json());
 
+        // TODO: no magic number
+        const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 54);
+        if (!viennaCampus?.is_primary) throw redirect('/sign-in?wrongCampus');
+
+        console.log(apiUser);
+
         return createSession(
             {
                 imageUrl: apiUser.image.versions.large,

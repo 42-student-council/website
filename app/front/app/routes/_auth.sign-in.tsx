@@ -13,6 +13,7 @@ export const meta: MetaFunction = () => {
 type LoaderData = {
     oauthFailed: boolean;
     oauthDenied: boolean;
+    wrongCampus: boolean;
 };
 
 export const loader: LoaderFunction = ({ request }) => {
@@ -21,6 +22,7 @@ export const loader: LoaderFunction = ({ request }) => {
     return {
         oauthFailed: typeof url.searchParams.get('oauthFailed') === 'string',
         oauthDenied: typeof url.searchParams.get('oauthDenied') === 'string',
+        wrongCampus: typeof url.searchParams.get('wrongCampus') === 'string',
     } satisfies LoaderData;
 };
 
@@ -60,6 +62,17 @@ export default function Index() {
                         <AlertTitle>OAuth Sign-In Denied</AlertTitle>
                         <AlertDescription>
                             You denied us the access to the public data of your 42 account.
+                        </AlertDescription>
+                    </Alert>
+                )}
+                {data.wrongCampus && (
+                    <Alert variant='destructive'>
+                        <AlertCircle className='h-4 w-4' />
+                        <AlertTitle>Wrong Campus</AlertTitle>
+                        <AlertDescription>
+                            The <span className='font-bold'>42 Vienna Student Council Website</span> is only accessible
+                            to <span className='font-bold'>42 Vienna Students</span>. We don't allow anyone else to
+                            access our platform.
                         </AlertDescription>
                     </Alert>
                 )}
