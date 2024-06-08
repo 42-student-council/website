@@ -5,9 +5,10 @@ from .models import Comment, Issue
 
 
 def get_frontend_data(request):
-    with open("./db/frontend-data/frontend-data.json") as f:
-        data = json.load(f)
-    return JsonResponse(data)
+    if request.method == "GET":
+        with open("./db/frontend-data/frontend-data.json") as f:
+            data = json.load(f)
+        return JsonResponse(data)
 
 
 def create_issue(request):
@@ -20,3 +21,10 @@ def create_issue(request):
         )
         return JsonResponse({"id": issue.id})
     return JsonResponse({"error": "Invalid request"})
+
+
+def view_all_issues(request):
+    if request.method == "GET":
+        issues = Issue.objects.all()
+        data = [{"id": issue.id, "title": issue.title, "description": issue.description} for issue in issues]
+        return JsonResponse(data)
