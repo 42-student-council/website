@@ -1,0 +1,17 @@
+name: Prettier
+
+on: [push, pull_request]
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+      - name: Run Prettier
+        run: npx prettier --check "**/*.{js,jsx,html,css}"
