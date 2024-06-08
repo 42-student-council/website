@@ -20,7 +20,8 @@ export const Issue = () => {
                     <div className="section-title">
                         <h2>Something you want to change?</h2>
                         <p>
-                            Please fill out the form below to raise an issue.
+                            Fill out the form below to raise an issue.
+                            This process is completely anonymous.
                         </p>
                     </div>
                     <form onSubmit={handleSubmit}>
@@ -57,7 +58,7 @@ export const Issue = () => {
                                 <div id="success"></div>
                                 <button
                                     type="submit"
-                                    className="btn btn-primary btn-lg"
+                                    className="btn btn-custom btn-lg"
                                 >
                                     Send Message
                                 </button>

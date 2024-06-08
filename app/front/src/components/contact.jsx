@@ -3,12 +3,11 @@ import emailjs from "emailjs-com";
 import React from "react";
 
 const initialState = {
-  name: "",
-  email: "",
+  intraLogin: "",
   message: "",
 };
 export const Contact = (props) => {
-  const [{ name, email, message }, setState] = useState(initialState);
+  const [{ intraLogin, message }, setState] = useState(initialState);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,15 +15,13 @@ export const Contact = (props) => {
   };
   const clearState = () => setState({ ...initialState });
   
-  
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(name, email, message);
-    
-    {/* replace below with your own Service ID, Template ID and Public Key from your EmailJS account */ }
+    console.log(`Intra Login: ${intraLogin}, Message: ${message}`);
+    { }
     
     emailjs
-      .sendForm("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", e.target, "YOUR_PUBLIC_KEY")
+      .sendForm(process.env.REACT_APP_EMAILJS_SERVICE_ID, process.env.REACT_APP_EMAILJS_TEMPLATE_ID, e.target, process.env.REACT_APP_EMAILJS_USER_ID)
       .then(
         (result) => {
           console.log(result.text);
@@ -42,7 +39,7 @@ export const Contact = (props) => {
           <div className="col-md-8">
             <div className="row">
               <div className="section-title">
-                <h2>You want to talk to us directly?</h2>
+                <h2>Want to talk to us directly?</h2>
                 <p>
                   Please fill out the form below to send us an email. We will
                   get back to you as soon as possible.
@@ -55,7 +52,7 @@ export const Contact = (props) => {
                       <input
                         type="text"
                         id="name"
-                        name="name"
+                        name="intraLogin"
                         className="form-control"
                         placeholder="Intra Login"
                         required
