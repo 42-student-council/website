@@ -29,13 +29,16 @@ services:
       - db
     env_file:
       - .env
-  
+    ports:
+      - "8000:8000"
+
   react:
     build:
       context: ./app/front
       dockerfile: Dockerfile
     volumes:
-      - ./front:/front
+      - ./app/front:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     command: npm start
