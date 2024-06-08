@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const Navigation = (props) => {
     const handleNavClick = (e, target) => {
@@ -12,43 +12,43 @@ export const Navigation = (props) => {
 
         window.scrollTo({
             top: offsetPosition,
-            behavior: "smooth",
+            behavior: 'smooth',
         });
     };
 
     return (
-        <nav id="menu" className="navbar navbar-default navbar-fixed-top">
-            <div className="container">
-                <div className="navbar-header">
+        <nav id='menu' className='navbar navbar-default navbar-fixed-top'>
+            <div className='container'>
+                <div className='navbar-header'>
                     <button
-                        type="button"
-                        className="navbar-toggle collapsed"
-                        data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1"
+                        type='button'
+                        className='navbar-toggle collapsed'
+                        data-toggle='collapse'
+                        data-target='#bs-example-navbar-collapse-1'
                     >
-                        {" "}
-                        <span className="sr-only">Toggle navigation</span> <span className="icon-bar"></span>{" "}
-                        <span className="icon-bar"></span> <span className="icon-bar"></span>{" "}
+                        {' '}
+                        <span className='sr-only'>Toggle navigation</span> <span className='icon-bar'></span>{' '}
+                        <span className='icon-bar'></span> <span className='icon-bar'></span>{' '}
                     </button>
-                    <a className="navbar-brand page-scroll" href="#page-top">
+                    <a className='navbar-brand page-scroll' href='#page-top'>
                         Student Council
-                    </a>{" "}
+                    </a>{' '}
                 </div>
 
-                <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul className="nav navbar-nav navbar-right">
+                <div className='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
+                    <ul className='nav navbar-nav navbar-right'>
                         <li>
-                            <a href="#about" className="page-scroll" onClick={(e) => handleNavClick(e, "#about")}>
+                            <a href='#about' className='page-scroll' onClick={(e) => handleNavClick(e, '#about')}>
                                 About
                             </a>
                         </li>
                         <li>
-                            <a href="#issue" className="page-scroll" onClick={(e) => handleNavClick(e, "#issue")}>
+                            <a href='#issue' className='page-scroll' onClick={(e) => handleNavClick(e, '#issue')}>
                                 Raise an issue
                             </a>
                         </li>
                         <li>
-                            <a href="#contact" className="page-scroll" onClick={(e) => handleNavClick(e, "#contact")}>
+                            <a href='#contact' className='page-scroll' onClick={(e) => handleNavClick(e, '#contact')}>
                                 Contact
                             </a>
                         </li>
