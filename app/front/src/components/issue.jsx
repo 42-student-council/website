@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { formatParagraph } from "../utils";
 
-export const Issue = ({
-    data = { title: "loading...", paragraph: "loading..." },
-}) => {
+export const Issue = ({ data = { title: "loading...", paragraph: "loading..." } }) => {
     const title = formatParagraph(data.title);
     const paragraph = formatParagraph(data.paragraph);
     const [issues, setIssues] = useState([]);
@@ -37,9 +35,7 @@ export const Issue = ({
                                             className="form-control"
                                             placeholder="Title"
                                             value={issueTitle}
-                                            onChange={(event) =>
-                                                setIssueTitle(event.target.value)
-                                            }
+                                            onChange={(event) => setIssueTitle(event.target.value)}
                                             required
                                         />
                                     </div>
@@ -52,11 +48,7 @@ export const Issue = ({
                                             className="form-control"
                                             placeholder="Description"
                                             value={description}
-                                            onChange={(event) =>
-                                                setDescription(
-                                                    event.target.value
-                                                )
-                                            }
+                                            onChange={(event) => setDescription(event.target.value)}
                                             required
                                         />
                                     </div>
@@ -64,10 +56,7 @@ export const Issue = ({
                                 <div className="clearfix"></div>
                                 <div className="col-lg-12 text-center">
                                     <div id="success"></div>
-                                    <button
-                                        type="submit"
-                                        className="btn btn-custom btn-lg"
-                                    >
+                                    <button type="submit" className="btn btn-custom btn-lg">
                                         Send Message
                                     </button>
                                 </div>

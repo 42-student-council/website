@@ -7,9 +7,7 @@ const initialState = {
     intraLogin: "",
     message: "",
 };
-export const Contact = ({
-    data = { title: "loading...", paragraph: "loading..." },
-}) => {
+export const Contact = ({ data = { title: "loading...", paragraph: "loading..." } }) => {
     const title = formatParagraph(data.title);
     const paragraph = formatParagraph(data.paragraph);
 
@@ -49,20 +47,14 @@ export const Contact = ({
                     <div className="col-md-8">
                         <div className="row">
                             <div className="section-title">
-                                <h2
-                                    dangerouslySetInnerHTML={{ __html: title }}
-                                ></h2>
+                                <h2 dangerouslySetInnerHTML={{ __html: title }}></h2>
                                 <p
                                     dangerouslySetInnerHTML={{
                                         __html: paragraph,
                                     }}
                                 ></p>
                             </div>
-                            <form
-                                name="sentMessage"
-                                noValidate
-                                onSubmit={handleSubmit}
-                            >
+                            <form name="sentMessage" noValidate onSubmit={handleSubmit}>
                                 <div className="row">
                                     <div className="col-md-4">
                                         <div className="form-group">
@@ -92,10 +84,7 @@ export const Contact = ({
                                     <p className="help-block text-danger"></p>
                                 </div>
                                 <div id="success"></div>
-                                <button
-                                    type="submit"
-                                    className="btn btn-custom btn-lg"
-                                >
+                                <button type="submit" className="btn btn-custom btn-lg">
                                     Send Message
                                 </button>
                             </form>
