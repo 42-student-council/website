@@ -115,3 +115,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+svg {
+  display: inline;
+  vertical-align: middle;
+}
