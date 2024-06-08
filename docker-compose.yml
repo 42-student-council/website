@@ -36,12 +36,11 @@ services:
     build:
       context: ./app/front
       dockerfile: Dockerfile
-    volumes:
-      - ./app/front:/app
-      - /app/node_modules
     ports:
       - "3000:3000"
-    command: npm start
+    environment:
+      NODE_ENV: production
+      PORT: 3000
 
   nginx:
     image: nginx:latest
