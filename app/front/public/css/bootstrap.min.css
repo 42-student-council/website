@@ -128,6 +128,7 @@ html input[type='button'],
 input[type='reset'],
 input[type='submit'] {
     -webkit-appearance: button;
+    appearance: button;
     cursor: pointer;
 }
 button[disabled],
@@ -158,6 +159,7 @@ input[type='search'] {
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     -webkit-appearance: textfield;
+    appearance: textfield;
 }
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-decoration {
@@ -2699,6 +2701,7 @@ textarea.form-control {
 }
 input[type='search'] {
     -webkit-appearance: none;
+    appearance: none;
 }
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
     input[type='date'].form-control,
@@ -6109,6 +6112,7 @@ button.list-group-item-danger.active:hover {
 }
 button.close {
     -webkit-appearance: none;
+    appearance: none;
     padding: 0;
     cursor: pointer;
     background: 0 0;

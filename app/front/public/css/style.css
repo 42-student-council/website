@@ -57,8 +57,6 @@ ol {
 ul,
 ol {
     padding: 0;
-    webkit-padding: 0;
-    moz-padding: 0;
 }
 hr {
     height: 2px;
@@ -389,6 +387,7 @@ header .intro-text {
 .hover-bg:hover .hover-text > h4 {
     opacity: 1;
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     -webkit-transform: translateY(0);
     transform: translateY(0);
 }
