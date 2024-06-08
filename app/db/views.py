@@ -15,8 +15,8 @@ def get_frontend_data(request):
         return JsonResponse(data)
 
 
-def create_issue(request):
-    if request.method == "POST":
+class CreateIssueView(View):
+    def post(self, request):
         data = json.loads(request.body)
         issue = Issue.objects.create(
             title=data["title"],
@@ -24,19 +24,18 @@ def create_issue(request):
             created_at=data["created_at"],
         )
         return JsonResponse({"id": issue.id})
-    return JsonResponse({"error": "Invalid request"})
 
 
 class IssueListView(View):
     def get(self, request):
-        issues = list(Issue.objects.values())  # Convert queryset to a list of dictionaries
+        issues = list(Issue.objects.values())
         response = JsonResponse(issues, safe=False)
-        response["Access-Control-Allow-Origin"] = "*"  # Add CORS header here
+        response["Access-Control-Allow-Origin"] = "*"
         return response
 
     def options(self, request, *args, **kwargs):
         response = JsonResponse({})
-        response["Access-Control-Allow-Origin"] = "*"  # Add CORS header here
+        response["Access-Control-Allow-Origin"] = "*"
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
