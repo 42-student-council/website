@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         }).then((res) => res.json());
 
         // TODO: no magic number
-        const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 54);
+        const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 53);
         if (!viennaCampus?.is_primary) throw redirect('/sign-in?wrongCampus');
 
         console.log(apiUser);
