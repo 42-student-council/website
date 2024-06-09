@@ -48,8 +48,8 @@ export async function action({ request }: ActionFunctionArgs) {
                     },
                     500,
                 );
-            const createdIssue: { id: number } = await res.json();
 
+            const createdIssue: { id: number } = await res.json();
             return json({ id: createdIssue.id });
         },
     );
@@ -89,14 +89,18 @@ export default function IssuesNew() {
     return (
         <div>
             <NavBar />
-            <H1 className='m-4'>Create A New Issue</H1>
+            <div className='md:flex md:justify-center'>
+                <H1 className='m-4 md:w-3/5'>Create A New Issue</H1>
+            </div>
             <Separator />
-            <p className='mt-4 mx-4'>
-                Issues are <span className='font-bold'>the</span> way to discuss with the community. Issues and their
-                comments are truly anonymous therefore no one needs to be afraid of expressing their concerns.
-            </p>
+            <div className='md:flex md:justify-center'>
+                <p className='mt-4 mx-4 md:w-3/5'>
+                    Issues are <span className='font-bold'>the</span> way to discuss with the community. Issues and
+                    their comments are truly anonymous therefore no one needs to be afraid of expressing their concerns.
+                </p>
+            </div>
             <div className='flex justify-center mt-4 mx-8'>
-                <createIssueFetcher.Form className='md:w-3/5 flex-1' method='post'>
+                <createIssueFetcher.Form className='md:w-3/5' method='post'>
                     <Label htmlFor='title' className='text-lg'>
                         Issue Title
                     </Label>
