@@ -1,4 +1,4 @@
-import { ActionFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { Form, json, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { Info } from 'lucide-react';
@@ -13,6 +13,7 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
+import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 const createIssueSchema = z.object({
@@ -27,7 +28,15 @@ const createIssueSchema = z.object({
         .max(5000, 'Description must be at most 5000 characters long.'),
 });
 
+export async function loader({ request }: LoaderFunctionArgs) {
+    await requireSessionData(request);
+
+    return null;
+}
+
 export async function action({ request }: ActionFunctionArgs) {
+    await requireSessionData(request);
+
     const form = await request.formData();
 
     return validateForm(

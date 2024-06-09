@@ -110,7 +110,7 @@ export async function requireSessionData(
 function isSessionData(data: any): data is SessionData {
     return (
         // biome-ignore lint/complexity/useOptionalChain: -
-        data && data.imageUrl && data.login && data.createdAt && data.type
+        data && data.imageUrl && data.login && data.createdAt
     );
 }
 
