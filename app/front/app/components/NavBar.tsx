@@ -41,18 +41,17 @@ function MainNav() {
     return (
         <div className='mr-4 hidden gap-2 md:flex'>
             {navItems.map((item, index) => (
-                <Button key={index} variant='link'>
-                    <NavLink
-                        to={item.href}
-                        className={({ isActive, isPending }) => {
-                            return classNames({
-                                underline: isActive,
-                            });
-                        }}
-                    >
-                        {item.label}
-                    </NavLink>
-                </Button>
+                <NavLink
+                    key={item.href}
+                    to={item.href}
+                    className={({ isActive, isPending }) => {
+                        return classNames('text-primary underline-offset-4 hover:underline', 'px-2 py-2', {
+                            'text-violet-600 underline font-bold': isActive,
+                        });
+                    }}
+                >
+                    {item.label}
+                </NavLink>
             ))}
         </div>
     );
@@ -82,7 +81,7 @@ function MobileNav() {
                                 to={item.href}
                                 className={({ isActive, isPending }) => {
                                     return classNames('mb-4 flex flex-row items-center', {
-                                        underline: isActive,
+                                        'text-violet-600 font-bold': isActive,
                                     });
                                 }}
                                 onClick={() => {
