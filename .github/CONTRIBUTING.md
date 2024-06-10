@@ -21,13 +21,13 @@ We use GitHub issues to track bugs. Report a bug by [opening an issue](https://g
 **Good Bug Reports** tend to have:
 *  A quick summary and/or background
 *  Steps to reproduce
-  * Be specific!
-  * Give sample code if you can.
+   * Be specific!
+   * Give sample code if you can.
 *  What you expected would happen
 *  What actually happens
 *  Notes, for example:
-  * What you think might be happening
-  * Stuff you tried that did not work
+   * What you think might be happening
+   * Stuff you tried that did not work
 
 The more thorough the bug report, the easier the fix 🫀
 ## Coding Style
