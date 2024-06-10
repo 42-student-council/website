@@ -55,7 +55,7 @@ To use the app, navigate to `http://localhost:3000` in your web browser. From th
 
 Contributions are what make open source such an amazing place to learn, inspire and create. Any contributions are **greatly** appreciated.
 
-See [CONTRIBUTING.md]([url](https://github.com/winstonallo/student-council-42vienna/tree/main/.github/CONTRIBUTING.md)) for more information on how to get started.
+See CONTRIBUTING.md for more information on how to get started.
 
 ## License
 
