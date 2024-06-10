@@ -1,0 +1,172 @@
+import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
+import { json, useFetcher, useNavigate } from '@remix-run/react';
+import classNames from 'classnames';
+import { Info } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+import { FormErrorMessage } from '~/components/FormErrorMessage';
+import NavBar from '~/components/NavBar';
+import { H1 } from '~/components/ui/H1';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
+import { Separator } from '~/components/ui/separator';
+import { Textarea } from '~/components/ui/textarea';
+import { requireSessionData } from '~/utils/session.server';
+import { validateForm } from '~/utils/validation';
+
+const createIssueSchema = z.object({
+    title: z
+        .string()
+        .trim()
+        .min(5, 'Title must be at least 5 characters long.')
+        .max(50, 'Title must be at most 50 characters long.'),
+    description: z
+        .string()
+        .min(10, 'Description must be at least 10 characters long.')
+        .max(5000, 'Description must be at most 5000 characters long.'),
+});
+
+export async function loader({ request }: LoaderFunctionArgs) {
+    await requireSessionData(request);
+
+    return null;
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+    await requireSessionData(request);
+
+    const form = await request.formData();
+
+    return validateForm(
+        form,
+        createIssueSchema,
+        (errors) => json({ errors }, 400),
+        async (data) => {
+            const res = await fetch(`${process.env.API_BASE_URL}/issue/create/`, {
+                method: 'POST',
+                body: JSON.stringify({ ...data, created_at: new Date().toISOString() }),
+            });
+            if (!res.ok)
+                return json(
+                    {
+                        errors: {
+                            message: 'An internal server error occurred while creating the issue. Please try again.',
+                        },
+                    },
+                    500,
+                );
+
+            const createdIssue: { id: number } = await res.json();
+            return json({ id: createdIssue.id });
+        },
+    );
+}
+
+export default function IssuesNew() {
+    const createIssueFetcher = useFetcher<{
+        errors?: { title?: string; description?: string; message?: string };
+        id?: number;
+    }>();
+    const navigate = useNavigate();
+
+    if (createIssueFetcher.data?.id != undefined) {
+        localStorage.removeItem('create-issue-title');
+        localStorage.removeItem('create-issue-description');
+        navigate(`/issues/${createIssueFetcher.data.id}`);
+    }
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+
+    useEffect(() => {
+        const savedTitle = localStorage.getItem('create-issue-title');
+        const savedDescription = localStorage.getItem('create-issue-description');
+        if (savedTitle) setTitle(savedTitle);
+        if (savedDescription) setDescription(savedDescription);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('create-issue-title', title);
+    }, [title]);
+
+    useEffect(() => {
+        localStorage.setItem('create-issue-description', description);
+    }, [description]);
+
+    return (
+        <div>
+            <NavBar />
+            <div className='md:flex md:justify-center'>
+                <H1 className='m-4 md:w-3/5'>Create A New Issue</H1>
+            </div>
+            <Separator />
+            <div className='md:flex md:justify-center'>
+                <p className='mt-4 mx-4 md:w-3/5'>
+                    Issues are <span className='font-bold'>the</span> way to discuss with the community. Issues and
+                    their comments are truly anonymous therefore no one needs to be afraid of expressing their concerns.
+                </p>
+            </div>
+            <div className='flex justify-center mt-4 mx-8'>
+                <createIssueFetcher.Form className='md:w-3/5' method='post'>
+                    <Label htmlFor='title' className='text-lg'>
+                        Issue Title
+                    </Label>
+                    <Input
+                        type='text'
+                        name='title'
+                        required
+                        autoComplete='off'
+                        minLength={5}
+                        maxLength={50}
+                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
+                        onChange={(e) => setTitle(e.target.value)}
+                        defaultValue={title}
+                    />
+                    <FormErrorMessage className='mt-1'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+
+                    <div className='mt-4'>
+                        <Label htmlFor='description' className='text-lg'>
+                            Issue Description
+                        </Label>
+                        <Textarea
+                            placeholder="Start explaining your issue here... (Currently we don't support markdown, but we will in the future.)"
+                            name='description'
+                            className={classNames('h-48', {
+                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
+                            })}
+                            required
+                            autoComplete='off'
+                            minLength={10}
+                            maxLength={5000}
+                            onChange={(e) => setDescription(e.target.value)}
+                            defaultValue={description}
+                        />
+                        <FormErrorMessage className='mt-1'>
+                            {createIssueFetcher.data?.errors?.description}
+                        </FormErrorMessage>
+                    </div>
+
+                    <Alert variant='info' className='mt-4 w-auto'>
+                        <Info className='h-4 w-4' />
+                        <AlertTitle>Info</AlertTitle>
+                        <AlertDescription>
+                            Issues are truly anonymous, this means even we - the student council - don't know who
+                            submitted them. Therefore you won't be able to edit or delete them afterwards.
+                        </AlertDescription>
+                    </Alert>
+                    <Button
+                        type='submit'
+                        variant='destructive'
+                        disabled={!!createIssueFetcher.formData}
+                        className='mt-4'
+                    >
+                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                    </Button>
+                    <FormErrorMessage className='mt-1'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
+                </createIssueFetcher.Form>
+            </div>
+        </div>
+    );
+}

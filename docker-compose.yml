@@ -45,6 +45,7 @@ services:
       CLIENT_SECRET: ${CLIENT_SECRET}
       BASE_URL: ${BASE_URL}
       SESSION_SECRET: ${SESSION_SECRET}
+      API_BASE_URL: ${API_BASE_URL}
 
   nginx:
     image: nginx:latest

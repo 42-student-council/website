@@ -25,7 +25,7 @@ export default function Index() {
                     Official Website of the 42 Vienna Student Council
                 </p>
                 <Button variant='destructive'>
-                    <Link to='/issues'>Have a problem?</Link>
+                    <Link to='/issues/new'>Have a problem?</Link>
                 </Button>
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
