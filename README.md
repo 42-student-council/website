@@ -5,7 +5,7 @@ We have decided to open source this project for greater transparency and to enco
 
 ## Table of Contents
 - [About the Project](#about-the-project)
-- [Tech STack](#tech-stack)
+- [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Contributing](#contributing)
@@ -63,4 +63,4 @@ Distributed under the Apache 2.0 License. See `LICENSE` for more information.
 
 ## Contact
 
-Click [here](https://discord.gg) to join our development Discord server.
+Click [here](https://discord.gg/FSBbTg8R) to join our development Discord server.
