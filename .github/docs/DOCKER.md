@@ -29,7 +29,17 @@ Docker is used to containerize the app, ensuring consistency across different en
     * This acts as a reverse proxy:
         * The React and Django services are separated, each running on different ports. Nginx acts as a gateway and directs requests to the appropriate service.
         * This will enable us to easily add additional layers of security and use WebSockets.
+
+## Why This Architecture?
+
+1. **Separation of Concerns**: By using separate containers for frontend, backend, database and webserver, we maintain a clear separation of concerns. This will make the codebase easier to debug, maintain & scale.
+2. **Consistency Across Environments**: Docker ensures that the app runs in a consistent environment, eliminating the "works on my machine" problem.
+3. **Scalability**: Each service can be scaled independently. For instance, if the frontend needs to handle more traffic, we can scale it up without affecting the database.
+4. **Ease of Deployment**: Docker Compose simplifies the process of setting up and tearing down the development and production environments. This is beneficial for both developers and contributors who need to get the app running quickly.
+5. **Security**: Nginx acts as a reverse proxy, providing an extra layer of security. It can handle SSL termination and protect the backend from direct exposure to the internet.
+6. **Modern Development Practices**: Using Django for the backend and Remix (React) for the frontend leverages modern, robust frameworks.
+7. **Community and Collaboration**: By open-sourcing the project and using widely-adopted technologies like Docker, Django and React, we make contribution easier and foster a collaborative environment. 
  
 ## Conclusion
 
-Using Docker ensures that the app runs consistently across different environments. By containerizing the application, you can easily manage dependencies, scale services, and deploy efficiently.
+In summary, this architecture leverages Docker, Django, and React to build a robust, scalable and maintainable app. It aligns well with the student council's goal: providing a reliable and secure platform to facilitate communication.  
