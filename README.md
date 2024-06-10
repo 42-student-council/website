@@ -21,7 +21,7 @@ The decision to start this project was sparked by the need to facilitate communi
 The application is containerized and built with Docker Compose. The technology stack includes:
 
 - **Backend**: Django (Python)
-  - [DOC](~/.github/docs/DJANGO.md)
+  - [DOC](.github/docs/DJANGO.md)
 - **Frontend**: Remix (TypeScript)
 - **Database**: PostgreSQL
 - **Webserver**: Nginx
@@ -43,7 +43,7 @@ Make sure you have the following installed:
 git clone https://github.com/winstonallo/student-council-42vienna.git
 cd student-council-42vienna
 ```
-2. Run `make debug` to build and run the containers. (See [MAKEFILE](~/.github/docs/MAKEFILE.md) for details on the commands).
+2. Run `make debug` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
 3. The app should now be running on http://localhost:3000
 
 ## Usage
