@@ -48,11 +48,13 @@ If your changes affect the project documentation (e.g. new features, changes to 
 
 ### Coding Style
 We use the [Black](https://black.readthedocs.io/) formatter for Python and [Prettier]((https://prettier.io/)) for TypeScript, HTML and CSS.
+
 **How to use Black:**
 * Use the VSCode extension and configure line length in the settings.
 * Alternatively:
   *  `pip install black`
   *  run `black` with the line length set to 120 in the root of your repo: `black --line-length 120 .`
+
 **How to use Prettier:**
 *  Use the VSCode extension and add the (the Prettier config file [.prettierrc](https://github.com/winstonallo/student-council-42vienna/blob/main/.prettierrc) is at the root of the repo).
 * Alternatively:
