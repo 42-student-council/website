@@ -35,8 +35,6 @@ Make sure you have the following installed:
 - Docker
 - Docker Compose
 
-### The Makefile
-
 ### Installation
 
 1. Clone the repo:
@@ -44,7 +42,7 @@ Make sure you have the following installed:
 git clone https://github.com/winstonallo/student-council-42vienna.git
 cd student-council-42vienna
 ```
-2. Run `make debug` to build and run the containers. (See the [Makefile docs](link) for details on the commands).
+2. Run `make debug` to build and run the containers. (See [MAKEFILE](~/.github/docs/MAKEFILE.md) for details on the commands).
 3. The app should now be running on http://localhost:3000
 
 ## Usage
