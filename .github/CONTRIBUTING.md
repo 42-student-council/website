@@ -11,7 +11,7 @@ Pull Requests are the best way to propose changes to the codebase, they are alwa
 1.  Fork the repo and create your branch from `main`.
 2.  If you have added code that should be tested, add tests.
 3.  Ensure the tests pass.
-4.  Make sure your code is formatted correctly: we use [Black]([url](https://black.readthedocs.io/en/stable/)).
+4.  Make sure your code is formatted correctly! See [Coding Style](#coding-style) for details.
 5.  Submit the pull request!
 ## Any Contributions You Make Will be under the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) Software License
 When you submit code changes, your submissions are understood to be under the same license that covers the project.
@@ -31,7 +31,7 @@ We use GitHub issues to track bugs. Report a bug by [opening an issue](https://g
 
 The more thorough the bug report, the easier the fix 🫀
 ## Coding Style
-We use the [Black](https://black.readthedocs.io/) formatter for Python and Prettier for TypeScrit, HTML and CSS.
+We use the [Black](https://black.readthedocs.io/) formatter for Python and [Prettier]((https://prettier.io/)) for TypeScrit, HTML and CSS.
 **How to use Black:**
 * Use the VSCode extension and configure line length in the settings.
 * Alternatively:
@@ -42,6 +42,11 @@ We use the [Black](https://black.readthedocs.io/) formatter for Python and Prett
 * Alternatively:
   * `npm install prettier`
   * `npx prettier --config .prettierrc --write "**/*.{ts,tsx,html,css,scss}"`
+
 **Pull Requests with failed stylechecks will be automatically denied!**
+## Discord server
+We have a Discord server to facilitate communication between contributors.
+
+Click [here](https://discord.gg/FSBbTg8R) to join.
 ## References
 This document was adapted from [briandk's contributing guidelines template](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62)
