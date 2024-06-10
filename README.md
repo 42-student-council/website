@@ -63,4 +63,4 @@ Distributed under the Apache 2.0 License. See `LICENSE` for more information.
 
 ## Contact
 
-[42 Vienna Student Council Discord server for development](link)
+Click [here](https://discord.gg) to join our development Discord server.
