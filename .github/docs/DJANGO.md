@@ -44,7 +44,7 @@ Our Django project structure looks like this:
 
 ## Adding Models
 
-Models in Django define the structure of your database. They are written in [models.py](~/app/db/models.py).
+Models in Django define the structure of your database. They are written in [models.py](/app/db/models.py).
 
 1. **Define a Model**: Create a new model by defining a class that inherits from `django.db.models.Model`.
   ```python3
@@ -58,7 +58,7 @@ Models in Django define the structure of your database. They are written in [mod
 
 ## Creating and Applying Migrations
 
-After defining models, create and apply migrations to update the database. This should be handled automatically by [entrypoint.sh](~/app/startup/entrypoint.sh). When building with `make debug`, you should see output showing that your models have been created and your migrations applied.
+After defining models, create and apply migrations to update the database. This should be handled automatically by [entrypoint.sh](/app/startup/entrypoint.sh). When building with `make debug`, you should see output showing that your models have been created and your migrations applied.
 Migrations are not handled by the statreloader, you have to rebuild for them to take effect!
 
 1. **Create Migrations**: Generate migration files based on the changes in your models.
@@ -72,7 +72,7 @@ Migrations are not handled by the statreloader, you have to rebuild for them to 
 
 ## Adding Views
 
-Views handle the logic for your application. They are written in [views.py](~/app/db/views.py).
+Views handle the logic for your application. They are written in [views.py](/app/db/views.py).
 
 1. **Define a View**: Create a new view function or class that handles a specific URL request.
 
@@ -84,7 +84,7 @@ Views handle the logic for your application. They are written in [views.py](~/ap
         def get(self, request):
             # your logic here
     ```
-2. **Add the View to URLs**: Map the view to a URL in [urls.py](~/app/app/urls.py).
+2. **Add the View to URLs**: Map the view to a URL in [urls.py](/app/app/urls.py).
 
     ```python3
     from django.urls import path
@@ -96,7 +96,7 @@ Views handle the logic for your application. They are written in [views.py](~/ap
 
 ## Configuring URLs
 
-URLs in Django are configured to map views to specific URLs. They are defined in [urls.py](~/app/app/urls.py).
+URLs in Django are configured to map views to specific URLs. They are defined in [urls.py](/app/app/urls.py).
     ```python3
     from django.urls import path
     from db import views
