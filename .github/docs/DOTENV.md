@@ -22,7 +22,7 @@ POSTGRES_PORT=5432                     # Default postgres port.
 
 # These are used for globally configuring your IP adress.
 BASE_URL="http://<IP>:3000"            # Frontend base URL.
-API_BASE_URL="http://<IP>:8000/api"     # Base URL for api calls.
+API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally, you can set it to whatever.
 SESSION_SECRET="-42"
