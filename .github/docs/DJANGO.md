@@ -12,44 +12,27 @@ This section provides and overview of the Django architecture and instructions o
 ## Project Structure
 
 Our Django project structure looks like this:
-    ```
+```
     app/
-    
     │
-    
     ├── app/
-    
     │ ├── __init__.py
-    
     │ ├── settings.py
-    
     │ ├── urls.py
-    
     │ ├── asgi.py
-    
     │ └── wsgi.py
-    
     │
     ├── db/
-    
     │ ├── migrations/
-    
     │ ├── __init__.py
-    
     │ ├── admin.py
-    
     │ ├── apps.py
-    
     │ ├── models.py
-    
     │ ├── views.py
-    
     │ └── urls.py
-    │
     ├── manage.py
-    
     └── requirements.txt
-    ```
+```
 
 ## Adding Models
 
