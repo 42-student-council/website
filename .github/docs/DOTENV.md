@@ -17,12 +17,12 @@ POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 
 # Do not change these even when building locally!
-POSTGRES_HOST=db                   # Name of the database service.
-POSTGRES_PORT=5432                 # Default postgres port.
+POSTGRES_HOST=db                       # Name of the database service.
+POSTGRES_PORT=5432                     # Default postgres port.
 
 # These are used for globally configuring your IP adress.
-BASE_URL="http://<IP>:3000"        # Frontend base URL.
-API_BASE_URL"http://<IP>:8000/api" # Base URL for api calls.
+BASE_URL="http://<IP>:3000"            # Frontend base URL.
+API_BASE_URL"http://<IP>:8000/api"     # Base URL for api calls.
 
 # This is not needed for building locally, you can set it to whatever.
 SESSION_SECRET="-42"
