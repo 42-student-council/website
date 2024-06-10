@@ -9,7 +9,7 @@ We want to make contributing to this project as easy and transparent as possible
 We use GitHub to host code, track issues and feature requests, as well as accept pull requests.
 We use [GitHub FLow](https://guides.github.com/introduction/flow/index.html): **All Changes Happen Through Pull Requests**.
 
-### Report Bugs using GitHub's [Issues](https://github.com/42-stats/42-stats/issues)
+### Report Bugs using GitHub's Issues
 We use GitHub issues to track bugs. Report a bug by [opening an issue](https://github.com/winstonallo/student-council-42vienna/issues); it's very easy!
 
 ### Write Bug Reports with Detail, Background and Sample Code!
@@ -18,8 +18,8 @@ We use GitHub issues to track bugs. Report a bug by [opening an issue](https://g
 *  Steps to reproduce
    * Be specific!
    * Give sample code if you can.
-*  What you expected would happen
-*  What actually happens
+*  What you expected would happen.
+*  What actually happens.
 *  Notes, for example:
    * What you think might be happening.
    * Stuff you tried that did not work.
