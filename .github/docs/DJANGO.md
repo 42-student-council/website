@@ -1,6 +1,6 @@
 # Django Architecture
 
-This section provides and overview of the Django architecture and instructions on how to add and manage various components like views, models and URLs.
+This section provides an overview of the Django architecture and instructions on how to add and manage various components like views, models and URLs.
 
 This section assumes that you have a basic understanding of REST APIs and Relational databases.
 
@@ -60,6 +60,7 @@ Models in Django define the structure of your database. They are written in [mod
 
 After defining models, create and apply migrations to update the database. This should be handled automatically by [entrypoint.sh](/app/startup/entrypoint.sh). When building with `make debug`, you should see output showing that your models have been created and your migrations applied.
 Migrations are not handled by the statreloader, you have to rebuild for them to take effect!
+If the build does not acknoledge the migrations for some reason, run the following commands.
 
 1. **Create Migrations**: Generate migration files based on the changes in your models.
     ```sh
