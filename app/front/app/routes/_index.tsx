@@ -1,9 +1,10 @@
-import type { MetaFunction } from '@remix-run/node';
+import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Button } from '~/components/ui/button';
 import { Link } from '@remix-run/react';
+import { requireSessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [
@@ -11,6 +12,10 @@ export const meta: MetaFunction = () => {
         { name: 'description', content: 'Welcome to the website of the 42 Vienna Student Council.' },
     ];
 };
+
+export async function loader({ request }: LoaderFunctionArgs) {
+    await requireSessionData(request);
+}
 
 export default function Index() {
     return (

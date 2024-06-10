@@ -1,12 +1,15 @@
-import { LoaderFunction } from '@remix-run/node';
+import { LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
+import { requireSessionData } from '~/utils/session.server';
 
 // TODO: Get dynamically from backend
-export const loader: LoaderFunction = async () => {
+export async function loader({ request }: LoaderFunctionArgs) {
+    await requireSessionData(request);
+
     const res: LoaderData = [];
 
     for (let i = 0; i < 5; i++) {
@@ -21,7 +24,7 @@ export const loader: LoaderFunction = async () => {
     }
 
     return res;
-};
+}
 
 type LoaderData = {
     firstName: string;
