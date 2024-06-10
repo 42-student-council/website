@@ -64,7 +64,9 @@ export async function action({ request }: ActionFunctionArgs) {
                     username: 'Webportal',
                     wait: true,
                 });
-            } catch {
+            } catch (error) {
+                console.error(error);
+
                 return json(
                     {
                         errors: {
