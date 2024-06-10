@@ -2,6 +2,14 @@
 
 This section provides and overview of the Django architecture and instructions on how to add and manage various components like views, models and URLs.
 
+This section assumes that you have a basic understanding of REST APIs and Relational databases.
+
+If not, we recommend you take a look at these articles:
+*  [REST APIs](https://www.freecodecamp.org/news/how-to-use-rest-api/)
+*  [Relational Databases](https://cloud.google.com/learn/what-is-a-relational-database?hl=de#:~:text=A%20relational%20database%20is%20a,structures%20relate%20to%20each%20other.)
+
+If you are not familiar with this and are feeling a little overwhelmed, don't worry about it! These are things you will learn during your cursus and this project is not running away. You can still contribute by finding bugs and proposing changes.
+
 ## Table of Contents
 - [Project Structure](#project-structure)
 - [Adding Models](#adding-models)
