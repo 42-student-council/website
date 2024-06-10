@@ -56,7 +56,7 @@ We use the [Black](https://black.readthedocs.io/) formatter for Python and [Pret
   *  run `black` with the line length set to 120 in the root of your repo: `black --line-length 120 .`
 
 **How to use Prettier:**
-*  Use the VSCode extension and add the (the Prettier config file [.prettierrc](https://github.com/winstonallo/student-council-42vienna/blob/main/.prettierrc) is at the root of the repo).
+*  Use the VSCode extension and add the (the Prettier config file [.prettierrc](~/.prettierrc) is at the root of the repo).
 * Alternatively:
   * `npm install prettier`
   * `npx prettier --config .prettierrc --write "**/*.{ts,tsx,html,css,scss}"`
