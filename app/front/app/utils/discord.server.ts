@@ -5,11 +5,12 @@ import { config } from './config.server';
 const rest = new REST({ version: '10' });
 const api = new API(rest);
 
-export type ExecuteWebhookData = RESTPostAPIWebhookWithTokenJSONBody & RESTPostAPIWebhookWithTokenQuery & {
+export type ExecuteWebhookData = RESTPostAPIWebhookWithTokenJSONBody &
+    RESTPostAPIWebhookWithTokenQuery & {
         files?: RawFile[];
         wait: true;
-    }
+    };
 
 export async function sendDiscordWebhook(data: ExecuteWebhookData) {
-	await api.webhooks.execute(config.discord.webhookId, config.discord.webhookToken, data)
+    await api.webhooks.execute(config.discord.webhookId, config.discord.webhookToken, data);
 }
