@@ -21,13 +21,13 @@ We use GitHub issues to track bugs. Report a bug by [opening an issue](https://g
 **Good Bug Reports** tend to have:
 *  A quick summary and/or background
 *  Steps to reproduce
-*    Be specific!
-*    Give sample code if you can.
+  * Be specific!
+  * Give sample code if you can.
 *  What you expected would happen
 *  What actually happens
 *  Notes, for example:
-*    What you think might be happening
-*    Stuff you tried that did not work
+  * What you think might be happening
+  * Stuff you tried that did not work
 
 The more thorough the bug report, the easier the fix 🫀
 ## Coding Style
@@ -38,7 +38,7 @@ We use the [Black](https://black.readthedocs.io/) formatter for Python and Prett
   *  `pip install black`
   *  run `black` with the line length set to 120 in the root of your repo: `black --line-length 120 .`
 **How to use Prettier:**
-*  Use the VSCode extension and add the (the Prettier config file [.prettierrc](https://github.com/winstonallo/student-council-42vienna/.prettierrc) is at the root of the repo).
+*  Use the VSCode extension and add the (the Prettier config file [.prettierrc](https://github.com/winstonallo/student-council-42vienna/blob/main/.prettierrc) is at the root of the repo).
 * Alternatively:
   * `npm install prettier`
   * `npx prettier --config .prettierrc --write "**/*.{ts,tsx,html,css,scss}"`
