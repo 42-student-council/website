@@ -8,13 +8,6 @@ from .models import Issue
 import json
 
 
-def get_frontend_data(request):
-    if request.method == "GET":
-        with open("./db/frontend-data/frontend-data.json") as f:
-            data = json.load(f)
-        return JsonResponse(data)
-
-
 class CreateIssueView(View):
     def post(self, request):
         data = json.loads(request.body)
