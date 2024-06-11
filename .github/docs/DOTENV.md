@@ -26,7 +26,7 @@ API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally.
 # You can set it to an empty string.
-SESSION_SECRET="-42"
+SESSION_SECRET=""
 
 # These are needed for 42OAuth configuration.
 # You can set these to empty strings, unless you
