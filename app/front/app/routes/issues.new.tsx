@@ -13,6 +13,7 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
+import { createIssue } from '~/models/issue.server';
 import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
@@ -55,11 +56,13 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            const res = await fetch(`${process.env.API_BASE_URL}/issue/create/`, {
-                method: 'POST',
-                body: JSON.stringify({ ...data, created_at: new Date().toISOString() }),
-            });
-            if (!res.ok)
+            try {
+                const issue = await createIssue(data);
+
+                return json(issue);
+            } catch (error) {
+                console.error(error);
+
                 return json(
                     {
                         errors: {
@@ -68,9 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
                     },
                     500,
                 );
-
-            const createdIssue: { id: number } = await res.json();
-            return json({ id: createdIssue.id });
+            }
         },
     );
 }
