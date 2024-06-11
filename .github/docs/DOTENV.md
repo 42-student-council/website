@@ -79,7 +79,7 @@ CLIENT_SECRET=<SECRET>
     * Click on 'Create Webhook'.
 3. Copy the Webhook URL:
     * It should look something like this:
-```php
+```
 https://discord.com/api/webhooks/<WEBHOOK_ID>/<WEBHOOK_TOKEN>
 ```
 4. Add the Webhook ID and Token to Your .env File:
