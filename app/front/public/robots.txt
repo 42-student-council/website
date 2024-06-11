@@ -1,0 +1,5 @@
+# This is a private website, therefore the crawlers should run away instead of crawling here.
+# Don't tell them the real reason is SEO.
+
+User-agent: *
+Disallow: /
