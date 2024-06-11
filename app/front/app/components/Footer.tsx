@@ -7,7 +7,6 @@ export function Footer() {
         <footer
             className='bg-white rounded-lg shadow m-4 dark:bg-gray-800 sticky'
             style={{
-                // bottom: 0,
                 height: 'fit-content',
                 top: '100vh',
             }}
@@ -28,18 +27,6 @@ export function Footer() {
                         It's open source! <GitHub className='size-5' />
                     </Link>
                 </div>
-                {/* <ul className='flex flex-wrap items-center text-sm font-medium text-gray-500 dark:text-gray-400 mt-0'>
-                    <li>
-                        <Link to='/imprint' className='hover:underline me-6'>
-                            Imprint
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to='/privacy' className='hover:underline sm:me-6'>
-                            Privacy Policy
-                        </Link>
-                    </li>
-                </ul> */}
             </div>
         </footer>
     );

@@ -23,11 +23,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body className='min-h-screen'>
-                {/* <div className='flex flex-col min-h-screen'> */}
                 {children}
 
                 <Footer />
-                {/* </div> */}
                 <ScrollRestoration />
                 <Scripts />
             </body>
