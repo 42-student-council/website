@@ -25,24 +25,25 @@ BASE_URL="http://<IP>:3000"            # Frontend base URL.
 API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally.
-You can set it to an empty string.
+# You can set it to an empty string.
 SESSION_SECRET="-42"
 
 # These are needed for 42OAuth configuration.
-# You do not need that for development unless you are directly working on 42OAuth-related code.
-# If that is the case, see [this part](#i-want-42oauth-to-work) of the doc.
-CLIENT_ID="u-s4tud(...)"
-CLIENT_SECRET="s-s4tud(...)"
+# You can set these to empty strings, unless you
+# are directly working on 42OAuth-related code.
+# If that is the case, see 'Set Up 42OAuth'.
+CLIENT_ID=""
+CLIENT_SECRET=""
 
 # These are needed for the contact form.
 # You can set these to empty strings, unless you need to test
 # the contact form functionality locally.
-# In that case
-DISCORD_WEBHOOK_ID="<your id>"
-DISCORD_WEBHOOK_TOKEN="your token"
+# If that is the case, see 'Set Up Discord Webhook'.
+DISCORD_WEBHOOK_ID=""
+DISCORD_WEBHOOK_TOKEN=""
 ```
 
-## I Want 42OAuth to Work
+## Set Up 42OAuth
 
 Here is how OAuth Authentification works:
 1. **User Initiates Authentication**: When a user tries to log in, they are redirected to the 42 Network's authentication page.
@@ -63,3 +64,27 @@ CLIENT_ID=<UID>
 CLIENT_SECRET=<SECRET>
 ```
 **DO NOT** push any of these!!
+
+## Set Up a Discord Webhook
+
+1. Create a Discord Server:
+    * If you do not already have a server, create a new one. This can be your personal development server.
+2. Create a Webhook:
+    * Navigate to the channel where you want to receive the messages.
+    * Click on the settings icon next to the channel name.
+    * In the channel settings, go to the 'Integrations' tab.
+    * Click on 'Create Webhook'.
+3. Copy the Webhook URL:
+    * It should look something like this:
+```php
+https://discord.com/api/webhooks/<WEBHOOK_ID>/<WEBHOOK_TOKEN>
+```
+4. Add the Webhook ID and Token to Your .env File:
+    * Split the webhook URL to extract the <WEBHOOK_ID> and <WEBHOOK_TOKEN>.
+    * Add these to your .env file:
+```.env
+DISCORD_WEBHOOK_ID=<WEBHOOK_ID>
+DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
+```
+
+**Reminder**: Ensure that the test webhook URL, ID and token are not exposed publicly. Use these only for local development and testing purposes.
