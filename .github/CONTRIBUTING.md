@@ -10,7 +10,7 @@ We use GitHub to host code, track issues and feature requests, as well as accept
 We use [GitHub FLow](https://guides.github.com/introduction/flow/index.html): **All Changes Happen Through Pull Requests**.
 
 ### Report Bugs using GitHub's Issues
-We use GitHub issues to track bugs. Report a bug by [opening an issue](https://github.com/42-student-council/student-council-42vienna/issues); it's very easy!
+We use GitHub issues to track bugs. Report a bug by [opening an issue](https://github.com/42-student-council/website/issues); it's very easy!
 
 ### Write Bug Reports with Detail, Background and Sample Code!
 **Good Bug Reports** tend to have:
