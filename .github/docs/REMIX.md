@@ -1,5 +1,10 @@
-# Remix
+# Remix Architecture
 We use Remix as a frontend framework.
+
+front/
+|
+| - app/
+
 
 **See**:
 - [Remix docs](https://remix.run/docs)
