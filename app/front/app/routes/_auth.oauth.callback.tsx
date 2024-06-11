@@ -1,6 +1,13 @@
-import { type LoaderFunction, redirect } from '@remix-run/node';
+import { type LoaderFunction, redirect, MetaFunction } from '@remix-run/node';
 import { checkState, createState, generateOauthUrl, getTokens } from '~/utils/oauth.server';
 import { createSession } from '~/utils/session.server';
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: 'Student Council OAuth2 Callback' },
+        { name: 'description', content: 'You should not be reading this.' },
+    ];
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);

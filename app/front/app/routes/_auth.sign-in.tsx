@@ -7,7 +7,10 @@ import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 
 export const meta: MetaFunction = () => {
-    return [{ title: '42VSC | Sign In' }, { name: 'description', content: '42 Vienna Student Council Sign In!' }];
+    return [
+        { title: 'Student Council | Sign In' },
+        { name: 'description', content: '42 Vienna Student Council Sign In!' },
+    ];
 };
 
 type LoaderData = {

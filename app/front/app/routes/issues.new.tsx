@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { Info } from 'lucide-react';
@@ -15,6 +15,17 @@ import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+
+export const meta: MetaFunction = () => {
+    return [
+        { title: 'Student Council | New Issue' },
+        {
+            name: 'description',
+            content:
+                'Have a problem and want to tell the community about it in an anonym way? Then this is the place to go!',
+        },
+    ];
+};
 
 const createIssueSchema = z.object({
     title: z

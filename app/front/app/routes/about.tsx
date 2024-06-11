@@ -1,10 +1,14 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { requireSessionData } from '~/utils/session.server';
+
+export const meta: MetaFunction = () => {
+    return [{ title: 'About the Student Council' }, { name: 'description', content: 'Who is the student council?' }];
+};
 
 // TODO: Get dynamically from backend
 export async function loader({ request }: LoaderFunctionArgs) {
