@@ -43,8 +43,9 @@ Make sure you have the following installed:
 git clone https://github.com/42-student-council/student-council-42vienna.git
 cd student-council-42vienna
 ```
-2. Run `make debug` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
-3. The app should now be running on http://localhost:3000
+2. Create your .env file and add the necessary variables (See [DOTENV](.github/docs/DOTENV.md) for details).
+3. Run `make debug` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
+4. The app should now be running on http://localhost:3000
 
 ## Usage
 
