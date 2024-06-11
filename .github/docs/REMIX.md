@@ -34,74 +34,40 @@ front/
 ## Adding Components
 Components are reusable pieces of UI. They are located in the `app/components` directory.
 
-### Example: Adding a new UI Component
-1. **Create the Component**: Create a new file in `app/components/ui/` (e.g., `card.tsx`).
-```tsx
-import * as React from 'react';
+### shadcn/ui
+We use [shadcn/ui](https://ui.shadcn.com/) for our base components. Therefore if
+you want to add a compnent, first check whether it is available by shadcn/ui.
+If it is just add the component (`npx shadcn-ui@latest add ...`).
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)} {...props} />
-));
-Card.displayName = 'Card';
-```
-2. **Use the Component**: Import and use the component in any other part of your application.
-```tsx
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/Card';
-
-const ExamplePage: React.FC = () => {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Example Card</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>This is an example card component.</p>
-            </CardContent>
-        </Card>
-    );
-};
-
-export default ExamplePage;
-```
+### Custom Components
+If the component you need is not available by `shadcn/ui` then you can write it
+;). All custom components should be in `app/components`, create a subdirectory
+if applicable. Please don't put custom components in `app/components/ui` as we
+reserve this directory only for `shadcn/ui`.
 
 ## Styling Components
-Components are styled using Tailwind CSS classes and utility functions. The `cn` utility function is used to merge class names.
-
-### Example: Styling a Component
-In the `card` component above, we use several Tailwind CSS classes like `rounded-lg`, `border`, `bg-card` and `text-card-foreground` to style the component.
-
-### Utility Function: `cn` 
-The `cn` utility function helps in conditionally merging class names.
+Components are styled using [Tailwind CSS](https://tailwindcss.com/docs)
+classes.
+For adding classes conditionally we use
+[Classnames](https://www.npmjs.com/package/classnames). You can imagine the
+usage similar to this:
 ```tsx
-import { type ClassValue, clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
-}
+<p className={classNames('font-bold text-blue-500', {
+    'underline text-blue-600': isActive
+})}>
+Hello World
+</p>
 ```
 
 ## Adding Routes
-Routes in Remix define the different pages of your application. They are located in the `app/routes/` directory.
-
-### Example: Adding a New Route
-1. **Create the Route**: Create a new file in `app/routes/` (e.g, `about.tsx`).
-```tsx
-import React from 'react';
-
-export default function About() {
-    return (
-        <div>
-            <h1>About Us</h1>
-            <p>This is the about page.</p>
-        </div>
-    );
-};
-```
-2. **Access the Route**: Navigate to `/about` in the app to see the new route.
+Routes in Remix define the different pages of your application. They are located
+in the `app/routes/` directory. You can read more about the file naming
+convention in the
+[Remix Docs](https://remix.run/docs/en/main/file-conventions/routes).
 
 ## Configuring Utilities
-Utilities are helper functions and configurations used across the app. They are located in the `app/utils/` directory.
+Utilities are helper functions and configurations used across the app. They are
+located in the `app/utils/` directory.
 
 ### Example: Adding a Utility Function
 1. **Create the Utility**: Create a new file in `app/utils/` (e.g., `math.ts`).
@@ -123,6 +89,12 @@ export default NewFunction {
     );
 };
 ```
+
+> [!NOTE]
+> When adding code which should not be shared with the end user, then please
+> make the file server-only by ending it with the `.server.ts` extension.
+> Read more about it in the
+> [Remix Docs](https://remix.run/docs/en/main/discussion/server-vs-client#splitting-up-client-and-server-code).
 
 ## Conclusion
 This documentation should give you a basic overview of the Remix architecture and how to contribute.
