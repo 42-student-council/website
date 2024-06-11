@@ -1,6 +1,8 @@
 import { LinksFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import stylesheet from '~/tailwind.css?url';
+import NavBar from './components/NavBar';
+import { Footer } from './components/Footer';
 
 export const links: LinksFunction = () => {
     return [
@@ -20,8 +22,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Meta />
                 <Links />
             </head>
-            <body>
+            <body className='min-h-screen'>
+                {/* <div className='flex flex-col min-h-screen'> */}
                 {children}
+
+                <Footer />
+                {/* </div> */}
                 <ScrollRestoration />
                 <Scripts />
             </body>
