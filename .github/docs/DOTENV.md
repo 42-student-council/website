@@ -24,15 +24,30 @@ POSTGRES_PORT=5432                     # Default postgres port.
 BASE_URL="http://<IP>:3000"            # Frontend base URL.
 API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
-# This is not needed for building locally, you can set it to whatever.
-SESSION_SECRET="-42"
+# This is not needed for building locally.
+# You can set it to an empty string.
+SESSION_SECRET=""
 
-# These are needed for 42OAuth configuration. You do not need that for development unless you are directly working on 42OAuth-related code. If that is the case, see the bottom section of this doc.
-CLIENT_ID="u-s4tud(...)"
-CLIENT_SECRET="s-s4tud(...)"
+# This is set to 'production' in production.
+# You can set this to an empty string.
+NODE_ENV="development"
+
+# These are needed for 42OAuth configuration.
+# You can set these to empty strings, unless you
+# need to test 42-OAuth locally.
+# If that is the case, see 'Set Up 42OAuth'.
+CLIENT_ID=""
+CLIENT_SECRET=""
+
+# These are needed for the contact form.
+# You can set these to empty strings, unless you need to test
+# the contact form functionality locally.
+# If that is the case, see 'Set Up Discord Webhook'.
+DISCORD_WEBHOOK_ID=""
+DISCORD_WEBHOOK_TOKEN=""
 ```
 
-## I Want 42OAuth to Work
+## Set Up 42-OAuth
 
 Here is how OAuth Authentification works:
 1. **User Initiates Authentication**: When a user tries to log in, they are redirected to the 42 Network's authentication page.
@@ -52,4 +67,28 @@ Once you are done, you will get a UID and a secret, which you can use for authen
 CLIENT_ID=<UID>
 CLIENT_SECRET=<SECRET>
 ```
-**DO NOT** push any of these!!
+
+## Set Up Discord Webhook
+
+1. Create a Discord Server:
+    * If you do not already have a server, create a new one. This can be your personal development server.
+2. Create a Webhook:
+    * Navigate to the channel where you want to receive the messages.
+    * Click on the settings icon next to the channel name.
+    * In the channel settings, go to the 'Integrations' tab.
+    * Click on 'Create Webhook'.
+3. Copy the Webhook URL:
+    * It should look something like this:
+```
+https://discord.com/api/webhooks/<WEBHOOK_ID>/<WEBHOOK_TOKEN>
+```
+4. Add the Webhook ID and Token to Your .env File:
+    * Split the webhook URL to extract the <WEBHOOK_ID> and <WEBHOOK_TOKEN>.
+    * Add these to your .env file:
+```.env
+DISCORD_WEBHOOK_ID=<WEBHOOK_ID>
+DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
+```
+
+# REMINDER
+Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉. 
