@@ -30,7 +30,7 @@ SESSION_SECRET=""
 
 # This is set to 'production' in production.
 # You can set this to an empty string.
-NODE_ENV=""
+NODE_ENV="development"
 
 # These are needed for 42OAuth configuration.
 # You can set these to empty strings, unless you
