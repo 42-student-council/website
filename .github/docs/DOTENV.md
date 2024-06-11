@@ -24,12 +24,22 @@ POSTGRES_PORT=5432                     # Default postgres port.
 BASE_URL="http://<IP>:3000"            # Frontend base URL.
 API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
-# This is not needed for building locally, you can set it to whatever.
+# This is not needed for building locally.
+You can set it to an empty string.
 SESSION_SECRET="-42"
 
-# These are needed for 42OAuth configuration. You do not need that for development unless you are directly working on 42OAuth-related code. If that is the case, see the bottom section of this doc.
+# These are needed for 42OAuth configuration.
+# You do not need that for development unless you are directly working on 42OAuth-related code.
+# If that is the case, see [this part](#i-want-42oauth-to-work) of the doc.
 CLIENT_ID="u-s4tud(...)"
 CLIENT_SECRET="s-s4tud(...)"
+
+# These are needed for the contact form.
+# You can set these to empty strings, unless you need to test
+# the contact form functionality locally.
+# In that case
+DISCORD_WEBHOOK_ID="<your id>"
+DISCORD_WEBHOOK_TOKEN="your token"
 ```
 
 ## I Want 42OAuth to Work
