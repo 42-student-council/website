@@ -8,7 +8,7 @@ import { requireSessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [
-        { title: '42 Vienna Student Council' },
+        { title: 'Student Council' },
         { name: 'description', content: 'Welcome to the website of the 42 Vienna Student Council.' },
     ];
 };
