@@ -15,34 +15,26 @@ front/
 ├── app/
 │ ├── components/
 │ │ ├── icon/
-│ │ │ └── 42.tsx
+│ │ │ └── ...
 │ │ ├── ui/
-│ │ │ ├── H1.tsx
-│ │ │ ├── ...
-│ │ └── NavBar.tsx
+│ │ │ └── ...
+│ │ └── ...
 │ ├── lib/
-│ │ └── utils.ts
+│ │ └── ...
 │ ├── routes/
 │ │ ├── _index.tsx
 │ │ ├── ...
 │ ├── utils/
-│ │ ├── config.server.ts
-│ │ ├── ...
-│ ├── entry.client.tsx
-│ ├── entry.server.tsx
-│ ├── root.tsx
-│ └── tailwind.css
+│ │ └── ...
+| └── ...
 ├── public/
 │ ├── fonts/
 │ │ ├── ...
 │ ├── img/
 │ │ └── ...
-│ └── favicon.ico
+│ └── ...
 ├── Dockerfile
-├── biome.json
 ├── components.json
-├── package-lock.json
-├── package.json
 ├── postcss.config.js
 ├── tailwind.config.ts
 ├── tsconfig.json
