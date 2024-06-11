@@ -86,4 +86,5 @@ DISCORD_WEBHOOK_ID=<WEBHOOK_ID>
 DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
 ```
 
-⚠️**REMINDER**: Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉. 
+#⚠️REMINDER
+Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉. 
