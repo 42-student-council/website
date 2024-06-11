@@ -40,7 +40,7 @@ Make sure you have the following installed:
 
 1. Clone the repo:
 ```sh
-git clone https://github.com/winstonallo/student-council-42vienna.git
+git clone https://github.com/42-student-council/student-council-42vienna.git
 cd student-council-42vienna
 ```
 2. Run `make debug` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
