@@ -30,7 +30,7 @@ SESSION_SECRET="-42"
 
 # These are needed for 42OAuth configuration.
 # You can set these to empty strings, unless you
-# are directly working on 42OAuth-related code.
+# need to test 42-OAuth locally.
 # If that is the case, see 'Set Up 42OAuth'.
 CLIENT_ID=""
 CLIENT_SECRET=""
@@ -43,7 +43,7 @@ DISCORD_WEBHOOK_ID=""
 DISCORD_WEBHOOK_TOKEN=""
 ```
 
-## Set Up 42OAuth
+## Set Up 42-OAuth
 
 Here is how OAuth Authentification works:
 1. **User Initiates Authentication**: When a user tries to log in, they are redirected to the 42 Network's authentication page.
@@ -63,7 +63,6 @@ Once you are done, you will get a UID and a secret, which you can use for authen
 CLIENT_ID=<UID>
 CLIENT_SECRET=<SECRET>
 ```
-**DO NOT** push any of these!!
 
 ## Set Up a Discord Webhook
 
@@ -87,4 +86,4 @@ DISCORD_WEBHOOK_ID=<WEBHOOK_ID>
 DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
 ```
 
-**Reminder**: Ensure that the test webhook URL, ID and token are not exposed publicly. Use these only for local development and testing purposes.
+⚠️**REMINDER**: Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉. 
