@@ -28,6 +28,10 @@ API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 # You can set it to an empty string.
 SESSION_SECRET=""
 
+# This is set to 'production' in production.
+# You can set this to an empty string.
+NODE_ENV=""
+
 # These are needed for 42OAuth configuration.
 # You can set these to empty strings, unless you
 # need to test 42-OAuth locally.
