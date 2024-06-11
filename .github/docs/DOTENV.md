@@ -68,7 +68,7 @@ CLIENT_ID=<UID>
 CLIENT_SECRET=<SECRET>
 ```
 
-## Set Up a Discord Webhook
+## Set Up Discord Webhook
 
 1. Create a Discord Server:
     * If you do not already have a server, create a new one. This can be your personal development server.
