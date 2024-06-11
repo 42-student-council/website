@@ -46,7 +46,8 @@ services:
       BASE_URL: ${BASE_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       API_BASE_URL: ${API_BASE_URL}
-
+      DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
+      DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
   nginx:
     image: nginx:latest
     ports:

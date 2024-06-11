@@ -117,8 +117,8 @@ export default function Contact() {
             <Separator />
             <div className='md:flex md:justify-center'>
                 <p className='mt-4 mx-4 md:w-3/5'>
-                    Do you have an issue you don't want to tell the public about it? Then you can contact us directly
-                    instead. We will try to help you as soon as possible.
+                    Do you have an issue you would like to stay private? Contact us directly instead. We will try to
+                    help you as soon as possible.
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-8 mb-4'>
@@ -128,7 +128,7 @@ export default function Contact() {
                             What do you want to tell us?
                         </Label>
                         <Textarea
-                            placeholder='Please describe your issue here. You can use Markdown if you want.'
+                            placeholder='Please describe your issue here. Markdown is supported.'
                             name='message'
                             className={classNames('h-48', {
                                 'border-red-600': !!contactFetcher.data?.errors?.message,
@@ -161,7 +161,7 @@ export default function Contact() {
 
                     {contactOption === 'email' && (
                         <div className='mt-2'>
-                            <Label htmlFor='how-to-contact'>For this contact way we need more information:</Label>
+                            <Label htmlFor='how-to-contact'>We need your info in order to get back to you:</Label>
                             <Input
                                 type='email'
                                 name='contactDetail'
@@ -184,7 +184,8 @@ export default function Contact() {
                         <Info className='h-4 w-4' />
                         <AlertTitle>Important</AlertTitle>
                         <AlertDescription>
-                            Since you want to contact the Student Council, we are storing who has send the message.
+                            We will store your data so we can contact you. If you want to raise concerns anonymously,
+                            please open an issue.
                             <br />
                             Contacting is <span className='font-bold uppercase'>not anonymous</span>.
                         </AlertDescription>
@@ -200,7 +201,7 @@ export default function Contact() {
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
                     {contactFetcher.data?.success && (
                         <p className='text-green-600 text-xs mt-1'>
-                            We have received your message, and will respond ASAP.
+                            We have received your message, we will get back to you soon!
                         </p>
                     )}
                 </contactFetcher.Form>
