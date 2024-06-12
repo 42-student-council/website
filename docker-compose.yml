@@ -53,7 +53,7 @@ services:
   react_prod:
     build:
       context: ./app/front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_prod
     ports:
       - "3000:3000"
     environment:
@@ -84,7 +84,7 @@ services:
   react_dev:
     build:
       context: ./app/front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_dev
     ports:
       - "5173:5173"
     environment:
