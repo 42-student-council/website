@@ -1,8 +1,13 @@
 run:
 	@docker-compose up -d --build
 
-debug:
-	@docker-compose up --build
+dev:
+	@docker-compose --profile=dev build
+	@docker-compose --profile=dev up
+
+prod:
+	@docker-compose --profile=prod build
+	@docker-compose --profile=prod up
 
 stop:
 	@docker-compose down

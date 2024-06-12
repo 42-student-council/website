@@ -9,6 +9,9 @@ services:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    profiles:
+      - dev
+      - prod
 
   web:
     build:
@@ -31,11 +34,26 @@ services:
       - .env
     ports:
       - "8000:8000"
+    profiles:
+      - dev
+      - prod
 
-  react:
+  # React and Nginx need different configurations based on
+  # whether we are in prod or dev.
+  #
+  # React:
+  #   - In order to enable hot reloading (HMR), we need to 
+  #     mount the code into a shared volume, which we cannot
+  #     do in prod
+  #
+  # Nginx:
+  #   - Depends on react, I did not find any way
+  #     to create conditional dependencies in
+  #     docker-compose
+  react_prod:
     build:
       context: ./app/front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_prod
     ports:
       - "3000:3000"
     environment:
@@ -48,15 +66,54 @@ services:
       API_BASE_URL: ${API_BASE_URL}
       DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
       DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
-  nginx:
+    profiles:
+      - prod
+
+  nginx_prod:
     image: nginx:latest
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx_prod.conf:/etc/nginx/nginx.conf
+    profiles:
+      - prod
     depends_on:
       - web
-      - react
+      - react_prod
+
+  react_dev:
+    build:
+      context: ./app/front
+      dockerfile: Dockerfile_dev
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 5173
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      BASE_URL: ${BASE_URL}
+      SESSION_SECRET: ${SESSION_SECRET}
+      API_BASE_URL: ${API_BASE_URL}
+      DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
+      DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
+    volumes:
+      - ./app/front:/app
+      - /app/node_modules
+    profiles:
+      - dev
+
+  nginx_dev:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx_dev.conf:/etc/nginx/nginx.conf
+    profiles:
+      - dev
+    depends_on:
+      - web
+      - react_dev
 
 volumes:
   db:
