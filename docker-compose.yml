@@ -38,8 +38,6 @@ services:
       - dev
       - prod
 
-
-
   # React and Nginx need different configurations based on
   # whether we are in prod or dev.
   #
@@ -76,7 +74,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx_prod.conf:/etc/nginx/nginx.conf
     profiles:
       - prod
     depends_on:
@@ -107,7 +105,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx_dev.conf:/etc/nginx/nginx.conf
     profiles:
       - dev
     depends_on:

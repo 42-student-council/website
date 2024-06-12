@@ -1,7 +1,7 @@
 run:
 	@docker-compose up -d --build
 
-debug_dev:
+dev:
 	@docker-compose --profile=dev build
 	@docker-compose --profile=dev up
 
