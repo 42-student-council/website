@@ -97,6 +97,9 @@ services:
       API_BASE_URL: ${API_BASE_URL}
       DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
       DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
+    volumes:
+      - ./app/front:/app
+      - /app/node_modules
     profiles:
       - dev
 
