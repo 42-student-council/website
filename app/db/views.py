@@ -102,7 +102,7 @@ class IssueUpvoteView(View):
             username = json.loads(request.body).get("user")
             if not username:
                 return JsonResponse({"error": "Username is required for double vote prevention"}, status=400)
-            
+
             user_hash = hash_username(username)
 
             if issue.votes.filter(user_hash=user_hash).exists():

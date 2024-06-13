@@ -1,14 +1,16 @@
 from django.db import models
 
+
 class Vote(models.Model):
     issue = models.ForeignKey("Issue", on_delete=models.CASCADE, related_name="votes")
     user_hash = models.CharField(max_length=64)
 
     class Meta:
         unique_together = ("issue", "user_hash")
-    
+
     def __str__(self):
         return f"Vote for Issue #{self.issue.id} by {self.user_hash}"
+
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -18,6 +20,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
+
 
 class Issue(models.Model):
     id = models.AutoField(primary_key=True)

@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button';
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
     const session = await requireSessionData(request);
-    const user = session.login
+    const user = session.login;
     const { id } = params;
     const API_BASE_URL = process.env.API_BASE_URL;
 
