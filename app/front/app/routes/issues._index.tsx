@@ -1,10 +1,9 @@
-import { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireSessionData } from '~/utils/session.server';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
-import { H1 } from '~/components/ui/H1';
+import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -33,7 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const issueId = form.get('issueId');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/upvote`, {
+        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

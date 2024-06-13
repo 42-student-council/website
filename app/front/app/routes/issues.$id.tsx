@@ -99,8 +99,7 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex justify-between items-center mb-4'>
-                        <span>Upvotes: {issue.upvotes}</span>
-                        <fetcher.Form method='post' action='/issues' className='ml-4 flex'>
+                        <fetcher.Form method='post' action='/issues/' className='ml-4 flex'>
                             <input type='hidden' name='id' value={issue.id} />
                             <button
                                 type='submit'
