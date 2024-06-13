@@ -63,12 +63,13 @@ class IssueView(View):
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
 
+
 class CommentView(View):
     def get(self, request, issue_id):
         try:
             issue = Issue.objects.get(id=issue_id)
             comments = issue.comments.all()
-            comments_json = serializers.serialize('json', comments)
+            comments_json = serializers.serialize("json", comments)
             return HttpResponse(comments_json, content_type="application/json")
         except Issue.DoesNotExist:
             return JsonResponse({"error": "Issue not found"}, status=404)

@@ -16,7 +16,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
     const [issueResponse, commentsResponse] = await Promise.all([
         fetch(`${API_BASE_URL}/issues/view/${id}`),
-        fetch(`${API_BASE_URL}/issues/view/${id}/comments`)
+        fetch(`${API_BASE_URL}/issues/view/${id}/comments`),
     ]);
 
     if (!issueResponse.ok) {
@@ -107,10 +107,12 @@ export default function IssueDetail() {
                         <h2 className='text-2xl font-bold'>Comments</h2>
                         {comments.length > 0 ? (
                             <ul>
-                                {comments.map(comment => (
+                                {comments.map((comment) => (
                                     <li key={comment.id} className='mt-4'>
                                         <p className='text-sm text-gray-600'>{comment.content}</p>
-                                        <p className='text-xs text-gray-400'>By {comment.author} on {new Date(comment.createdAt).toLocaleDateString()}</p>
+                                        <p className='text-xs text-gray-400'>
+                                            By {comment.author} on {new Date(comment.createdAt).toLocaleDateString()}
+                                        </p>
                                     </li>
                                 ))}
                             </ul>
