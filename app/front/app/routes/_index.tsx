@@ -67,7 +67,6 @@ export default function Index() {
                     </div>
                 </div>
             </div>
-            <div className='my-4'>TODO</div>
         </div>
     );
 }
