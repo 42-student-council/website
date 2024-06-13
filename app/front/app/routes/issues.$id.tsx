@@ -27,7 +27,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     }
 
     const issue = await issueResponse.json();
-    const comments = await commentsResponse.json();
+    const commentsData = await commentsResponse.json();
+
+    const comments = commentsData.map((comment) => ({
+        id: comment.pk,
+        ...comment.fields,
+    }));
 
     return json({ issue, comments });
 };
@@ -80,9 +85,12 @@ export default function IssueDetail() {
                         </svg>
                     </Link>
                     <div className='flex justify-between items-center'>
-                        <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-8 pb-4'>
+                        <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
                             Issue #{issue.id}:{' '}
-                            <mark className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'>
+                            <mark
+                                className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'
+                                style={{ lineHeight: '1.5em' }}
+                            >
                                 {issue.title}
                             </mark>
                         </h1>
@@ -96,7 +104,7 @@ export default function IssueDetail() {
                             <input type='hidden' name='id' value={issue.id} />
                             <button
                                 type='submit'
-                                className='px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                                className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                             >
                                 Upvote ({issue.upvotes || 0})
                             </button>
@@ -127,7 +135,7 @@ export default function IssueDetail() {
                             ></textarea>
                             <button
                                 type='submit'
-                                className='mt-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                                className='mt-2 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                             >
                                 Submit
                             </button>

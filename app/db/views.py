@@ -84,7 +84,6 @@ class CommentView(View):
         comment_text = data.get("text")
 
         if not comment_text:
-            print(data)
             return JsonResponse({"error": "Comment text is required"}, status=400)
 
         comment = Comment.objects.create(text=comment_text)
