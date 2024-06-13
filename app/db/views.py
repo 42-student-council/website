@@ -5,7 +5,8 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue, Comment
+from .models import Issue, Comment, Vote
+from .utils import hash_username
 import json
 
 
@@ -40,8 +41,6 @@ class IssueListView(View):
 @method_decorator(xframe_options_exempt, name="dispatch")
 class IssueView(View):
     def get(self, request, issue_id):
-        # Standard Issue endpoint returning all necessary info
-        # for frontend display.
         try:
             issue = Issue.objects.get(id=issue_id)
             response = JsonResponse(
@@ -99,6 +98,18 @@ class IssueUpvoteView(View):
     def post(self, request, issue_id):
         try:
             issue = Issue.objects.get(id=issue_id)
+
+            username = json.loads(request.body).get("user")
+            if not username:
+                return JsonResponse({"error": "Username is required for double vote prevention"}, status=400)
+
+            user_hash = hash_username(username)
+
+            if issue.votes.filter(user_hash=user_hash).exists():
+                return JsonResponse({"error": "User has already voted for this issue"}, status=400)
+
+            Vote.objects.create(issue=issue, user_hash=user_hash)
+
             issue.upvotes += 1
             issue.save()
 

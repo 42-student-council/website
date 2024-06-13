@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireSessionData } from '~/utils/session.server';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
@@ -32,13 +32,17 @@ export async function action({ request }: ActionFunctionArgs) {
     const issueId = form.get('issueId');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/`, {
+        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/upvote/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
         if (!response.ok) {
+            if (response.status === 400) {
+                const result = await response.json();
+                return json({ message: 'You have already voted on this issue.' }, { status: 400 });
+            }
             throw new Error('Failed to upvote issue');
         }
         const result = await response.json();
@@ -52,6 +56,16 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function Issues() {
     const { issues, error } = useLoaderData();
     const fetcher = useFetcher();
+    const [popupMessage, setPopupMessage] = useState(null);
+
+    useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
+            setPopupMessage(fetcher.data.message);
+        }
+        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.error) {
+            setPopupMessage(fetcher.data.error);
+        }
+    }, [fetcher.state, fetcher.data]);
 
     return (
         <div>
@@ -82,7 +96,7 @@ export default function Issues() {
                                 <Link to={`/issues/${issue.id}`} className='w-full'>
                                     <Button
                                         type='button'
-                                        className={`w-full py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none rounded-lg border border-violet-100 focus:z-10 focus:ring-4 focus:ring-violet-100 dark:focus:ring-violet-700 text-left ${
+                                        className={`w-4/5 text-sm font-medium text-gray-900 focus:outline-none rounded-lg border border-violet-100 focus:z-10 focus:ring-4 focus:ring-violet-100 dark:focus:ring-violet-700 text-left ${
                                             index % 2 === 0
                                                 ? 'bg-violet-100 hover:bg-violet-200 dark:bg-violet-400 dark:hover:bg-violet-400'
                                                 : 'bg-violet-200 hover:bg-violet-300 dark:bg-violet-400 dark:hover:bg-violet-800'
@@ -96,10 +110,10 @@ export default function Issues() {
                                     action={`/issues/${issue.id}/upvote/`}
                                     className='ml-4 flex'
                                 >
-                                    <input type='hidden' name='id' value={issue.id} />
+                                    <input type='hidden' name='issueId' value={issue.id} />
                                     <button
                                         type='submit'
-                                        className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                                        className='px-1 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 min-w-[100px] text-center'
                                     >
                                         Upvote ({issue.upvotes || 0})
                                     </button>
@@ -109,6 +123,19 @@ export default function Issues() {
                     </ul>
                 </div>
             </div>
+            {popupMessage && (
+                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
+                    <div className='bg-white p-6 rounded shadow-lg'>
+                        <p>{popupMessage}</p>
+                        <button
+                            onClick={() => setPopupMessage(null)}
+                            className='mt-4 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

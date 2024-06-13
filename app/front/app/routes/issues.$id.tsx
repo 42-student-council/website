@@ -1,69 +1,113 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireSessionData } from '~/utils/session.server';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
+import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-    const { id } = params;
-    const API_BASE_URL = process.env.API_BASE_URL;
+    try {
+        const { id } = params;
+        const API_BASE_URL = process.env.API_BASE_URL;
 
-    if (!id) {
-        throw new Error('Issue ID is required');
+        if (!id) {
+            throw new Error('Issue ID is required');
+        }
+
+        const [issueResponse, commentsResponse] = await Promise.all([
+            fetch(`${API_BASE_URL}/issues/${id}`),
+            fetch(`${API_BASE_URL}/issues/${id}/comments`),
+        ]);
+
+        if (!issueResponse.ok) {
+            throw new Error('Failed to fetch issue');
+        }
+        if (!commentsResponse.ok) {
+            throw new Error('Failed to fetch comments');
+        }
+
+        const issue = await issueResponse.json();
+        const commentsData = await commentsResponse.json();
+
+        const comments = commentsData.map((comment) => ({
+            id: comment.pk,
+            ...comment.fields,
+        }));
+
+        return json({ issue, comments });
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error loading data');
     }
-
-    const [issueResponse, commentsResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/issues/${id}`),
-        fetch(`${API_BASE_URL}/issues/${id}/comments`),
-    ]);
-
-    if (!issueResponse.ok) {
-        throw new Error('Failed to fetch issue');
-    }
-    if (!commentsResponse.ok) {
-        throw new Error('Failed to fetch comments');
-    }
-
-    const issue = await issueResponse.json();
-    const commentsData = await commentsResponse.json();
-
-    const comments = commentsData.map((comment) => ({
-        id: comment.pk,
-        ...comment.fields,
-    }));
-
-    return json({ issue, comments });
 };
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
-    await requireSessionData(request);
+    try {
+        await requireSessionData(request);
 
-    const form = await request.formData();
-    const text = form.get('comment_text');
-    const { id } = params;
-    const API_BASE_URL = process.env.API_BASE_URL;
+        const form = await request.formData();
+        const text = form.get('comment_text');
+        const { id } = params;
+        const API_BASE_URL = process.env.API_BASE_URL;
 
-    const response = await fetch(`${API_BASE_URL}/issues/${id}/comments/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-    });
+        if (text) {
+            const response = await fetch(`${API_BASE_URL}/issues/${id}/comments/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text }),
+            });
 
-    if (!response.ok) {
-        throw new Error('Failed to post comment');
+            if (!response.ok) {
+                throw new Error('Failed to post comment');
+            }
+
+            const result = await response.json();
+            return json(result);
+        }
+
+        const upvoteId = form.get('id');
+
+        if (upvoteId) {
+            const response = await fetch(`${API_BASE_URL}/issues/${id}/upvote/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            });
+
+            if (!response.ok) {
+                if (response.status === 400) {
+                    const result = await response.json();
+                    return json({ message: 'You have already voted on this issue.' }, { status: 400 });
+                }
+                throw new Error('Failed to upvote issue');
+            }
+
+            const result = await response.json();
+            return json(result);
+        }
+
+        throw new Error('Invalid action');
+    } catch (error) {
+        console.error(error);
+        return json({ message: error.message || 'An unexpected error occurred' }, { status: 500 });
     }
-
-    const result = await response.json();
-    return json(result);
 };
 
 export default function IssueDetail() {
     const { issue, comments } = useLoaderData();
     const fetcher = useFetcher();
+    const [popupMessage, setPopupMessage] = useState(null);
+
+    useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
+            setPopupMessage(fetcher.data.message);
+        }
+    }, [fetcher.state, fetcher.data]);
 
     return (
         <div>
@@ -142,6 +186,19 @@ export default function IssueDetail() {
                     </div>
                 </div>
             </div>
+            {popupMessage && (
+                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
+                    <div className='bg-white p-6 rounded shadow-lg'>
+                        <p>{popupMessage}</p>
+                        <button
+                            onClick={() => setPopupMessage(null)}
+                            className='mt-4 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

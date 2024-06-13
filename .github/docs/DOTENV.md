@@ -21,21 +21,18 @@ POSTGRES_HOST=db                       # Name of the database service.
 POSTGRES_PORT=5432                     # Default postgres port.
 
 # These are used for globally configuring your IP adress.
-BASE_URL="http://<IP>:3000"            # Frontend base URL.
+BASE_URL="http://<IP>:5173"            # Frontend base URL. Set port to 3000 in prod.
 API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally.
 # You can set it to an empty string.
 SESSION_SECRET=""
 
-# This is set to 'production' in production.
-# You can set this to an empty string.
-NODE_ENV="development"
+# Set this to any value except production or development
+NODE_ENV="anything"
 
 # These are needed for 42OAuth configuration.
-# You can set these to empty strings, unless you
-# need to test 42-OAuth locally.
-# If that is the case, see 'Set Up 42OAuth'.
+# See 'Set Up 42OAuth'.
 CLIENT_ID=""
 CLIENT_SECRET=""
 
@@ -60,7 +57,7 @@ In order to configure this, you need to create an application on the 42 Intranet
 
 You will be asked for a **Redirect URI**. This is the URI the user will be redirected to upon successful authentication.
 
-This should be as follows: `http://<IP>:3000/oauth/callback`
+This should be as follows: `http://<IP>:5173/oauth/callback`
 
 Once you are done, you will get a UID and a secret, which you can use for authenticating your app. You can then add these to your .env file as follows:
 ```.env
