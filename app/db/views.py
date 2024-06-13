@@ -5,7 +5,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue
+from .models import Issue, Comment
 import json
 
 
@@ -73,3 +73,21 @@ class CommentView(View):
             return HttpResponse(comments_json, content_type="application/json")
         except Issue.DoesNotExist:
             return JsonResponse({"error": "Issue not found"}, status=404)
+    def post(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+        except Issue.DoesNotExist:
+            return JsonResponse({"error": "Issue not found"}, status=404)
+
+        data = json.loads(request.body)
+        comment_text = data.get('text')
+
+        if not comment_text:
+            print(data)
+            return JsonResponse({"error": "Comment text is required"}, status=400)
+
+        comment = Comment.objects.create(text=comment_text)
+        issue.comments.add(comment)
+
+        response_data = serializers.serialize("json", [comment,])
+        return HttpResponse(response_data, content_type="application/json", status=201)

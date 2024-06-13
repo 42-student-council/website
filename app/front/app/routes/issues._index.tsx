@@ -12,7 +12,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     const API_BASE_URL = process.env.API_BASE_URL;
     try {
-        const response = await fetch(`${API_BASE_URL}/issues/view/all/`);
+        const response = await fetch(`${API_BASE_URL}/issues/`);
         if (!response.ok) {
             throw new Error('Failed to fetch issues');
         }
@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const issueId = form.get('issueId');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/upvote/`, {
+        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/upvote`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

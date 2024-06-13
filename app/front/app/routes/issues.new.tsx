@@ -55,8 +55,11 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            const res = await fetch(`${process.env.API_BASE_URL}/issue/create/`, {
+            const res = await fetch(`${process.env.API_BASE_URL}/issues/create/`, {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({ ...data, created_at: new Date().toISOString() }),
             });
             if (!res.ok)
@@ -82,11 +85,13 @@ export default function IssuesNew() {
     }>();
     const navigate = useNavigate();
 
-    if (createIssueFetcher.data?.id != undefined) {
-        localStorage.removeItem('create-issue-title');
-        localStorage.removeItem('create-issue-description');
-        navigate(`/issues/${createIssueFetcher.data.id}`);
-    }
+    useEffect(() => {
+        if (createIssueFetcher.data?.id != undefined) {
+            localStorage.removeItem('create-issue-title');
+            localStorage.removeItem('create-issue-description');
+            navigate(`/issues/${createIssueFetcher.data.id}`);
+        }
+    }, [createIssueFetcher.data, navigate]);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');

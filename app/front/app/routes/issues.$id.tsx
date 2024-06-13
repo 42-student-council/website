@@ -15,8 +15,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     }
 
     const [issueResponse, commentsResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/issues/view/${id}`),
-        fetch(`${API_BASE_URL}/issues/view/${id}/comments`),
+        fetch(`${API_BASE_URL}/issues/${id}`),
+        fetch(`${API_BASE_URL}/issues/${id}/comments`),
     ]);
 
     if (!issueResponse.ok) {
@@ -36,16 +36,16 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
     await requireSessionData(request);
 
     const form = await request.formData();
-    const comment = form.get('comment');
+    const text = form.get('comment_text');
     const { id } = params;
     const API_BASE_URL = process.env.API_BASE_URL;
 
-    const response = await fetch(`${API_BASE_URL}/issues/${id}/comments`, {
+    const response = await fetch(`${API_BASE_URL}/issues/${id}/comments/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ comment }),
+        body: JSON.stringify({ text }),
     });
 
     if (!response.ok) {
@@ -56,7 +56,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
     return json(result);
 };
 
-// Define the component
+
 export default function IssueDetail() {
     const { issue, comments } = useLoaderData();
     const fetcher = useFetcher();
@@ -109,9 +109,9 @@ export default function IssueDetail() {
                             <ul>
                                 {comments.map((comment) => (
                                     <li key={comment.id} className='mt-4'>
-                                        <p className='text-sm text-gray-600'>{comment.content}</p>
+                                        <p className='text-sm text-gray-600'>{comment.text}</p>
                                         <p className='text-xs text-gray-400'>
-                                            By {comment.author} on {new Date(comment.createdAt).toLocaleDateString()}
+                                            On {new Date(comment.created_at).toLocaleDateString()}
                                         </p>
                                     </li>
                                 ))}
@@ -121,7 +121,7 @@ export default function IssueDetail() {
                         )}
                         <fetcher.Form method='post' className='mt-4'>
                             <textarea
-                                name='comment'
+                                name='comment_text'
                                 rows='3'
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
@@ -139,3 +139,4 @@ export default function IssueDetail() {
         </div>
     );
 }
+
