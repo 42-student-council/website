@@ -21,6 +21,10 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
     });
 
     if (!response.ok) {
+        if (response.status === 400) {
+            const result = await response.json();
+            return json({ message: 'You have already voted on this issue.' }, { status: 400 });
+        }
         throw new Error('Failed to upvote issue');
     }
 
