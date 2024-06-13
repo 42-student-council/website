@@ -31,8 +31,10 @@ export default function Index() {
                     Official Website of the 42 Vienna Student Council
                 </p>
                 <Button style={{ backgroundColor: 'darkviolet', color: 'white' }}>
-    <Link to='/issues/new' style={{ color: 'inherit' }}>Have a problem?</Link>
-</Button>
+                    <Link to='/issues/new' style={{ color: 'inherit' }}>
+                        Have a problem?
+                    </Link>
+                </Button>
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
                 <img
