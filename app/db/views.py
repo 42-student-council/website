@@ -73,6 +73,7 @@ class CommentView(View):
             return HttpResponse(comments_json, content_type="application/json")
         except Issue.DoesNotExist:
             return JsonResponse({"error": "Issue not found"}, status=404)
+
     def post(self, request, issue_id):
         try:
             issue = Issue.objects.get(id=issue_id)
@@ -80,7 +81,7 @@ class CommentView(View):
             return JsonResponse({"error": "Issue not found"}, status=404)
 
         data = json.loads(request.body)
-        comment_text = data.get('text')
+        comment_text = data.get("text")
 
         if not comment_text:
             print(data)
@@ -89,5 +90,10 @@ class CommentView(View):
         comment = Comment.objects.create(text=comment_text)
         issue.comments.add(comment)
 
-        response_data = serializers.serialize("json", [comment,])
+        response_data = serializers.serialize(
+            "json",
+            [
+                comment,
+            ],
+        )
         return HttpResponse(response_data, content_type="application/json", status=201)

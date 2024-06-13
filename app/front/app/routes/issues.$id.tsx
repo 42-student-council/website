@@ -56,7 +56,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
     return json(result);
 };
 
-
 export default function IssueDetail() {
     const { issue, comments } = useLoaderData();
     const fetcher = useFetcher();
@@ -139,4 +138,3 @@ export default function IssueDetail() {
         </div>
     );
 }
-
