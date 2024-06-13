@@ -30,9 +30,9 @@ export default function Index() {
                 <p className='text-2xl text-center text-slate-600 mb-4'>
                     Official Website of the 42 Vienna Student Council
                 </p>
-                <Button variant='destructive'>
-                    <Link to='/issues/new'>Have a problem?</Link>
-                </Button>
+                <Button style={{ backgroundColor: 'darkviolet', color: 'white' }}>
+    <Link to='/issues/new' style={{ color: 'inherit' }}>Have a problem?</Link>
+</Button>
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
                 <img

@@ -67,7 +67,7 @@ export default function Issues() {
                         </h1>
                         <Link
                             to='/issues/new'
-                            className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 pl-10'
+                            className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                         >
                             I also have something to say!
                         </Link>
@@ -96,7 +96,7 @@ export default function Issues() {
                                     <input type='hidden' name='issueId' value={issue.id} />
                                     <button
                                         type='submit'
-                                        className='px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex-grow'
+                                        className='px-4 py-0 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 flex-grow'
                                     >
                                         Upvote ({issue.upvotes || 0})
                                     </button>
