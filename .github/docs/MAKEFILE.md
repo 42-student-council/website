@@ -6,9 +6,16 @@ We have included a Makefile to simplify common tasks and to ensure students who 
 ```sh
 make run
 ```
-* **debug**: Build and start the containers with live logs.
+* **dev**: **This is the command you should be running for development**
+
+Builds the app locally in dev mode and mounts the frontend code directory into the react container,
+enabling hot reloading (look it up, you do not (!) want to code a webapp without that).
 ```sh
-make debug 
+make dev
+```
+* **prod**: Builds the app in prod mode (WIP).
+```sh
+make prod
 ```
 * **stop**: Stop and remove the containers.
 ```sh
