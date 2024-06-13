@@ -21,7 +21,7 @@ POSTGRES_HOST=db                       # Name of the database service.
 POSTGRES_PORT=5432                     # Default postgres port.
 
 # These are used for globally configuring your IP adress.
-BASE_URL="http://<IP>:3000"            # Frontend base URL.
+BASE_URL="http://<IP>:5173"            # Frontend base URL. Set port to 3000 in prod.
 API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally.
