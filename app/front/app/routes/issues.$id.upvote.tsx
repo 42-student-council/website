@@ -7,8 +7,8 @@ import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
-    await requireSessionData(request);
-
+    const session = await requireSessionData(request);
+    const user = session.login
     const { id } = params;
     const API_BASE_URL = process.env.API_BASE_URL;
 
@@ -17,6 +17,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         headers: {
             'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ user }),
     });
 
     if (!response.ok) {
