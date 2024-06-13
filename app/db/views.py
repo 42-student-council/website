@@ -60,24 +60,6 @@ class IssueView(View):
             response["Access-Control-Allow-Origin"] = "*"
             return response
 
-    def post(self, request, issue_id):
-        try:
-            issue = objects.get(id=issue_id)
-            issue.upvotes += 1
-            issue.save()
-            return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
-        except Issue.DoesNotExist:
-            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    def options(self, request, *args, **kwargs):
-        response = JsonResponse({})
-        response["Access-Control-Allow-Origin"] = "*"
-        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type"
-        return response
-
 
 class CommentView(View):
     def get(self, request, issue_id):
@@ -111,3 +93,26 @@ class CommentView(View):
             ],
         )
         return HttpResponse(response_data, content_type="application/json", status=201)
+
+
+class IssueUpvoteView(View):
+    def post(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+            issue.upvotes += 1
+            issue.save()
+
+            print(JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes}))
+            return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
+        except Issue.DoesNotExist:
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error": str(e)}, status=500)
+
+    def options(self, request, *args, **kwargs):
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
