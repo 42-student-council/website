@@ -91,11 +91,15 @@ export default function Issues() {
                                         {issue.id}: {issue.title}
                                     </Button>
                                 </Link>
-                                <fetcher.Form method='post' action='/issues' className='ml-4 flex'>
-                                    <input type='hidden' name='issueId' value={issue.id} />
+                                <fetcher.Form
+                                    method='post'
+                                    action={`/issues/${issue.id}/upvote/`}
+                                    className='ml-4 flex'
+                                >
+                                    <input type='hidden' name='id' value={issue.id} />
                                     <button
                                         type='submit'
-                                        className='px-4 py-0 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 flex-grow'
+                                        className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                                     >
                                         Upvote ({issue.upvotes || 0})
                                     </button>

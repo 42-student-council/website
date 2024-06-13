@@ -1,5 +1,5 @@
 from django.db import models
-
+import hashlib
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
