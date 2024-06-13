@@ -62,7 +62,8 @@ export default function Issues() {
                     <div className='flex justify-between items-center'>
                         <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-8 pb-4'>
                             Here is what{' '}
-                            <mark className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'>students</mark> think
+                            <mark className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'>students</mark>{' '}
+                            think
                         </h1>
                         <Link
                             to='/issues/new'
@@ -108,4 +109,3 @@ export default function Issues() {
         </div>
     );
 }
-
