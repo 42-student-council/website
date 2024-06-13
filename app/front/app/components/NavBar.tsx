@@ -74,7 +74,7 @@ function MobileNav() {
 
                 <SheetContent side='left'>
                     <div className='flex flex-col items-start'>
-                        <div className='mb-6 font-bold uppercase text-violet-600'>Student Council</div>
+                        <div className='mb-6 font-bold uppercase text-gray-600'>Student Council</div>
                         {navItems.map((item, index) => (
                             <NavLink
                                 key={index}

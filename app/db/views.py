@@ -1,10 +1,11 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
-from .models import Issue
+from django.core import serializers
+from .models import Issue, Comment
 import json
 
 
@@ -39,6 +40,8 @@ class IssueListView(View):
 @method_decorator(xframe_options_exempt, name="dispatch")
 class IssueView(View):
     def get(self, request, issue_id):
+        # Standard Issue endpoint returning all necessary info
+        # for frontend display.
         try:
             issue = Issue.objects.get(id=issue_id)
             response = JsonResponse(
@@ -46,6 +49,8 @@ class IssueView(View):
                     "id": issue.id,
                     "title": issue.title,
                     "description": issue.description,
+                    "upvotes": issue.upvotes,
+                    "created_at": issue.created_at,
                 }
             )
             response["Access-Control-Allow-Origin"] = "*"
@@ -54,6 +59,56 @@ class IssueView(View):
             response = JsonResponse({"error": "Issue not found"}, status=404)
             response["Access-Control-Allow-Origin"] = "*"
             return response
+
+
+class CommentView(View):
+    def get(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+            comments = issue.comments.all()
+            comments_json = serializers.serialize("json", comments)
+            return HttpResponse(comments_json, content_type="application/json")
+        except Issue.DoesNotExist:
+            return JsonResponse({"error": "Issue not found"}, status=404)
+
+    def post(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+        except Issue.DoesNotExist:
+            return JsonResponse({"error": "Issue not found"}, status=404)
+
+        data = json.loads(request.body)
+        comment_text = data.get("text")
+
+        if not comment_text:
+            return JsonResponse({"error": "Comment text is required"}, status=400)
+
+        comment = Comment.objects.create(text=comment_text)
+        issue.comments.add(comment)
+
+        response_data = serializers.serialize(
+            "json",
+            [
+                comment,
+            ],
+        )
+        return HttpResponse(response_data, content_type="application/json", status=201)
+
+
+class IssueUpvoteView(View):
+    def post(self, request, issue_id):
+        try:
+            issue = Issue.objects.get(id=issue_id)
+            issue.upvotes += 1
+            issue.save()
+
+            print(JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes}))
+            return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
+        except Issue.DoesNotExist:
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error": str(e)}, status=500)
 
     def options(self, request, *args, **kwargs):
         response = JsonResponse({})
