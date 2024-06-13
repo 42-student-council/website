@@ -57,7 +57,7 @@ In order to configure this, you need to create an application on the 42 Intranet
 
 You will be asked for a **Redirect URI**. This is the URI the user will be redirected to upon successful authentication.
 
-This should be as follows: `http://<IP>:3000/oauth/callback`
+This should be as follows: `http://<IP>:5173/oauth/callback`
 
 Once you are done, you will get a UID and a secret, which you can use for authenticating your app. You can then add these to your .env file as follows:
 ```.env
