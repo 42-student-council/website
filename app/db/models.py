@@ -1,6 +1,16 @@
 from django.db import models
 
 
+class Announcement(models.Model):
+    id = models.AutoField(primary_key=True)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    comments = models.ManyToManyField("Comment", related_name="announcements", blank=True)
+
+    def __str__(self):
+        return f"Announcement #{self.id}"
+
+
 class Vote(models.Model):
     issue = models.ForeignKey("Issue", on_delete=models.CASCADE, related_name="votes")
     user_hash = models.CharField(max_length=64)

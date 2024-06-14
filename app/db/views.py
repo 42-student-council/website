@@ -5,7 +5,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue, Comment, Vote
+from .models import Issue, Comment, Vote, Announcement
 from .utils import hash_username
 import json
 
@@ -127,3 +127,13 @@ class IssueUpvoteView(View):
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
+
+
+class AnnouncementView(View):
+    def get(self, request):
+        try:
+            announcements = Announcement.objects.all()
+            response = serializers.serialize("json", announcements)
+            return JsonResponse(response)
+        except Announcement.DoesNotExist:
+            return JsonResponse({"error": "No announcements found"}, status=404)
