@@ -136,12 +136,17 @@ class IssueUpvoteView(View):
 
 class AnnouncementViewAdmin(View):
     def post(self, request):
-        data = json.loads(request.body)
-        issue = Announcement.objects.create(
-            title=data["title"],
-            text=data["text"],
-        )
-        return JsonResponse({"id": issue.id})
+        try:
+            data = json.loads(request.body)
+            issue = Announcement.objects.create(
+                title=data["title"],
+                text=data["text"],
+            )
+            return JsonResponse({"id": issue.id})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        except KeyError:
+            return JsonResponse({"error": "Missing fields in JSON"}, status=400)
 
 
 class AnnouncementIndexView(View):

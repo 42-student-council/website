@@ -52,32 +52,41 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const form = await request.formData();
 
-    return validateForm(
-        form,
-        createAnnouncementSchema,
-        (errors) => json({ errors }, 400),
-        async (data) => {
-            const res = await fetch(`${process.env.API_BASE_URL}/admin/announcements/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...data, created_at: new Date().toISOString() }),
-            });
-            if (!res.ok)
-                return json(
-                    {
-                        errors: {
-                            message: 'An internal server error occurred while creating the issue. Please try again.',
-                        },
-                    },
-                    500,
-                );
+    // Convert form data to a JSON object
+    const data = Object.fromEntries(form);
 
-            const createdIssue: { id: number } = await res.json();
-            return json({ id: createdIssue.id });
+    // Validate the form data
+    const validation = createAnnouncementSchema.safeParse(data);
+    if (!validation.success) {
+        const errors = validation.error.format();
+        return json({ errors }, { status: 400 });
+    }
+
+    // Send the validated data to the backend as JSON
+    const response = await fetch(`${process.env.API_BASE_URL}/admin/announcements/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
         },
-    );
+        body: JSON.stringify({
+            ...validation.data,
+            created_at: new Date().toISOString(),
+        }),
+    });
+
+    if (!response.ok) {
+        return json(
+            {
+                errors: {
+                    message: 'An internal server error occurred while creating the announcement. Please try again.',
+                },
+            },
+            { status: 500 },
+        );
+    }
+
+    const createdAnnouncement = await response.json();
+    return json({ id: createdAnnouncement.id });
 }
 
 type LoaderData = {
