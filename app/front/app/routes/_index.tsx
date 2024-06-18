@@ -30,11 +30,9 @@ export default function Index() {
                 <p className='text-2xl text-center text-slate-600 mb-4'>
                     Official Website of the 42 Vienna Student Council
                 </p>
-                <Button style={{ backgroundColor: 'darkviolet', color: 'white' }}>
-                    <Link to='/issues/new' style={{ color: 'inherit' }}>
-                        Have a problem?
-                    </Link>
-                </Button>
+                <Link to='/issues/new'>
+                    <Button className='bg-purple-600 hover:bg-purple-800'>Have a problem?</Button>
+                </Link>
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
                 <img
@@ -46,9 +44,11 @@ export default function Index() {
                     <div className='mb-4'>
                         <H2 className='mb-2'>What is the Student Council?</H2>
                         <p>
-                            We are students who have been elected by our peers to represent them in the school's
-                            decision making process. This is a platform for you to anonymously share your thoughts,
-                            ideas, and concerns with us.
+                            We are students who have been elected by our you and your peers. We represent the student
+                            body in the school's decision making process. This platform allows you to anonymously share
+                            your thoughts, ideas, and concerns with the community. While your submissions remain
+                            anonymous to the public, the student council members will know who submitted what, to ensure
+                            accurate and effective representation.
                         </p>
                     </div>
                     <div>
