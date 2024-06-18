@@ -111,14 +111,16 @@ class IssueUpvoteView(View):
             user_hash = hash_username(username)
 
             if issue.votes.filter(user_hash=user_hash).exists():
-                return JsonResponse({"error": "User has already voted for this issue"}, status=400)
+                issue.upvotes -= 1
+                issue.save()
+                issue.votes.filter(user_hash=user_hash).delete()
+                return JsonResponse({"error": "Successfully removed the vote."}, status=200)
 
             Vote.objects.create(issue=issue, user_hash=user_hash)
 
             issue.upvotes += 1
             issue.save()
 
-            print(JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes}))
             return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
         except Issue.DoesNotExist:
             return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)

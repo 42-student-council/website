@@ -41,14 +41,13 @@ export async function action({ request }: ActionFunctionArgs) {
         if (!response.ok) {
             if (response.status === 400) {
                 const result = await response.json();
-                return json({ message: 'You have already voted on this issue.' }, { status: 400 });
+                return json({ message: response.body }, { status: 400 });
             }
             throw new Error('Failed to upvote issue');
         }
         const result = await response.json();
         return json(result);
     } catch (error) {
-        console.error('Error upvoting issue:', error);
         return json({ error: 'Failed to upvote issue' });
     }
 }
