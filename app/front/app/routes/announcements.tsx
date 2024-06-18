@@ -96,6 +96,15 @@ export default function Announcements() {
         error?: { title?: string; text?: string };
     }>();
     const navigate = useNavigate();
+    const [expandedStates, setExpandedStates] = useState<{ [key: number]: boolean }>({});
+    const MAX_LENGTH = 100;
+
+    const toggleReadMore = (id: number) => {
+        setExpandedStates((prevState) => ({
+            ...prevState,
+            [id]: !prevState[id],
+        }));
+    };
 
     useEffect(() => {
         if (createAnnouncementFetcher.data?.id !== undefined) {
@@ -137,15 +146,27 @@ export default function Announcements() {
                     {announcements
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map((announcement) => (
-                            <div className='mx-auto w-2/3'>
-                                <article className='pb-32 text-center' key={announcement.id}>
+                            <div className='mx-auto w-2/3' key={announcement.id}>
+                                <article className='pb-32 text-center'>
                                     <time dateTime={announcement.created_at}>
                                         {new Date(announcement.created_at).toLocaleDateString()}
                                     </time>
                                     <h2 className='pl-4 pb-4 text-3xl font-bold'>
                                         <strong>{announcement.title}</strong>
                                     </h2>
-                                    <p>{announcement.text}</p>
+                                    <p>
+                                        {expandedStates[announcement.id]
+                                            ? announcement.text
+                                            : `${announcement.text.substring(0, MAX_LENGTH)}...`}
+                                    </p>
+                                    {announcement.text.length > MAX_LENGTH && (
+                                        <button
+                                            onClick={() => toggleReadMore(announcement.id)}
+                                            className='text-violet-500 hover:text-violet-500'
+                                        >
+                                            {expandedStates[announcement.id] ? 'Less' : 'More'}
+                                        </button>
+                                    )}
                                 </article>
                             </div>
                         ))}
