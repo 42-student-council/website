@@ -5,7 +5,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue, Comment, Vote
+from .models import Issue, Comment, Vote, CouncilMember
 from .utils import hash_username
 import json
 
@@ -101,22 +101,35 @@ class IssueUpvoteView(View):
 
             username = json.loads(request.body).get("user")
             if not username:
-                return JsonResponse({"error": "Username is required for double vote prevention"}, status=400)
+                return JsonResponse(
+                    {"error": "Username is required for double vote prevention"},
+                    status=400,
+                )
 
             user_hash = hash_username(username)
 
             if issue.votes.filter(user_hash=user_hash).exists():
-                return JsonResponse({"error": "User has already voted for this issue"}, status=400)
+                return JsonResponse(
+                    {"error": "User has already voted for this issue"}, status=400
+                )
 
             Vote.objects.create(issue=issue, user_hash=user_hash)
 
             issue.upvotes += 1
             issue.save()
 
-            print(JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes}))
-            return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
+            print(
+                JsonResponse(
+                    {"success": "Issue upvoted successfully", "upvotes": issue.upvotes}
+                )
+            )
+            return JsonResponse(
+                {"success": "Issue upvoted successfully", "upvotes": issue.upvotes}
+            )
         except Issue.DoesNotExist:
-            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
+            return JsonResponse(
+                {"error": f"Issue with ID {issue_id} not found"}, status=404
+            )
         except Exception as e:
             print(e)
             return JsonResponse({"error": str(e)}, status=500)
@@ -125,5 +138,68 @@ class IssueUpvoteView(View):
         response = JsonResponse({})
         response["Access-Control-Allow-Origin"] = "*"
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class CouncilMemberView(View):
+    def get(self, request, login):
+        try:
+            council_member = CouncilMember.objects.get(login=login)
+            response = JsonResponse(
+                {
+                    "login": council_member.login,
+                    "first_name": council_member.first_name,
+                    "last_name": council_member.last_name,
+                    "email": council_member.email,
+                    "profile_picture": council_member.profile_picture,
+                }
+            )
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
+        except CouncilMember.DoesNotExist:
+            response = JsonResponse({"error": "Council Member not found."}, status=404)
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
+
+    def delete(self, request, login):
+        try:
+            council_member = CouncilMember.objects.get(login=login)
+            council_member.delete()
+            return JsonResponse({"success": "Council Member deleted."})
+        except CouncilMember.DoesNotExist:
+            return JsonResponse({"error": "Council Member not found."}, status=404)
+
+    def options(self, request, *args, **kwargs):
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, DELETE, OPTIONS"
+        response["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
+
+
+class CouncilMemberListView(View):
+    def get(self, request):
+        council_members = list(CouncilMember.objects.values())
+        response = JsonResponse(council_members, safe=False)
+        response["Access-Control-Allow-Origin"] = "*"
+        return response
+
+    def post(self, request):
+        data = json.loads(request.body)
+        council_member = CouncilMember.objects.create(
+            login=data["login"],
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            profile_picture=data["profile_picture"],
+        )
+        return JsonResponse({"login": council_member.login})
+
+    def options(self, request, *args, **kwargs):
+        response = JsonResponse({})
+        response["Access-Control-Allow-Origin"] = "*"
+        response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response

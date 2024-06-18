@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
+import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { requireSessionData } from '~/utils/session.server';
@@ -10,33 +11,37 @@ export const meta: MetaFunction = () => {
     return [{ title: 'About the Student Council' }, { name: 'description', content: 'Who is the student council?' }];
 };
 
+function shuffle(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 // TODO: Get dynamically from backend
 export async function loader({ request }: LoaderFunctionArgs) {
     await requireSessionData(request);
 
-    const res: LoaderData = [];
+    const res = await fetch(`${process.env.API_BASE_URL}/council-members`);
 
-    for (let i = 0; i < 5; i++) {
-        res.push({
-            firstName: 'Arthur',
-            lastName: 'Charreton',
-            role: 'President',
-            login: 'abied-ch',
-            email: 'abied-ch@student.42vienna.com',
-            profilePicture: 'https://cdn.intra.42.fr/users/63a26445a8ea9dce5ccd500d357af796/abied-ch.jpg',
-        });
+    if (!res.ok) {
+        throw new Error('Failed to fetch council members');
     }
 
-    return res;
+    const data: LoaderData = await res.json();
+
+    shuffle(data);
+
+    return data;
 }
 
 type LoaderData = {
-    firstName: string;
-    lastName: string;
-    role: string;
+    first_name: string;
+    last_name: string;
     login: string;
     email: string;
-    profilePicture: string;
+    profile_picture: string;
 }[];
 
 export default function About() {
@@ -45,25 +50,24 @@ export default function About() {
     return (
         <div>
             <NavBar />
-            <div className='mb-8 md:mb-16 md:mt-16'>
+            <div className='mb-8 md:mb-16 md:mt-16 flex flex-col items-center'>
                 <H1 className='mt-4 mb-2 text-center'>Student Council</H1>
-                {/* <p className='mx-4 text-lg'>We are the students who have been elected by our peers.</p> */}
+                <p className='mx-4 text-lg'>(In random order.)</p>
             </div>
             <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
                 {data.map((member) => (
                     <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
                         <Avatar className='rounded-xl size-60'>
-                            <AvatarImage src={member.profilePicture} />
-                            <AvatarFallback>{member.firstName.slice(0, 2)}</AvatarFallback>
+                            <AvatarImage src={member.profile_picture} />
+                            <AvatarFallback>{member.first_name.slice(0, 2)}</AvatarFallback>
                         </Avatar>
-                        <p className='text-xl mt-4 text-center'>{member.role}</p>
 
-                        <H1 className='mt-4'>
-                            {member.firstName} {member.lastName}
-                        </H1>
+                        <H3 className='mt-4'>
+                            {member.first_name} {member.last_name}
+                        </H3>
 
-                        <div className='mt-4'>
-                            <p className='text-lg'>
+                        {/* <div className='mt-4'>
+                           <p className='text-lg'>
                                 E-Mail:
                                 <Button variant='link' className='pb-0 text-base'>
                                     <a href={`mailto:${member.email}`}>{member.email}</a>
@@ -76,8 +80,8 @@ export default function About() {
                                         {member.login}
                                     </Link>
                                 </Button>
-                            </p>
-                        </div>
+                            </p> 
+                        </div> */}
                     </div>
                 ))}
             </div>

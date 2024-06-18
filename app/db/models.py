@@ -32,3 +32,14 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CouncilMember(models.Model):
+    login = models.CharField(max_length=20, primary_key=True)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    profile_picture = models.URLField()
+
+    def __str__(self):
+        return self.name

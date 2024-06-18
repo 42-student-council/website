@@ -106,6 +106,16 @@ export async function requireSessionData(
     return data;
 }
 
+export async function requireAdmin(request: Request): Promise<SessionData> {
+    const session = await requireSessionData(request);
+
+    if (session.login != process.env.SUPER_ADMIN) {
+        throw new Response(null, { status: 401, statusText: 'Unauthorized' });
+    }
+
+    return session;
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: -
 function isSessionData(data: any): data is SessionData {
     return (

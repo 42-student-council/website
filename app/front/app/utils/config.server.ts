@@ -3,6 +3,7 @@ export const config = {
         webhookId: requireEnv('DISCORD_WEBHOOK_ID'),
         webhookToken: requireEnv('DISCORD_WEBHOOK_TOKEN'),
     },
+    superAdmin: requireEnv('SUPER_ADMIN'),
 };
 
 function requireEnv(name: string): string {
