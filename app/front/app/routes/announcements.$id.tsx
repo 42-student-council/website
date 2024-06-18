@@ -1,7 +1,8 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
+import { requireSessionData } from '~/utils/session.server';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 
 export async function loader({ params }: LoaderFunctionArgs) {
@@ -40,12 +41,47 @@ export async function loader({ params }: LoaderFunctionArgs) {
     }
 }
 
+export const action = async ({ request, params }: LoaderFunctionArgs) => {
+    try {
+        await requireSessionData(request);
+
+        const form = await request.formData();
+        const text = form.get('comment_text');
+        const { id } = params;
+        const API_BASE_URL = process.env.API_BASE_URL;
+
+        if (text) {
+            const response = await fetch(`${API_BASE_URL}/comments/announcement/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to post comment');
+            }
+
+            const result = await response.json();
+            return json(result);
+        }
+    } catch (error) {
+        console.error(error);
+        return json({ message: error.message || 'An unexpected error occurred' }, { status: 500 });
+    }
+};
+
 export default function AnnouncementDetail() {
     const { announcement, comments } = useLoaderData();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
-    console.log(announcement);
+    const formRef = useRef(null);
+
     useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
+            formRef.current?.reset();
+        }
         if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
             setPopupMessage(fetcher.data.message);
         }
@@ -93,21 +129,6 @@ export default function AnnouncementDetail() {
                     <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'>
                         {announcement.description}
                     </p>
-                    <div className='flex justify-between items-center mb-4'>
-                        <fetcher.Form
-                            method='post'
-                            action={`/announcements/${announcement.id}/upvote/`}
-                            className='ml-4 flex'
-                        >
-                            <input type='hidden' name='id' value={announcement.id} />
-                            <button
-                                type='submit'
-                                className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
-                            >
-                                Upvote ({announcement.upvotes || 0})
-                            </button>
-                        </fetcher.Form>
-                    </div>
                     <div className='mt-8'>
                         <h2 className='text-2xl font-bold'>Comments</h2>
                         {comments.length > 0 ? (
@@ -124,7 +145,12 @@ export default function AnnouncementDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' className='mt-4'>
+                        <fetcher.Form
+                            method='post'
+                            action={`/announcements/${announcement.id}/`}
+                            className='mt-4'
+                            ref={formRef}
+                        >
                             <textarea
                                 name='comment_text'
                                 rows='3'
