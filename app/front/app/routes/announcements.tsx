@@ -134,19 +134,21 @@ export default function Announcements() {
             {error && <p>Error loading announcements: {error}</p>}
             {announcements && announcements.length > 0 ? (
                 <ul>
-                    {announcements.map((announcement) => (
-                        <div className='mx-auto w-2/3'>
-                            <article className='pb-32 text-center' key={announcement.id}>
-                                <time dateTime={announcement.created_at}>
-                                    {new Date(announcement.created_at).toLocaleDateString()}
-                                </time>
-                                <h2 className='pl-4 pb-4 text-3xl font-bold'>
-                                    <strong>{announcement.title}</strong>
-                                </h2>
-                                <p>{announcement.text}</p>
-                            </article>
-                        </div>
-                    ))}
+                    {announcements
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        .map((announcement) => (
+                            <div className='mx-auto w-2/3'>
+                                <article className='pb-32 text-center' key={announcement.id}>
+                                    <time dateTime={announcement.created_at}>
+                                        {new Date(announcement.created_at).toLocaleDateString()}
+                                    </time>
+                                    <h2 className='pl-4 pb-4 text-3xl font-bold'>
+                                        <strong>{announcement.title}</strong>
+                                    </h2>
+                                    <p>{announcement.text}</p>
+                                </article>
+                            </div>
+                        ))}
                 </ul>
             ) : (
                 <p>No announcements available.</p>
