@@ -1,10 +1,11 @@
 import { ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { Trash2 } from 'lucide-react';
+import { Info, Trash2 } from 'lucide-react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { H3 } from '~/components/ui/H3';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { getAccessToken } from '~/utils/oauth.server';
@@ -165,7 +166,19 @@ export default function AdminCouncilMembers() {
                         <FormErrorMessage className='mt-1'>
                             {addCouncilMemberFetcher.data?.errors?.newLogin}
                         </FormErrorMessage>
+                        <p></p>
                     </addCouncilMemberFetcher.Form>
+                    <Alert variant='destructive' className='mt-4 w-auto'>
+                        <Info className='h-4 w-4' />
+                        <AlertTitle>Warning!</AlertTitle>
+                        <AlertDescription>
+                            Student Council members will automatically have{' '}
+                            <span className='font-bold uppercase'>Administrator</span> access to this website.
+                            <br />
+                            Please make sure to only add real student council members, and don't add someone for
+                            trolling.
+                        </AlertDescription>
+                    </Alert>
                 </div>
                 <div className='flex flex-col m-4'>
                     <H3 className='mb-2'>Current Council Members</H3>
