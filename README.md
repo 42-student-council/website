@@ -62,4 +62,4 @@ Distributed under the Apache 2.0 License. See `LICENSE` for more information.
 
 ## Contact
 
-Click [here](https://discord.gg/FSBbTg8R) to join our development Discord server.
+Click [here](https://discord.gg/YP5sM98x8D) to join our development Discord server.
