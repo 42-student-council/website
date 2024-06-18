@@ -5,7 +5,7 @@ from db.views import *
 urlpatterns = [
     path("api/issues/create/", CreateIssueView.as_view(), name="create_issue"),
     path("api/issues/<int:issue_id>/upvote/", IssueUpvoteView.as_view(), name="view_issue"),
-    path("api/issues/<int:issue_id>/comments/", CommentView.as_view(), name="view_comments"),
+    path("api/comments/<str:target_type>/<int:target_id>/", CommentView.as_view(), name="view_comments"),
     path("api/issues/", IssueIndexView.as_view(), name="list_issues"),
     path("api/issues/<int:issue_id>/", IssueView.as_view(), name="view_issue"),
     path("api/announcements/", AnnouncementIndexView.as_view(), name="announcements"),

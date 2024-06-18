@@ -17,7 +17,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
         const [issueResponse, commentsResponse] = await Promise.all([
             fetch(`${API_BASE_URL}/issues/${id}`),
-            fetch(`${API_BASE_URL}/issues/${id}/comments`),
+            fetch(`${API_BASE_URL}/comments/issue/${id}`),
         ]);
 
         if (!issueResponse.ok) {
@@ -52,7 +52,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         const API_BASE_URL = process.env.API_BASE_URL;
 
         if (text) {
-            const response = await fetch(`${API_BASE_URL}/issues/${id}/comments/`, {
+            const response = await fetch(`${API_BASE_URL}/comments/issue/${id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
