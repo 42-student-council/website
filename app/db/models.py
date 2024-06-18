@@ -7,6 +7,7 @@ class Announcement(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     comments = models.ManyToManyField("Comment", related_name="announcements", blank=True)
+    upvotes = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Announcement #{self.id}"

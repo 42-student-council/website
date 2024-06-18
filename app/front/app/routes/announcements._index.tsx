@@ -12,7 +12,6 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Textarea } from '~/components/ui/textarea';
-import { validateForm } from '~/utils/validation';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Latest Announcements' }, { name: 'description', content: 'What are we working on?' }];

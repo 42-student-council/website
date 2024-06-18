@@ -9,6 +9,6 @@ urlpatterns = [
     path("api/issues/", IssueIndexView.as_view(), name="list_issues"),
     path("api/issues/<int:issue_id>/", IssueView.as_view(), name="view_issue"),
     path("api/announcements/", AnnouncementIndexView.as_view(), name="announcements"),
-    path("api/announcements/<int:issue_id>/", AnnouncementView.as_view(), name="announcements"),
+    path("api/announcements/<int:announcement_id>/", AnnouncementView.as_view(), name="announcement"),
     path("api/admin/announcements/", AnnouncementViewAdmin.as_view(), name="new_announcement"),
 ]

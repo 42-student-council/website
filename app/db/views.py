@@ -62,7 +62,7 @@ class IssueView(View):
 
 class CommentView(View):
     targets = {
-        "annoucement": Announcement,
+        "announcement": Announcement,
         "issue": Issue,
     }
 
@@ -152,8 +152,8 @@ class AnnouncementViewAdmin(View):
 class AnnouncementIndexView(View):
     def get(self, request):
         try:
-            issues = list(Announcement.objects.values())
-            response = JsonResponse(issues, safe=False)
+            announcements = list(Announcement.objects.values())
+            response = JsonResponse(announcements, safe=False)
             response["Access-Control-Allow-Origin"] = "*"
             return response
         except Announcement.DoesNotExist:
@@ -161,5 +161,20 @@ class AnnouncementIndexView(View):
 
 
 class AnnouncementView(View):
-    def get():
-        pass
+    def get(self, request, announcement_id):
+        try:
+            announcement = Announcement.objects.get(id=announcement_id)
+            response = JsonResponse(
+                {
+                    "id": announcement.id,
+                    "title": announcement.title,
+                    "description": announcement.text,
+                    "upvotes": announcement.upvotes,
+                    "created_at": announcement.created_at,
+                }
+            )
+            print(response.content)
+            return response
+        except Announcement.DoesNotExist:
+            response = JsonResponse({"error": "Announcement not found"}, status=404)
+            return response

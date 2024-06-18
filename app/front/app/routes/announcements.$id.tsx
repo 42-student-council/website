@@ -1,32 +1,31 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import { requireSessionData } from '~/utils/session.server';
 import React, { useState, useEffect } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export async function loader({ params }: LoaderFunctionArgs) {
     try {
         const { id } = params;
+        console.log('Fetching data for announcement ID:', id);
         const API_BASE_URL = process.env.API_BASE_URL;
 
         if (!id) {
-            throw new Error('Issue ID is required');
+            throw new Error('announcement ID is required');
         }
 
-        const [issueResponse, commentsResponse] = await Promise.all([
-            fetch(`${API_BASE_URL}/issues/${id}`),
-            fetch(`${API_BASE_URL}/comments/issue/${id}`),
+        const [announcementResponse, commentsResponse] = await Promise.all([
+            fetch(`${API_BASE_URL}/announcements/${id}/`),
+            fetch(`${API_BASE_URL}/comments/announcement/${id}/`),
         ]);
-
-        if (!issueResponse.ok) {
-            throw new Error('Failed to fetch issue');
+        if (!announcementResponse.ok) {
+            throw new Error('Failed to fetch announcement');
         }
         if (!commentsResponse.ok) {
             throw new Error('Failed to fetch comments');
         }
 
-        const issue = await issueResponse.json();
+        const announcement = await announcementResponse.json();
         const commentsData = await commentsResponse.json();
 
         const comments = commentsData.map((comment) => ({
@@ -34,79 +33,32 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
             ...comment.fields,
         }));
 
-        return json({ issue, comments });
+        return json({ announcement, comments });
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
     }
-};
+}
 
-export const action = async ({ request, params }: LoaderFunctionArgs) => {
-    try {
-        await requireSessionData(request);
-
-        const form = await request.formData();
-        const text = form.get('comment_text');
-        const { id } = params;
-        const API_BASE_URL = process.env.API_BASE_URL;
-
-        if (text) {
-            const response = await fetch(`${API_BASE_URL}/comments/issue/${id}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to post comment');
-            }
-
-            const result = await response.json();
-            return json(result);
-        }
-
-        const upvoteId = form.get('id');
-
-        if (upvoteId) {
-            const response = await fetch(`${API_BASE_URL}/issues/${id}/upvote/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({}),
-            });
-
-            if (!response.ok) {
-                if (response.status === 400) {
-                    const result = await response.json();
-                    return json({ message: 'You have already voted on this issue.' }, { status: 400 });
-                }
-                throw new Error('Failed to upvote issue');
-            }
-
-            const result = await response.json();
-            return json(result);
-        }
-
-        throw new Error('Invalid action');
-    } catch (error) {
-        console.error(error);
-        return json({ message: error.message || 'An unexpected error occurred' }, { status: 500 });
-    }
-};
-
-export default function IssueDetail() {
-    const { issue, comments } = useLoaderData();
+export default function AnnouncementDetail() {
+    const { announcement, comments } = useLoaderData();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
-
+    console.log(announcement);
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
             setPopupMessage(fetcher.data.message);
         }
     }, [fetcher.state, fetcher.data]);
+
+    useEffect(() => {
+        console.log('Announcement:', announcement);
+        console.log('Comments:', comments);
+    }, [announcement, comments]);
+
+    if (!announcement) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div>
@@ -114,7 +66,7 @@ export default function IssueDetail() {
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
                     <Link
-                        to='/issues'
+                        to='/announcements'
                         className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 mb-4'
                     >
                         <svg
@@ -129,26 +81,30 @@ export default function IssueDetail() {
                     </Link>
                     <div className='flex justify-between items-center'>
                         <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
-                            Issue #{issue.id}:{' '}
+                            Announcement #{announcement.id}:{' '}
                             <mark
                                 className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'
                                 style={{ lineHeight: '1.5em' }}
                             >
-                                {issue.title}
+                                {announcement.title}
                             </mark>
                         </h1>
                     </div>
                     <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'>
-                        {issue.description}
+                        {announcement.description}
                     </p>
                     <div className='flex justify-between items-center mb-4'>
-                        <fetcher.Form method='post' action={`/issues/${issue.id}/upvote/`} className='ml-4 flex'>
-                            <input type='hidden' name='id' value={issue.id} />
+                        <fetcher.Form
+                            method='post'
+                            action={`/announcements/${announcement.id}/upvote/`}
+                            className='ml-4 flex'
+                        >
+                            <input type='hidden' name='id' value={announcement.id} />
                             <button
                                 type='submit'
                                 className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                             >
-                                Upvote ({issue.upvotes || 0})
+                                Upvote ({announcement.upvotes || 0})
                             </button>
                         </fetcher.Form>
                     </div>
