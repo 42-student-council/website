@@ -3,6 +3,7 @@ from django.db import models
 
 class Announcement(models.Model):
     id = models.AutoField(primary_key=True)
+    title = models.TextField()
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     comments = models.ManyToManyField("Comment", related_name="announcements", blank=True)

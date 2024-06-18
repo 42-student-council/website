@@ -9,4 +9,5 @@ urlpatterns = [
     path("api/issues/<int:issue_id>/comments/", views.CommentView.as_view(), name="view_comments"),
     path("api/issues/", views.IssueListView.as_view(), name="list_issues"),
     path("api/announcements/", views.AnnouncementView.as_view(), name="announcements"),
+    path("api/admin/announcements/", views.AnnouncementViewAdmin.as_view(), name="new_announcement"),
 ]

@@ -132,8 +132,19 @@ class IssueUpvoteView(View):
 class AnnouncementView(View):
     def get(self, request):
         try:
-            announcements = Announcement.objects.all()
-            response = serializers.serialize("json", announcements)
-            return JsonResponse(response)
+            issues = list(Announcement.objects.values())
+            response = JsonResponse(issues, safe=False)
+            response["Access-Control-Allow-Origin"] = "*"
+            return response
         except Announcement.DoesNotExist:
             return JsonResponse({"error": "No announcements found"}, status=404)
+
+
+class AnnouncementViewAdmin(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        issue = Announcement.objects.create(
+            title=data["title"],
+            text=data["text"],
+        )
+        return JsonResponse({"id": issue.id})
