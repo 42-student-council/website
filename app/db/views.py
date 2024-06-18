@@ -21,7 +21,7 @@ class CreateIssueView(View):
         return JsonResponse({"id": issue.id})
 
 
-class IssueListView(View):
+class IssueIndexView(View):
     def get(self, request):
         issues = list(Issue.objects.values())
         response = JsonResponse(issues, safe=False)
@@ -129,7 +129,17 @@ class IssueUpvoteView(View):
         return response
 
 
-class AnnouncementView(View):
+class AnnouncementViewAdmin(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        issue = Announcement.objects.create(
+            title=data["title"],
+            text=data["text"],
+        )
+        return JsonResponse({"id": issue.id})
+
+
+class AnnouncementIndexView(View):
     def get(self, request):
         try:
             issues = list(Announcement.objects.values())
@@ -140,11 +150,6 @@ class AnnouncementView(View):
             return JsonResponse({"error": "No announcements found"}, status=404)
 
 
-class AnnouncementViewAdmin(View):
-    def post(self, request):
-        data = json.loads(request.body)
-        issue = Announcement.objects.create(
-            title=data["title"],
-            text=data["text"],
-        )
-        return JsonResponse({"id": issue.id})
+class AnnouncementView(View):
+    def get():
+        pass
