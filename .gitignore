@@ -16,3 +16,4 @@ venv
 # UTILS
 
 node_modules/
+format.sh

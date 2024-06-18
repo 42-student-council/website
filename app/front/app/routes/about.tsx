@@ -47,7 +47,6 @@ export default function About() {
             <NavBar />
             <div className='mb-8 md:mb-16 md:mt-16'>
                 <H1 className='mt-4 mb-2 text-center'>Student Council</H1>
-                {/* <p className='mx-4 text-lg'>We are the students who have been elected by our peers.</p> */}
             </div>
             <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
                 {data.map((member) => (
