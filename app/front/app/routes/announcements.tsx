@@ -135,13 +135,17 @@ export default function Announcements() {
             {announcements && announcements.length > 0 ? (
                 <ul>
                     {announcements.map((announcement) => (
-                        <article className='pl-16' key={announcement.id}>
-                            <time dateTime={announcement.created_at}>
-                                {new Date(announcement.created_at).toLocaleDateString()}
-                            </time>
-                            <h2>{announcement.title}</h2>
-                            <p>{announcement.text}</p>
-                        </article>
+                        <div className='mx-auto w-2/3'>
+                            <article className='pb-32 text-center' key={announcement.id}>
+                                <time dateTime={announcement.created_at}>
+                                    {new Date(announcement.created_at).toLocaleDateString()}
+                                </time>
+                                <h2 className='pl-4 pb-4 text-3xl font-bold'>
+                                    <strong>{announcement.title}</strong>
+                                </h2>
+                                <p>{announcement.text}</p>
+                            </article>
+                        </div>
                     ))}
                 </ul>
             ) : (
