@@ -159,9 +159,16 @@ export default function Announcements() {
                                     <time dateTime={announcement.created_at}>
                                         {new Date(announcement.created_at).toLocaleDateString()}
                                     </time>
-                                    <h2 className='pl-4 pb-4 text-3xl font-bold'>
-                                        <strong>{announcement.title}</strong>
-                                    </h2>
+                                    <Link
+                                        to={`/announcements/${announcement.id}`}
+                                        className='no-underline hover:underline'
+                                    >
+                                        {' '}
+                                        {/* Step 2: Wrap with Link and set to prop */}
+                                        <h2 className='pl-4 pb-4 text-3xl font-bold'>
+                                            <strong>{announcement.title}</strong>
+                                        </h2>
+                                    </Link>
                                     <p>
                                         {expandedStates[announcement.id]
                                             ? announcement.text
@@ -169,7 +176,10 @@ export default function Announcements() {
                                     </p>
                                     {announcement.text.length > MAX_LENGTH && (
                                         <button
-                                            onClick={() => toggleReadMore(announcement.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent link navigation when clicking the button
+                                                toggleReadMore(announcement.id);
+                                            }}
                                             className='text-violet-500 hover:text-violet-500'
                                         >
                                             {expandedStates[announcement.id] ? 'Less' : 'More'}
