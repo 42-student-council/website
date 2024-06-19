@@ -70,6 +70,48 @@ export async function getTokens(code: string): Promise<Tokens> {
     return await response.json();
 }
 
+let accessToken: string | null = null;
+let accessTokenExpiresAt: number = Date.now();
+
+export async function getAccessToken(): Promise<string> {
+    // Subtract 10 seconds, in order to take network request time into account.
+    if (Date.now() < accessTokenExpiresAt - 10000 && accessToken) {
+        return accessToken;
+    }
+
+    const res = await fetch(`https://api.intra.42.fr/oauth/token`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            grant_type: 'client_credentials',
+            // TODO: not as string
+            client_id: process.env.CLIENT_ID as string,
+            client_secret: process.env.CLIENT_SECRET as string,
+        }).toString(),
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to get Access Token');
+    }
+
+    const data: GetCredentialsResponse = await res.json();
+
+    accessTokenExpiresAt = data.created_at * 1000 + data.expires_in * 1000;
+    accessToken = data.access_token;
+
+    return accessToken;
+}
+
+export type GetCredentialsResponse = {
+    access_token: string;
+    token_type: 'bearer';
+    expires_in: number;
+    scope: string;
+    created_at: number;
+};
+
 // TODO: Do we even need to refresh tokens?
 // export async function refreshTokens(refreshToken: string): Promise<Tokens> {
 // 	return await oauth
