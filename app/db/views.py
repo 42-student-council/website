@@ -10,17 +10,6 @@ from .utils import hash_username
 import json
 
 
-class CreateIssueView(View):
-    def post(self, request):
-        data = json.loads(request.body)
-        issue = Issue.objects.create(
-            title=data["title"],
-            description=data["description"],
-            created_at=data["created_at"],
-        )
-        return JsonResponse({"id": issue.id})
-
-
 class IssueListView(View):
     def get(self, request):
         issues = list(Issue.objects.values())
@@ -34,6 +23,15 @@ class IssueListView(View):
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
+
+    def post(self, request):
+        data = json.loads(request.body)
+        issue = Issue.objects.create(
+            title=data["title"],
+            description=data["description"],
+            created_at=data["created_at"],
+        )
+        return JsonResponse({"id": issue.id})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            const res = await fetch(`${process.env.API_BASE_URL}/issues/create/`, {
+            const res = await fetch(`${process.env.API_BASE_URL}/issues/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
