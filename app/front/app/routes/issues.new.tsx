@@ -1,11 +1,11 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
-import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
+import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
@@ -120,8 +120,9 @@ export default function IssuesNew() {
             <Separator />
             <div className='md:flex md:justify-center'>
                 <p className='mt-4 mx-4 md:w-3/5'>
-                    Issues are <span className='font-bold'>the</span> way to discuss with the community. Issues and
-                    their comments are truly anonymous therefore no one needs to be afraid of expressing their concerns.
+                    Issues are <span className='font-bold'>the</span> way to discuss with the community. While issues
+                    and their comments remain anonym to the public, the student council members will know who submitted
+                    what, to ensure accurate and effective representation.
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-8'>
@@ -164,14 +165,15 @@ export default function IssuesNew() {
                         </FormErrorMessage>
                     </div>
 
-                    <Alert variant='info' className='mt-4 w-auto'>
-                        <Info className='h-4 w-4' />
-                        <AlertTitle>Info</AlertTitle>
-                        <AlertDescription>
-                            Issues are truly anonymous, this means even we - the student council - don't know who
-                            submitted them. Therefore you won't be able to edit or delete them afterwards.
-                        </AlertDescription>
-                    </Alert>
+                    <Info className='mt-4 w-auto'>
+                        <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
+                        submittng them.
+                        <div className='mb-2' />
+                        Issues are anonymous to the public, this means students won't know who submitted which issue.
+                        But in order to ensure accurate and effective representation the council members know who
+                        submitted which issue.
+                    </Info>
+
                     <Button
                         type='submit'
                         variant='destructive'
