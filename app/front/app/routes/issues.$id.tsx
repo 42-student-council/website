@@ -5,6 +5,29 @@ import React, { useState, useEffect } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 
+type Issue = {
+    id: number;
+    title: string;
+    description: string;
+    upvotes: number;
+};
+
+type Comment = {
+    id: number;
+    text: number;
+    issueId: number;
+    created_at: string;
+};
+
+type LoaderData = {
+    issue: Issue;
+    comments: Comment[];
+};
+
+type FetcherData = {
+    message?: string;
+};
+
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     try {
         const { id } = params;
@@ -92,19 +115,25 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
         throw new Error('Invalid action');
     } catch (error) {
-        console.error(error);
-        return json({ message: error.message || 'An unexpected error occurred' }, { status: 500 });
+        if (error instanceof Error) {
+            console.error(error);
+            return json({ message: error.message }, { status: 500 });
+        } else {
+            console.error('An unexpected error occurred', error);
+            return json({ message: 'An unexpected error occurred' }, { status: 500 });
+        }
     }
 };
 
 export default function IssueDetail() {
-    const { issue, comments } = useLoaderData();
+    const { issue, comments } = useLoaderData() as LoaderData;
     const fetcher = useFetcher();
-    const [popupMessage, setPopupMessage] = useState(null);
+    const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
-            setPopupMessage(fetcher.data.message);
+        const data = fetcher.data as FetcherData;
+        if (fetcher.state === 'idle' && data && data && data.message) {
+            setPopupMessage(data.message);
         }
     }, [fetcher.state, fetcher.data]);
 

@@ -126,9 +126,7 @@ class IssueUpvoteView(View):
 
             return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
         except Issue.DoesNotExist:
-            return JsonResponse(
-                {"error": f"Issue with ID {issue_id} not found"}, status=404
-            )
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
         except Exception as e:
             print(e)
             return JsonResponse({"error": str(e)}, status=500)
@@ -202,6 +200,7 @@ class CouncilMemberListView(View):
         response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
+
 
 class AnnouncementViewAdmin(View):
     def post(self, request):
