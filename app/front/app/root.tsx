@@ -20,6 +20,11 @@ export const links: LinksFunction = () => {
             rel: 'stylesheet',
             href: stylesheet,
         },
+        {
+            rel: 'icon',
+            type: 'image/x-icon',
+            href: '/favicon.ico',
+        },
     ];
 };
 
