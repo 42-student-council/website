@@ -21,7 +21,7 @@ class CreateIssueView(View):
         return JsonResponse({"id": issue.id})
 
 
-class IssueIndexView(View):
+class IssueListView(View):
     def get(self, request):
         issues = list(Issue.objects.values())
         response = JsonResponse(issues, safe=False)
