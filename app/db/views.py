@@ -5,7 +5,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue, Comment, Vote, Announcement, CouncilMember
+from .models import *
 from .utils import hash_username
 import json
 
@@ -101,7 +101,6 @@ class IssueUpvoteView(View):
     def post(self, request, issue_id):
         try:
             issue = Issue.objects.get(id=issue_id)
-
             username = json.loads(request.body).get("user")
             if not username:
                 return JsonResponse(
@@ -109,16 +108,15 @@ class IssueUpvoteView(View):
                     status=400,
                 )
 
-            user_hash = hash_username(username)
+            user, created = User.objects.get_or_create(_hash=hash_username(username))
 
-            if issue.votes.filter(user_hash=user_hash).exists():
+            if issue.votes.filter(user=user).exists():
                 issue.upvotes -= 1
                 issue.save()
-                issue.votes.filter(user_hash=user_hash).delete()
+                issue.votes.filter(user=user).delete()
                 return JsonResponse({"error": "Successfully removed the vote."}, status=200)
 
-            Vote.objects.create(issue=issue, user_hash=user_hash)
-
+            Vote.objects.create(issue=issue, user=user)
             issue.upvotes += 1
             issue.save()
 
@@ -127,7 +125,7 @@ class IssueUpvoteView(View):
             return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
         except Exception as e:
             print(e)
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     def options(self, request, *args, **kwargs):
         response = JsonResponse({})
