@@ -73,7 +73,7 @@ services:
   nginx_prod:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "${NGINX_PORT}:80"
     volumes:
       - ./nginx/nginx_prod.conf:/etc/nginx/nginx.conf
     profiles:
@@ -108,7 +108,7 @@ services:
   nginx_dev:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "${NGINX_PORT}:80"
     volumes:
       - ./nginx/nginx_dev.conf:/etc/nginx/nginx.conf
     profiles:
