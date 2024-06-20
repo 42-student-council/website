@@ -43,20 +43,27 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
     try {
-        await requireSessionData(request);
+        const session = await requireSessionData(request);
 
+        const user = session.login;
         const form = await request.formData();
         const text = form.get('comment_text');
         const { id } = params;
         const API_BASE_URL = process.env.API_BASE_URL;
 
         if (text) {
+            const requestBody = {
+                text: text,
+                user: {
+                    user: user,
+                },
+            };
             const response = await fetch(`${API_BASE_URL}/comments/announcement/${id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify(requestBody),
             });
 
             if (!response.ok) {
