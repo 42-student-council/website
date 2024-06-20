@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireSessionData } from '~/utils/session.server';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 
@@ -134,16 +134,28 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, comments } = useLoaderData() as LoaderData;
+    const { issue, comments } = useLoaderData();
     const fetcher = useFetcher();
-    const [popupMessage, setPopupMessage] = useState<string | null>(null);
+    const [popupMessage, setPopupMessage] = useState(null);
+    const formRef = useRef(null);
 
     useEffect(() => {
-        const data = fetcher.data as FetcherData;
-        if (fetcher.state === 'idle' && data && data && data.message) {
-            setPopupMessage(data.message);
+        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
+            formRef.current?.reset();
+        }
+        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
+            setPopupMessage(fetcher.data.message);
         }
     }, [fetcher.state, fetcher.data]);
+
+    useEffect(() => {
+        console.log('Issue:', issue);
+        console.log('Comments:', comments);
+    }, [issue, comments]);
+
+    if (!issue) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div>
@@ -205,7 +217,7 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' className='mt-4'>
+                        <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef}>
                             <textarea
                                 name='comment_text'
                                 rows='3'
