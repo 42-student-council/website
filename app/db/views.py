@@ -67,7 +67,7 @@ class CommentView(View):
         "issue": Issue,
     }
     RATE_LIMIT_KEY_PREFIX = "comment_rate_limit"
-    RATE_LIMIT_THRESHOLD = 5
+    RATE_LIMIT_THRESHOLD = 1
     RATE_LIMIT_PERIOD = timedelta(minutes=5)
 
     def get(self, request, target_type, target_id):
