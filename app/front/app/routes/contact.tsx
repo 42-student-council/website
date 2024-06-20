@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
+import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
@@ -180,16 +181,13 @@ export default function Contact() {
                         </div>
                     )}
 
-                    <Alert variant='destructive' className='mt-4 w-auto'>
-                        <Info className='h-4 w-4' />
-                        <AlertTitle>Important</AlertTitle>
-                        <AlertDescription>
-                            We will store your data so we can contact you. If you want to raise concerns anonymously,
-                            please open an issue.
-                            <br />
-                            Contacting is <span className='font-bold uppercase'>not anonymous</span>.
-                        </AlertDescription>
-                    </Alert>
+                    <Warning title='Important' className='mt-4 w-auto'>
+                        We will store your data so we can contact you. If you want to raise concerns anonymously, please
+                        open an issue.
+                        <br />
+                        Contacting is <span className='font-bold uppercase'>not anonymous</span>.
+                    </Warning>
+
                     <Button
                         type='submit'
                         variant='secondary'
