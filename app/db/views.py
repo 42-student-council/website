@@ -8,6 +8,9 @@ from django.core import serializers
 from .models import *
 from .utils import hash_username
 import json
+from datetime import timedelta
+from django.utils import timezone
+from django.core.cache import cache
 
 
 class IssueListView(View):
@@ -63,6 +66,9 @@ class CommentView(View):
         "announcement": Announcement,
         "issue": Issue,
     }
+    RATE_LIMIT_KEY_PREFIX = "comment_rate_limit"
+    RATE_LIMIT_THRESHOLD = 5
+    RATE_LIMIT_PERIOD = timedelta(minutes=5)
 
     def get(self, request, target_type, target_id):
         if target_type not in self.targets:
@@ -95,7 +101,19 @@ class CommentView(View):
             if not username:
                 return JsonResponse({"error": "Username is required"}, status=400)
 
-            user, created = User.objects.get_or_create(_hash=hash_username(username))
+            hashed_user = hash_username(username)
+            user_key = f"{self.RATE_LIMIT_KEY_PREFIX}_{hashed_user}_{target_id}"
+            now = timezone.now()
+            comment_activity = cache.get(user_key, [])
+
+            comment_activity = [timestamp for timestamp in comment_activity if timestamp > now - self.RATE_LIMIT_PERIOD]
+            if len(comment_activity) >= self.RATE_LIMIT_THRESHOLD:
+                return JsonResponse({"error": "Rate limit exceeded. Please try again later."}, status=429)
+
+            comment_activity.append(now)
+            cache.set(user_key, comment_activity, timeout=int(self.RATE_LIMIT_PERIOD.total_seconds()))
+
+            user, created = User.objects.get_or_create(_hash=hash_username(hashed_user))
 
             comment = Comment.objects.create(user=user, text=text)
             object.comments.add(comment)

@@ -91,6 +91,9 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
             });
 
             if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error('You tried to post too many comments. Please try again later.');
+                }
                 throw new Error('Failed to post comment');
             }
 
