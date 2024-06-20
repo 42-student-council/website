@@ -89,13 +89,10 @@ class CommentView(View):
             data = json.loads(request.body)
             text = data.get("text")
             if not text:
-                print("TEXT")
                 return JsonResponse({"error": "Comment text is required"}, status=400)
 
             username = data.get("user", {}).get("user")
             if not username:
-                print("USER")
-
                 return JsonResponse({"error": "Username is required"}, status=400)
 
             user, created = User.objects.get_or_create(_hash=hash_username(username))
@@ -250,7 +247,6 @@ class AnnouncementView(View):
                     "created_at": announcement.created_at,
                 }
             )
-            print(response.content)
             return response
         except Announcement.DoesNotExist:
             response = JsonResponse({"error": "Announcement not found"}, status=404)
