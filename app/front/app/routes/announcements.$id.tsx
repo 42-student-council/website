@@ -43,23 +43,33 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
     try {
-        await requireSessionData(request);
+        const session = await requireSessionData(request);
 
+        const user = session.login;
         const form = await request.formData();
         const text = form.get('comment_text');
         const { id } = params;
         const API_BASE_URL = process.env.API_BASE_URL;
 
         if (text) {
+            const requestBody = {
+                text: text,
+                user: {
+                    user: user,
+                },
+            };
             const response = await fetch(`${API_BASE_URL}/comments/announcement/${id}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify(requestBody),
             });
 
             if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error('You tried to post too many comments. Please try again later.');
+                }
                 throw new Error('Failed to post comment');
             }
 
@@ -77,10 +87,12 @@ export default function AnnouncementDetail() {
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
+    const [commentText, setCommentText] = useState('');
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
             formRef.current?.reset();
+            setCommentText('');
         }
         if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
             setPopupMessage(fetcher.data.message);
@@ -156,10 +168,13 @@ export default function AnnouncementDetail() {
                                 rows='3'
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
+                                value={commentText} // Bind text area to state
+                                onChange={(e) => setCommentText(e.target.value)} // Step 2
                             ></textarea>
                             <button
                                 type='submit'
                                 className='mt-2 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                                disabled={!commentText.trim()} // Step 3
                             >
                                 Submit
                             </button>

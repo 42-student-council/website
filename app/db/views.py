@@ -5,20 +5,12 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
-from .models import Issue, Comment, Vote, Announcement, CouncilMember
+from .models import *
 from .utils import hash_username
 import json
-
-
-class CreateIssueView(View):
-    def post(self, request):
-        data = json.loads(request.body)
-        issue = Issue.objects.create(
-            title=data["title"],
-            description=data["description"],
-            created_at=data["created_at"],
-        )
-        return JsonResponse({"id": issue.id})
+from datetime import timedelta
+from django.utils import timezone
+from django.core.cache import cache
 
 
 class IssueListView(View):
@@ -34,6 +26,15 @@ class IssueListView(View):
         response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
+
+    def post(self, request):
+        data = json.loads(request.body)
+        issue = Issue.objects.create(
+            title=data["title"],
+            description=data["description"],
+            created_at=data["created_at"],
+        )
+        return JsonResponse({"id": issue.id})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -65,6 +66,9 @@ class CommentView(View):
         "announcement": Announcement,
         "issue": Issue,
     }
+    RATE_LIMIT_KEY_PREFIX = "comment_rate_limit"
+    RATE_LIMIT_THRESHOLD = 5
+    RATE_LIMIT_PERIOD = timedelta(minutes=1)
 
     def get(self, request, target_type, target_id):
         if target_type not in self.targets:
@@ -92,18 +96,39 @@ class CommentView(View):
             text = data.get("text")
             if not text:
                 return JsonResponse({"error": "Comment text is required"}, status=400)
-            comment = Comment.objects.create(text=text)
+
+            username = data.get("user", {}).get("user")
+            if not username:
+                return JsonResponse({"error": "Username is required"}, status=400)
+
+            hashed_user = hash_username(username)
+            user_key = f"{self.RATE_LIMIT_KEY_PREFIX}_{hashed_user}_{target_id}"
+            now = timezone.now()
+            comment_activity = cache.get(user_key, [])
+
+            comment_activity = [timestamp for timestamp in comment_activity if timestamp > now - self.RATE_LIMIT_PERIOD]
+            if len(comment_activity) >= self.RATE_LIMIT_THRESHOLD:
+                return JsonResponse({"error": "Rate limit exceeded. Please try again later."}, status=429)
+
+            comment_activity.append(now)
+            cache.set(user_key, comment_activity, timeout=int(self.RATE_LIMIT_PERIOD.total_seconds()))
+
+            user, created = User.objects.get_or_create(_hash=hash_username(hashed_user))
+
+            comment = Comment.objects.create(user=user, text=text)
             object.comments.add(comment)
             return JsonResponse({"success": f"{target_model.__name__} commented successfully"})
         except target_model.DoesNotExist:
             return JsonResponse({"error": "Issue not found"}, status=404)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
 class IssueUpvoteView(View):
     def post(self, request, issue_id):
         try:
             issue = Issue.objects.get(id=issue_id)
-
             username = json.loads(request.body).get("user")
             if not username:
                 return JsonResponse(
@@ -111,27 +136,24 @@ class IssueUpvoteView(View):
                     status=400,
                 )
 
-            user_hash = hash_username(username)
+            user, created = User.objects.get_or_create(_hash=hash_username(username))
 
-            if issue.votes.filter(user_hash=user_hash).exists():
+            if issue.votes.filter(user=user).exists():
                 issue.upvotes -= 1
                 issue.save()
-                issue.votes.filter(user_hash=user_hash).delete()
+                issue.votes.filter(user=user).delete()
                 return JsonResponse({"error": "Successfully removed the vote."}, status=200)
 
-            Vote.objects.create(issue=issue, user_hash=user_hash)
-
+            Vote.objects.create(issue=issue, user=user)
             issue.upvotes += 1
             issue.save()
 
             return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
         except Issue.DoesNotExist:
-            return JsonResponse(
-                {"error": f"Issue with ID {issue_id} not found"}, status=404
-            )
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
         except Exception as e:
             print(e)
-            return JsonResponse({"error": str(e)}, status=500)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     def options(self, request, *args, **kwargs):
         response = JsonResponse({})
@@ -203,6 +225,7 @@ class CouncilMemberListView(View):
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
 
+
 class AnnouncementViewAdmin(View):
     def post(self, request):
         try:
@@ -242,7 +265,6 @@ class AnnouncementView(View):
                     "created_at": announcement.created_at,
                 }
             )
-            print(response.content)
             return response
         except Announcement.DoesNotExist:
             response = JsonResponse({"error": "Announcement not found"}, status=404)

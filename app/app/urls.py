@@ -3,7 +3,6 @@ from django.urls import path
 from db.views import *
 
 urlpatterns = [
-    path("api/issues/create/", CreateIssueView.as_view(), name="create_issue"),
     path("api/issues/<int:issue_id>/", IssueView.as_view(), name="view_issue"),
     path(
         "api/issues/<int:issue_id>/upvote/",
