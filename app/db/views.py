@@ -89,12 +89,26 @@ class CommentView(View):
             data = json.loads(request.body)
             text = data.get("text")
             if not text:
+                print("TEXT")
                 return JsonResponse({"error": "Comment text is required"}, status=400)
-            comment = Comment.objects.create(text=text)
+
+            # Adjusted to match the nested user structure
+            username = data.get("user", {}).get("user")  # Accessing the nested user object
+            if not username:
+                print("USER")
+
+                return JsonResponse({"error": "Username is required"}, status=400)
+
+            user, created = User.objects.get_or_create(_hash=username)  # Assuming username is the correct field
+
+            comment = Comment.objects.create(user=user, text=text)
             object.comments.add(comment)
             return JsonResponse({"success": f"{target_model.__name__} commented successfully"})
         except target_model.DoesNotExist:
             return JsonResponse({"error": "Issue not found"}, status=404)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
 class IssueUpvoteView(View):
