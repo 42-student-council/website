@@ -92,14 +92,13 @@ class CommentView(View):
                 print("TEXT")
                 return JsonResponse({"error": "Comment text is required"}, status=400)
 
-            # Adjusted to match the nested user structure
-            username = data.get("user", {}).get("user")  # Accessing the nested user object
+            username = data.get("user", {}).get("user")
             if not username:
                 print("USER")
 
                 return JsonResponse({"error": "Username is required"}, status=400)
 
-            user, created = User.objects.get_or_create(_hash=username)  # Assuming username is the correct field
+            user, created = User.objects.get_or_create(_hash=hash_username(username))
 
             comment = Comment.objects.create(user=user, text=text)
             object.comments.add(comment)

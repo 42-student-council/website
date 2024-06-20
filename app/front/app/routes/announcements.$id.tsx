@@ -84,10 +84,12 @@ export default function AnnouncementDetail() {
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
+    const [commentText, setCommentText] = useState('');
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
             formRef.current?.reset();
+            setCommentText('');
         }
         if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
             setPopupMessage(fetcher.data.message);
@@ -163,10 +165,13 @@ export default function AnnouncementDetail() {
                                 rows='3'
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
+                                value={commentText} // Bind text area to state
+                                onChange={(e) => setCommentText(e.target.value)} // Step 2
                             ></textarea>
                             <button
                                 type='submit'
                                 className='mt-2 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                                disabled={!commentText.trim()} // Step 3
                             >
                                 Submit
                             </button>
