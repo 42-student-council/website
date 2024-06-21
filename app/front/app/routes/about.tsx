@@ -58,7 +58,7 @@ export default function About() {
                 {data.map((member) => (
                     <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
                         <Avatar className='rounded-xl size-60'>
-                            <AvatarImage src={member.profile_picture} />
+                            <AvatarImage src={member.profile_picture} className='object-cover' />
                             <AvatarFallback>{member.first_name.slice(0, 2)}</AvatarFallback>
                         </Avatar>
 

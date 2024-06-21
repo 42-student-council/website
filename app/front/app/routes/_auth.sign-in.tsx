@@ -40,14 +40,6 @@ export default function Index() {
                 In order to provide a secure and private platform, we only allow students of 42 Vienna to access our
                 portal.
             </p>
-            <Alert variant='info' className='mt-4 w-auto'>
-                <Info className='h-4 w-4 text-red-600' />
-                <AlertTitle>Info</AlertTitle>
-                <AlertDescription>
-                    Your data is only used for logging in. <br />
-                    Posting, Commenting and Voting is <span className='font-bold'>completely anonymous</span>!
-                </AlertDescription>
-            </Alert>
             <div className='w-80 mt-4 flex flex-col justify-center items-center space-y-4'>
                 {data.oauthFailed && (
                     <Alert variant='destructive'>
