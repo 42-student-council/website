@@ -125,6 +125,13 @@ class CommentView(View):
             return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
+from django.views import View
+from django.http import JsonResponse
+import json
+from .models import Issue, User, Vote
+from django.contrib.contenttypes.models import ContentType
+
+
 class IssueUpvoteView(View):
     def post(self, request, issue_id):
         try:
@@ -137,14 +144,15 @@ class IssueUpvoteView(View):
                 )
 
             user, created = User.objects.get_or_create(_hash=hash_username(username))
+            issue_content_type = ContentType.objects.get_for_model(Issue)
 
-            if issue.votes.filter(user=user).exists():
+            if Vote.objects.filter(content_type=issue_content_type, object_id=issue.id, user=user).exists():
                 issue.upvotes -= 1
                 issue.save()
-                issue.votes.filter(user=user).delete()
-                return JsonResponse({"error": "Successfully removed the vote."}, status=200)
+                Vote.objects.filter(content_type=issue_content_type, object_id=issue.id, user=user).delete()
+                return JsonResponse({"success": "Successfully removed the vote.", "upvotes": issue.upvotes}, status=200)
 
-            Vote.objects.create(issue=issue, user=user)
+            Vote.objects.create(content_type=issue_content_type, object_id=issue.id, user=user)
             issue.upvotes += 1
             issue.save()
 

@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class User(models.Model):
@@ -42,14 +44,16 @@ class Announcement(models.Model):
 
 
 class Vote(models.Model):
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="votes")
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="votes")
 
     class Meta:
-        unique_together = ("issue", "user")
+        unique_together = ("content_type", "object_id", "user")
 
     def __str__(self):
-        return f"Vote for Issue #{self.issue.id} by {self.user_hash}"
+        return f"Vote for by {self.user._hash} on {self.content_type.name} #{self.object_id}"
 
 
 class CouncilMember(models.Model):
