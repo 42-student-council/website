@@ -8,6 +8,24 @@ class User(models.Model):
     _hash = models.CharField(max_length=64)
 
 
+class Poll(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+
+
+class Question(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="questions")
+    text = models.CharField(max_length=200)
+    allow_multiple_choices = models.BooleanField(default=False)
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
+    text = models.CharField(max_length=200)
+    votes = models.IntegerChoices(default=0)
+
+
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     text = models.TextField()

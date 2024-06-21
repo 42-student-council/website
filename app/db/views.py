@@ -125,13 +125,6 @@ class CommentView(View):
             return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
-from django.views import View
-from django.http import JsonResponse
-import json
-from .models import Issue, User, Vote
-from django.contrib.contenttypes.models import ContentType
-
-
 class IssueUpvoteView(View):
     def post(self, request, issue_id):
         try:
