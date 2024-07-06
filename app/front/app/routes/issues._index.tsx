@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         return { issues };
     } catch (error) {
         console.error('Error fetching issues:', error);
-        return json({ issues: [], error: 'Failed to load issues' });
+        return { issues: [], error: 'Failed to load issues' };
     }
 }
 
