@@ -53,13 +53,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
         if (!response.ok) {
             throw new Error('Failed to fetch issues');
         }
-        const issues = await response.json();
-        return json({ issues });
+        const issues: Issue[] = await response.json();
+        issues.sort((a, b) => b.upvotes - a.upvotes);
+
+        return { issues };
     } catch (error) {
         console.error('Error fetching issues:', error);
-        return json({ issues: [], error: 'Failed to load issues' });
+        return { issues: [], error: 'Failed to load issues' };
     }
 }
+
+type Issue = {
+    id: number;
+    title: string;
+    description: string;
+    created_at: string;
+    upvotes: number;
+};
+
+type LoaderData = {
+    issues: Issue[];
+    error?: string;
+};
 
 export async function action({ request }: ActionFunctionArgs) {
     await requireSessionData(request);
@@ -91,7 +106,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Issues() {
-    const { issues, error } = useLoaderData();
+    const { issues, error } = useLoaderData<LoaderData>();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
 
