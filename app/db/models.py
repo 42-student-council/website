@@ -4,7 +4,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class User(models.Model):
-class User(models.Model):
     id = models.AutoField(primary_key=True)
     _hash = models.CharField(max_length=64)
 
