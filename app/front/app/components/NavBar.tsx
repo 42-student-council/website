@@ -26,11 +26,6 @@ const navItems = [
         icon: Info,
     },
     {
-        label: 'Announcements',
-        href: '/announcements',
-        icon: Info,
-    },
-    {
         label: 'Issues',
         href: '/issues',
         icon: TriangleAlert,
