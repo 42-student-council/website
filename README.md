@@ -43,12 +43,12 @@ git clone https://github.com/42-student-council/website.git
 cd website
 ```
 2. Create your .env file and add the necessary variables (See [DOTENV](.github/docs/DOTENV.md) for details).
-3. Run `make debug` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
-4. The app should now be running on http://localhost:3000
+3. Run `make dev` to build and run the containers. (See [MAKEFILE](.github/docs/MAKEFILE.md) for details on the commands).
+4. The app should now be running on http://localhost:5173
 
 ## Usage
 
-To use the app, navigate to `http://localhost:3000` in your web browser. From there, you can test the functionality.
+To use the app, navigate to `http://localhost:5173` in your web browser. From there, you can test the functionality.
 
 ## Contributing
 
