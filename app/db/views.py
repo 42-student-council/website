@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
 from .models import *
+from .models import *
 from .utils import hash_username
 import json
 from datetime import timedelta
@@ -152,8 +153,10 @@ class IssueUpvoteView(View):
             return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
         except Issue.DoesNotExist:
             return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
         except Exception as e:
             print(e)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
             return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     def options(self, request, *args, **kwargs):
