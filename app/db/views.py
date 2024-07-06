@@ -64,7 +64,6 @@ class IssueView(View):
 
 class CommentView(View):
     targets = {
-        "announcement": Announcement,
         "issue": Issue,
     }
     RATE_LIMIT_KEY_PREFIX = "comment_rate_limit"
@@ -228,48 +227,3 @@ class CouncilMemberListView(View):
         response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type"
         return response
-
-
-class AnnouncementViewAdmin(View):
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            issue = Announcement.objects.create(
-                title=data["title"],
-                text=data["text"],
-            )
-            return JsonResponse({"id": issue.id})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-        except KeyError:
-            return JsonResponse({"error": "Missing fields in JSON"}, status=400)
-
-
-class AnnouncementIndexView(View):
-    def get(self, request):
-        try:
-            announcements = list(Announcement.objects.values())
-            response = JsonResponse(announcements, safe=False)
-            response["Access-Control-Allow-Origin"] = "*"
-            return response
-        except Announcement.DoesNotExist:
-            return JsonResponse({"error": "No announcements found"}, status=404)
-
-
-class AnnouncementView(View):
-    def get(self, request, announcement_id):
-        try:
-            announcement = Announcement.objects.get(id=announcement_id)
-            response = JsonResponse(
-                {
-                    "id": announcement.id,
-                    "title": announcement.title,
-                    "description": announcement.text,
-                    "upvotes": announcement.upvotes,
-                    "created_at": announcement.created_at,
-                }
-            )
-            return response
-        except Announcement.DoesNotExist:
-            response = JsonResponse({"error": "Announcement not found"}, status=404)
-            return response

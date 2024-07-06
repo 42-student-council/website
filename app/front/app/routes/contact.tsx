@@ -92,11 +92,18 @@ export default function Contact() {
         success?: boolean;
     }>();
 
-    if (contactFetcher.data?.success === true) {
-        localStorage.removeItem('contact-message');
-    }
-
     const [message, setMessage] = useState('');
+    const [contactOption, setContactOption] = useState('discord');
+    const [contactDetail, setContactDetail] = useState(`${data.login}@student.42vienna.com`);
+
+    useEffect(() => {
+        if (contactFetcher.data?.success) {
+            setMessage('');
+            setContactOption('discord');
+            setContactDetail(`${data.login}@student.42vienna.com`);
+            localStorage.removeItem('contact-message');
+        }
+    }, [contactFetcher.data?.success]);
 
     useEffect(() => {
         const savedMessage = localStorage.getItem('contact-message');
@@ -106,8 +113,6 @@ export default function Contact() {
     useEffect(() => {
         localStorage.setItem('contact-message', message);
     }, [message]);
-
-    const [contactOption, setContactOption] = useState('discord');
 
     return (
         <div>
@@ -139,7 +144,7 @@ export default function Contact() {
                             minLength={10}
                             maxLength={4096}
                             onChange={(e) => setMessage(e.target.value)}
-                            defaultValue={message}
+                            value={message}
                         />
                         <FormErrorMessage className='mt-1'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
@@ -170,7 +175,8 @@ export default function Contact() {
                                 autoComplete='on'
                                 maxLength={255}
                                 placeholder='Please enter your E-Mail'
-                                defaultValue={`${data.login}@student.42vienna.com`}
+                                value={contactDetail}
+                                onChange={(e) => setContactDetail(e.target.value)}
                                 className={classNames({
                                     'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
                                 })}

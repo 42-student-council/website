@@ -20,17 +20,6 @@ urlpatterns = [
         CommentView.as_view(),
         name="view_comments",
     ),
-    path("api/announcements/", AnnouncementIndexView.as_view(), name="announcements"),
-    path(
-        "api/announcements/<int:announcement_id>/",
-        AnnouncementView.as_view(),
-        name="announcement",
-    ),
-    path(
-        "api/admin/announcements/",
-        AnnouncementViewAdmin.as_view(),
-        name="new_announcement",
-    ),
     path(
         "api/council-members/",
         CouncilMemberListView.as_view(),

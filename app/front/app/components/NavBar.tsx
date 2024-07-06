@@ -46,7 +46,7 @@ function MainNav() {
                     to={item.href}
                     className={({ isActive, isPending }) => {
                         return classNames('text-primary underline-offset-4 hover:underline', 'px-2 py-2', {
-                            'text-violet-600 underline font-bold': isActive,
+                            ' underline font-bold': isActive,
                         });
                     }}
                 >
@@ -69,7 +69,7 @@ function MobileNav() {
                             <MenuIcon />
                         </Button>
                     </SheetTrigger>
-                    <div className='font-bold uppercase text-violet-600'>Student Council</div>
+                    <div className='font-bold uppercase'>Student Council</div>
                 </div>
 
                 <SheetContent side='left'>
@@ -81,7 +81,7 @@ function MobileNav() {
                                 to={item.href}
                                 className={({ isActive, isPending }) => {
                                     return classNames('mb-4 flex flex-row items-center', {
-                                        'text-violet-600 font-bold': isActive,
+                                        'font-bold': isActive,
                                     });
                                 }}
                                 onClick={() => {

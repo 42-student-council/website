@@ -4,6 +4,7 @@ import { requireSessionData } from '~/utils/session.server';
 import React, { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
+import { Button } from '~/components/ui/button';
 
 type Issue = {
     id: number;
@@ -169,7 +170,7 @@ export default function IssueDetail() {
                 <div className='md:w-4/5 p-4'>
                     <Link
                         to='/issues'
-                        className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 mb-4'
+                        className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 mb-4'
                     >
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -183,13 +184,7 @@ export default function IssueDetail() {
                     </Link>
                     <div className='flex justify-between items-center'>
                         <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
-                            Issue #{issue.id}:{' '}
-                            <mark
-                                className='px-2 text-white bg-violet-600 rounded dark:bg-gray-500'
-                                style={{ lineHeight: '1.5em' }}
-                            >
-                                {issue.title}
-                            </mark>
+                            Issue #{issue.id}: {issue.title}
                         </h1>
                     </div>
                     <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'>
@@ -198,12 +193,12 @@ export default function IssueDetail() {
                     <div className='flex justify-between items-center mb-4'>
                         <fetcher.Form method='post' action={`/issues/${issue.id}/upvote/`} className='ml-4 flex'>
                             <input type='hidden' name='id' value={issue.id} />
-                            <button
+                            <Button
                                 type='submit'
-                                className='px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                                className='px-4 py-2 text-sm font-medium text-white rounded  focus:outline-none focus:ring-2 focus:ring-offset-2 '
                             >
                                 Upvote ({issue.upvotes || 0})
-                            </button>
+                            </Button>
                         </fetcher.Form>
                     </div>
                     <div className='mt-8'>
@@ -231,13 +226,13 @@ export default function IssueDetail() {
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)} // Step 2
                             ></textarea>
-                            <button
+                            <Button
                                 type='submit'
-                                className='mt-2 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
-                                disabled={!commentText.trim()} // Step 3
+                                className='mt-2 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2'
+                                disabled={!commentText.trim()}
                             >
                                 Submit
-                            </button>
+                            </Button>
                         </fetcher.Form>
                     </div>
                 </div>
@@ -246,12 +241,12 @@ export default function IssueDetail() {
                 <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
                     <div className='bg-white p-6 rounded shadow-lg'>
                         <p>{popupMessage}</p>
-                        <button
+                        <Button
                             onClick={() => setPopupMessage(null)}
-                            className='mt-4 px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                            className='mt-4 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
                         >
                             Close
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

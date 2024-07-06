@@ -43,7 +43,7 @@ function AdminCrumb() {
                     <div key={crumb.href}>
                         <BreadcrumbItem>
                             {index === breadcrumbs.length - 1 ? (
-                                <BreadcrumbPage className='text-purple-600'>{crumb.label}</BreadcrumbPage>
+                                <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                             ) : (
                                 <BreadcrumbLink href={crumb.href}>{crumb.label}</BreadcrumbLink>
                             )}

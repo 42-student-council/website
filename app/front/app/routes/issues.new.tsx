@@ -174,12 +174,7 @@ export default function IssuesNew() {
                         submitted which issue.
                     </Info>
 
-                    <Button
-                        type='submit'
-                        variant='destructive'
-                        disabled={!!createIssueFetcher.formData}
-                        className='mt-4'
-                    >
+                    <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
                     </Button>
                     <FormErrorMessage className='mt-1'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>

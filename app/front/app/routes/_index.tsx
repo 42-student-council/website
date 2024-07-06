@@ -31,7 +31,7 @@ export default function Index() {
                     Official Website of the 42 Vienna Student Council
                 </p>
                 <Link to='/issues/new'>
-                    <Button className='bg-purple-600 hover:bg-purple-800'>Have a problem?</Button>
+                    <Button>Have a problem?</Button>
                 </Link>
             </div>
             <div className='flex flex-col md:flex-row md:items-center'>
