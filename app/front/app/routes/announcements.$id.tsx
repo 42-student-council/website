@@ -8,7 +8,6 @@ import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 export async function loader({ params }: LoaderFunctionArgs) {
     try {
         const { id } = params;
-        console.log('Fetching data for announcement ID:', id);
         const API_BASE_URL = process.env.API_BASE_URL;
 
         if (!id) {

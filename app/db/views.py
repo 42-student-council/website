@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core import serializers
 from .models import *
+from .models import *
 from .utils import hash_username
 import json
 from datetime import timedelta
@@ -137,22 +138,25 @@ class IssueUpvoteView(View):
                 )
 
             user, created = User.objects.get_or_create(_hash=hash_username(username))
+            issue_content_type = ContentType.objects.get_for_model(Issue)
 
-            if issue.votes.filter(user=user).exists():
+            if Vote.objects.filter(content_type=issue_content_type, object_id=issue.id, user=user).exists():
                 issue.upvotes -= 1
                 issue.save()
-                issue.votes.filter(user=user).delete()
-                return JsonResponse({"error": "Successfully removed the vote."}, status=200)
+                Vote.objects.filter(content_type=issue_content_type, object_id=issue.id, user=user).delete()
+                return JsonResponse({"success": "Successfully removed the vote.", "upvotes": issue.upvotes}, status=200)
 
-            Vote.objects.create(issue=issue, user=user)
+            Vote.objects.create(content_type=issue_content_type, object_id=issue.id, user=user)
             issue.upvotes += 1
             issue.save()
 
             return JsonResponse({"success": "Issue upvoted successfully", "upvotes": issue.upvotes})
         except Issue.DoesNotExist:
             return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
+            return JsonResponse({"error": f"Issue with ID {issue_id} not found"}, status=404)
         except Exception as e:
             print(e)
+            return JsonResponse({"error": "An unexpected error occurred"}, status=500)
             return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
     def options(self, request, *args, **kwargs):
