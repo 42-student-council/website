@@ -8,24 +8,6 @@ class User(models.Model):
     _hash = models.CharField(max_length=64)
 
 
-class Poll(models.Model):
-    id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
-
-
-class Question(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name="questions")
-    text = models.CharField(max_length=200)
-    allow_multiple_choices = models.BooleanField(default=False)
-
-
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
-    text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-
-
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     text = models.TextField()
@@ -48,18 +30,6 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class Announcement(models.Model):
-    id = models.AutoField(primary_key=True)
-    title = models.TextField()
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    comments = models.ManyToManyField(Comment, related_name="announcements", blank=True)
-    upvotes = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"Announcement #{self.id}"
 
 
 class Vote(models.Model):

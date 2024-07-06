@@ -24,7 +24,7 @@ export function Footer() {
                         target='_blank'
                         className='hover:underline'
                     >
-                        It's open source! <GitHub className='size-5' />
+                        Found a bug? <GitHub className='size-5' />
                     </Link>
                 </div>
             </div>

@@ -20,7 +20,7 @@ function NavigationCard({
                 {...props}
             >
                 <CardContent className='flex flex-col items-center text-center'>
-                    <Icon className='size-16 my-4 text-purple-600' />
+                    <Icon className='size-16 my-4' />
                     <p>{title}</p>
                 </CardContent>
             </Card>
