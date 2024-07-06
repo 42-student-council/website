@@ -105,7 +105,7 @@ export default function Issues() {
     }, [fetcher.state, fetcher.data]);
 
     return (
-        <div class="bg-[url('/img/landing-page.png')]">
+        <div>
             <NavBar></NavBar>
             <div className='flex flex-col sm:gap-4 sm:py-4'>
                 <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
@@ -116,7 +116,7 @@ export default function Issues() {
                                     <Button size='sm' className='h-7 gap-1'>
                                         <PlusCircle className='h-3.5 w-3.5' />
                                         <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                                            I am annoying as well!
+                                            I also have something to say!
                                         </span>
                                     </Button>
                                 </Link>
@@ -126,7 +126,8 @@ export default function Issues() {
                             <Card x-chunk='dashboard-06-chunk-0'>
                                 <CardHeader>
                                     <CardTitle>Issues</CardTitle>
-                                    <CardDescription>This is what students are currently crying about.</CardDescription>
+                                    
+                                    <CardDescription>This is what students are currently talking about.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <Table>
