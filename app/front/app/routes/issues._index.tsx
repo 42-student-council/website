@@ -126,8 +126,10 @@ export default function Issues() {
                             <Card x-chunk='dashboard-06-chunk-0'>
                                 <CardHeader>
                                     <CardTitle>Issues</CardTitle>
-                                    
-                                    <CardDescription>This is what students are currently talking about.</CardDescription>
+
+                                    <CardDescription>
+                                        This is what students are currently talking about.
+                                    </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <Table>

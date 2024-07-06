@@ -38,7 +38,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body className='min-h-screen'>
-           
                 {children}
 
                 <Footer />
