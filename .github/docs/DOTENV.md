@@ -1,6 +1,6 @@
 # .env File
 
-In order to build the website locally, you will need to create a .env file.
+In order to build the website yourself, you will need to create a .env file.
 
 ## What is a .env File?
 
@@ -22,7 +22,7 @@ POSTGRES_PORT=5432                     # Default postgres port.
 
 # These are used for globally configuring your IP adress.
 BASE_URL="http://<IP>:5173"            # Frontend base URL. Set port to 3000 in prod.
-API_BASE_URL="http://<IP>:8000/api"    # Base URL for api calls.
+API_BASE_URL="http://web:8000/api"    # Base URL for api calls.
 
 # This is not needed for building locally.
 # You can set it to an empty string.
@@ -88,4 +88,4 @@ DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
 ```
 
 # REMINDER
-Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉. 
+Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉.
