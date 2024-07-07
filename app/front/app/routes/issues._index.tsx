@@ -38,7 +38,7 @@ export default function Issues() {
 
     return (
         <div>
-            <NavBar></NavBar>
+            <NavBar />
             <div className='flex flex-col sm:gap-4 sm:py-4'>
                 <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
                     <Tabs defaultValue='all'>
@@ -47,9 +47,7 @@ export default function Issues() {
                                 <Link to='/issues/new'>
                                     <Button size='sm' className='h-7 gap-1'>
                                         <PlusCircle className='h-3.5 w-3.5' />
-                                        <span className='sr-only sm:not-sr-only sm:whitespace-nowrap'>
-                                            I also have something to say!
-                                        </span>
+                                        <span className='whitespace-nowrap'>I also have something to say!</span>
                                     </Button>
                                 </Link>
                             </div>
@@ -66,24 +64,27 @@ export default function Issues() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
-                                                <TableHead>Name</TableHead>
+                                                <TableHead>Title</TableHead>
                                                 <TableHead className='hidden md:table-cell'>Upvotes</TableHead>
                                                 <TableHead className='hidden md:table-cell'>Created at</TableHead>
-                                                <TableHead>
-                                                    <span className='sr-only'>Actions</span>
-                                                </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {issues.map((issue) => (
-                                                <TableRow key={issue.id}>
+                                                <TableRow
+                                                    key={issue.id}
+                                                    onClick={() => navigate(`/issues/${issue.id}`)}
+                                                    className='hover:cursor-pointer hover:bg-slate-100'
+                                                >
                                                     <TableCell className='font-medium'>
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
                                                     </TableCell>
-                                                    <TableCell>{issue.upvotes}</TableCell>
+                                                    <TableCell className='hidden md:table-cell'>
+                                                        {issue.upvotes}
+                                                    </TableCell>
 
                                                     <TableCell className='hidden md:table-cell'>
-                                                        {new Date(issue.created_at).toLocaleDateString('en-US', {
+                                                        {new Date(issue.created_at).toLocaleDateString('en-GB', {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric',
@@ -98,7 +99,9 @@ export default function Issues() {
                                 </CardContent>
                                 <CardFooter>
                                     <div className='text-xs text-muted-foreground'>
-                                        Showing <strong>1-10</strong> of <strong>{issues.length}</strong> issues
+                                        {/* Showing <strong>1-10</strong> of <strong>{issues.length}</strong> issues */}
+                                        Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                        {issues.length === 1 ? 'issue' : 'issues'}
                                     </div>
                                 </CardFooter>
                             </Card>
