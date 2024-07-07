@@ -3,8 +3,8 @@ import NavBar from '~/components/NavBar';
 import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Button } from '~/components/ui/button';
-import { Link } from '@remix-run/react';
-import { requireSessionData } from '~/utils/session.server';
+import { Link, useLoaderData } from '@remix-run/react';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [
@@ -14,14 +14,21 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    await requireSessionData(request);
-    return null;
+    const session = await requireSessionData(request);
+    return { session };
 }
 
+type LoaderData = {
+    session: SessionData;
+};
+
 export default function Index() {
+    const data = useLoaderData<LoaderData>();
+
     return (
         <div>
-            <NavBar />
+            <NavBar login={data.session.login} role={data.session.role} />
+
             <div className='flex flex-col items-center mt-80 mb-80'>
                 <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold'>
                     <p>STUDENT</p>

@@ -1,5 +1,4 @@
-import { type Session, createCookieSessionStorage, redirect, createSessionStorage } from '@remix-run/node';
-import { nanoid } from 'nanoid';
+import { type Session, createCookieSessionStorage, redirect } from '@remix-run/node';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -21,7 +20,7 @@ const storage = createCookieSessionStorage({
     },
 });
 
-export async function createSession(data: Omit<SessionData, 'id'>, redirectTo: string) {
+export async function createSession(data: Omit<SessionData, 'id' | 'role'>, redirectTo: string) {
     const session = await storage.getSession();
 
     session.set('accessToken', data.accessToken);
@@ -30,6 +29,7 @@ export async function createSession(data: Omit<SessionData, 'id'>, redirectTo: s
     session.set('login', data.login);
     session.set('createdAt', data.createdAt);
     session.set('imageUrl', data.imageUrl);
+    session.set('role', await getSessionRole(data.login));
 
     return redirect(redirectTo, {
         headers: {
@@ -106,13 +106,23 @@ export async function requireSessionData(
     return data;
 }
 
+async function getSessionRole(login: string): Promise<SessionRole> {
+    if (login === process.env.SUPER_ADMIN) return SessionRole.ADMIN;
+
+    const member = await fetch(`${process.env.API_BASE_URL}/council-members/${login}`);
+    if (!member.ok) {
+        return SessionRole.USER;
+    }
+
+    return SessionRole.ADMIN;
+}
+
+// Don't use session.role since that one can be unreliable, until we change how we handle sessions.
 export async function requireAdmin(request: Request): Promise<SessionData> {
     const session = await requireSessionData(request);
+    const role = await getSessionRole(session.login);
 
-    if (session.login === process.env.SUPER_ADMIN) return session;
-
-    const member = await fetch(`${process.env.API_BASE_URL}/council-members/${session.login}`);
-    if (!member.ok) {
+    if (role !== SessionRole.ADMIN) {
         throw new Response(null, { status: 401, statusText: 'Unauthorized' });
     }
 
@@ -123,7 +133,7 @@ export async function requireAdmin(request: Request): Promise<SessionData> {
 function isSessionData(data: any): data is SessionData {
     return (
         // biome-ignore lint/complexity/useOptionalChain: -
-        data && data.imageUrl && data.login && data.createdAt
+        data && data.imageUrl && data.login && data.createdAt && data.role
     );
 }
 
@@ -135,4 +145,10 @@ export interface SessionData {
     refreshToken: string | null;
     accessTokenExpiresAt: Date | null;
     createdAt: Date;
+    role: SessionRole;
+}
+
+export enum SessionRole {
+    USER = 'USER',
+    ADMIN = 'ADMIN',
 }
