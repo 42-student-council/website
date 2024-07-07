@@ -1,47 +1,11 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { json, useFetcher, useLoaderData, Link, useNavigate } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData, Link } from '@remix-run/react';
 import { requireSessionData } from '~/utils/session.server';
-import {
-    File,
-    Home,
-    LineChart,
-    ListFilter,
-    MoreHorizontal,
-    Package,
-    Package2,
-    PanelLeft,
-    PlusCircle,
-    Search,
-    Settings,
-    ShoppingCart,
-    Users2,
-} from 'lucide-react';
-import { Badge } from '~/components/ui/badge';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Input } from '~/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
+import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 
@@ -56,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const issues: Issue[] = await response.json();
     issues.sort((a, b) => b.upvotes - a.upvotes);
 
-    return { issues };
+    return issues;
 }
 
 type Issue = {
@@ -67,15 +31,10 @@ type Issue = {
     upvotes: number;
 };
 
-type LoaderData = {
-    issues: Issue[];
-    error?: string;
-};
+type LoaderData = Issue[];
 
 export default function Issues() {
-    const { issues, error } = useLoaderData<LoaderData>();
-
-    let navigate = useNavigate();
+    const issues = useLoaderData<LoaderData>();
 
     return (
         <div>
