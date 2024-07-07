@@ -169,7 +169,7 @@ export default function Issues() {
                                                     <TableCell>{issue.upvotes}</TableCell>
 
                                                     <TableCell className='hidden md:table-cell'>
-                                                        {new Date(issue.created_at).toLocaleDateString('en-US', {
+                                                        {new Date(issue.created_at).toLocaleDateString('en-GB', {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric',
