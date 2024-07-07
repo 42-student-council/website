@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { json, useFetcher, useLoaderData, Link } from '@remix-run/react';
+import { json, useFetcher, useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { useEffect, useState } from 'react';
 import { requireSessionData } from '~/utils/session.server';
 import {
@@ -119,6 +119,8 @@ export default function Issues() {
         }
     }, [fetcher.state, fetcher.data]);
 
+    let navigate = useNavigate();
+
     return (
         <div>
             <NavBar></NavBar>
@@ -152,14 +154,15 @@ export default function Issues() {
                                                 <TableHead>Name</TableHead>
                                                 <TableHead className='hidden md:table-cell'>Upvotes</TableHead>
                                                 <TableHead className='hidden md:table-cell'>Created at</TableHead>
-                                                <TableHead>
-                                                    <span className='sr-only'>Actions</span>
-                                                </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {issues.map((issue) => (
-                                                <TableRow key={issue.id}>
+                                                <TableRow
+                                                    key={issue.id}
+                                                    onClick={() => navigate(`/issues/${issue.id}`)}
+                                                    className='hover:cursor-pointer hover:bg-slate-100'
+                                                >
                                                     <TableCell className='font-medium'>
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
                                                     </TableCell>
