@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
+import { Warning } from '~/components/alert/Warning';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     await requireSessionData(request);
@@ -31,35 +32,6 @@ type Issue = {
 };
 
 type LoaderData = Issue[];
-
-export async function action({ request }: ActionFunctionArgs) {
-    await requireSessionData(request);
-
-    const API_BASE_URL = process.env.API_BASE_URL;
-
-    const form = await request.formData();
-    const issueId = form.get('issueId');
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/issues/${issueId}/upvote/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (!response.ok) {
-            if (response.status === 400) {
-                const result = await response.json();
-                return json({ message: response.body }, { status: 400 });
-            }
-            throw new Error('Failed to upvote issue');
-        }
-        const result = await response.json();
-        return json(result);
-    } catch (error) {
-        return json({ error: 'Failed to upvote issue' });
-    }
-}
 
 export default function Issues() {
     const issues = useLoaderData<LoaderData>();
@@ -133,6 +105,26 @@ export default function Issues() {
                         </TabsContent>
                     </Tabs>
                 </main>
+            </div>
+        </div>
+    );
+}
+
+export function ErrorBoundary() {
+    return (
+        <div>
+            <NavBar />
+            <div className='mt-4 mx-4'>
+                <Warning title='Error'>
+                    Something went wrong whilst fetching the issues. Please try again later.
+                    <p className='mt-4'>
+                        If this issue persists, please open an issue on our{' '}
+                        <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
+                            GitHub Repo
+                        </Link>
+                        .
+                    </p>
+                </Warning>
             </div>
         </div>
     );
