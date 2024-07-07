@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { HTMLAttributes, useState } from 'react';
 import { Button } from './ui/button';
 import {
     Sheet,
@@ -10,9 +10,19 @@ import {
     SheetTitle,
     SheetTrigger,
 } from './ui/sheet';
-import { MenuIcon, Home, Info, TriangleAlert, MessageCircle } from 'lucide-react';
-import { NavLink } from '@remix-run/react';
+import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings } from 'lucide-react';
+import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { Avatar } from './ui/avatar';
+import { ScrollArea } from './ui/scroll-area';
+import { ScrollAreaCorner } from '@radix-ui/react-scroll-area';
 
 const navItems = [
     {
@@ -37,27 +47,66 @@ const navItems = [
     },
 ];
 
-function MainNav() {
+function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLAttributes<HTMLDivElement>) {
+    const location = useLocation();
+
     return (
-        <div className='mr-4 hidden gap-2 md:flex'>
-            {navItems.map((item, index) => (
-                <NavLink
-                    key={item.href}
-                    to={item.href}
-                    className={({ isActive, isPending }) => {
-                        return classNames('text-primary underline-offset-4 hover:underline', 'px-2 py-2', {
-                            ' underline font-bold': isActive,
-                        });
-                    }}
-                >
-                    {item.label}
-                </NavLink>
-            ))}
+        <div className='font-bold text-slate-500'>
+            <DropdownMenu>
+                <DropdownMenuTrigger className='flex flex-row items-center font-bold text-slate-600 hover:text-slate-800 transition-colors duration-300'>
+                    <span className='mr-2'>{login}</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    {role === 'ADMIN' && (
+                        <>
+                            <Link to='/admin'>
+                                <DropdownMenuItem className='font-bold hover:underline hover:cursor-pointer'>
+                                    <Settings className='size-5 mr-2' /> Admin
+                                </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuSeparator />
+                        </>
+                    )}
+
+                    <DropdownMenuItem className='text-red-500 font-bold focus:bg-red-100 focus:text-red-600'>
+                        <Form method='post' action='/sign-out'>
+                            <input type='hidden' name='_action' value='sign-out' />
+                            <input type='hidden' name='redirectTo' value={location.pathname} />
+                            <button type='submit'>
+                                <DoorOpen className='size-5 mr-2' /> Sign Out
+                            </button>
+                        </Form>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }
 
-function MobileNav() {
+function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
+    return (
+        <div className='hidden md:flex flex-row justify-between w-full items-center'>
+            <div className='mr-4 gap-2 flex'>
+                {navItems.map((item, index) => (
+                    <NavLink
+                        key={item.href}
+                        to={item.href}
+                        className={({ isActive, isPending }) => {
+                            return classNames('text-primary underline-offset-4 hover:underline', 'px-2 py-2', {
+                                ' underline font-bold': isActive,
+                            });
+                        }}
+                    >
+                        {item.label}
+                    </NavLink>
+                ))}
+            </div>
+            <User login={login} role={role} />
+        </div>
+    );
+}
+
+function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -69,41 +118,47 @@ function MobileNav() {
                             <MenuIcon />
                         </Button>
                     </SheetTrigger>
-                    <div className='font-bold uppercase'>Student Council</div>
+                    <User login={login} role={role} />
                 </div>
 
                 <SheetContent side='left'>
-                    <div className='flex flex-col items-start'>
-                        <div className='mb-6 font-bold uppercase text-gray-600'>Student Council</div>
-                        {navItems.map((item, index) => (
-                            <NavLink
-                                key={index}
-                                to={item.href}
-                                className={({ isActive, isPending }) => {
-                                    return classNames('mb-4 flex flex-row items-center', {
-                                        'font-bold': isActive,
-                                    });
-                                }}
-                                onClick={() => {
-                                    setOpen(false);
-                                }}
-                            >
-                                <item.icon className='size-5 mr-4' /> <p>{item.label}</p>
-                            </NavLink>
-                        ))}
-                    </div>
+                    <ScrollArea className='w-full h-full'>
+                        <div className='flex flex-col items-start'>
+                            <div className='mb-6 font-bold uppercase text-gray-600'>Student Council</div>
+                            <div className='flex flex-col justify-between	'>
+                                <div>
+                                    {navItems.map((item, index) => (
+                                        <NavLink
+                                            key={index}
+                                            to={item.href}
+                                            className={({ isActive, isPending }) => {
+                                                return classNames('mb-4 flex flex-row items-center', {
+                                                    'font-bold': isActive,
+                                                });
+                                            }}
+                                            onClick={() => {
+                                                setOpen(false);
+                                            }}
+                                        >
+                                            <item.icon className='size-5 mr-4' /> <p>{item.label}</p>
+                                        </NavLink>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </ScrollArea>
                 </SheetContent>
             </Sheet>
         </div>
     );
 }
 
-export default function NavBar() {
+export default function NavBar({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
         <header className='w-full border-b'>
             <div className='flex h-14 items-center px-4'>
-                <MainNav />
-                <MobileNav />
+                <MainNav login={login} role={role} />
+                <MobileNav login={login} role={role} />
             </div>
         </header>
     );

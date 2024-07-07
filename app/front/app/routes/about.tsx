@@ -1,11 +1,11 @@
-import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction, Session } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
-import { requireSessionData } from '~/utils/session.server';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'About the Student Council' }, { name: 'description', content: 'Who is the student council?' }];
@@ -21,7 +21,7 @@ function shuffle(array: any[]) {
 
 // TODO: Get dynamically from backend
 export async function loader({ request }: LoaderFunctionArgs) {
-    await requireSessionData(request);
+    const session = await requireSessionData(request);
 
     const res = await fetch(`${process.env.API_BASE_URL}/council-members`);
 
@@ -29,33 +29,36 @@ export async function loader({ request }: LoaderFunctionArgs) {
         throw new Error('Failed to fetch council members');
     }
 
-    const data: LoaderData = await res.json();
+    const data: LoaderData['councilMembers'] = await res.json();
 
     shuffle(data);
 
-    return data;
+    return { councilMembers: data, session } satisfies LoaderData;
 }
 
 type LoaderData = {
-    first_name: string;
-    last_name: string;
-    login: string;
-    email: string;
-    profile_picture: string;
-}[];
+    councilMembers: {
+        first_name: string;
+        last_name: string;
+        login: string;
+        email: string;
+        profile_picture: string;
+    }[];
+    session: SessionData;
+};
 
 export default function About() {
     const data = useLoaderData<LoaderData>();
 
     return (
         <div>
-            <NavBar />
+            <NavBar login={data.session.login} role={data.session.role} />
             <div className='mb-8 md:mb-16 md:mt-16 flex flex-col items-center'>
                 <H1 className='mt-4 mb-2 text-center'>Student Council</H1>
                 <p className='mx-4 text-lg'>(In random order.)</p>
             </div>
             <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
-                {data.map((member) => (
+                {data.councilMembers.map((member) => (
                     <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
                         <Avatar className='rounded-xl size-60'>
                             <AvatarImage src={member.profile_picture} className='object-cover' />
