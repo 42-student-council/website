@@ -1,66 +1,25 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { json, useFetcher, useLoaderData, Link } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData, Link } from '@remix-run/react';
 import { requireSessionData } from '~/utils/session.server';
-import {
-    File,
-    Home,
-    LineChart,
-    ListFilter,
-    MoreHorizontal,
-    Package,
-    Package2,
-    PanelLeft,
-    PlusCircle,
-    Search,
-    Settings,
-    ShoppingCart,
-    Users2,
-} from 'lucide-react';
-import { Badge } from '~/components/ui/badge';
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
-import { Input } from '~/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
+import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     await requireSessionData(request);
 
     const API_BASE_URL = process.env.API_BASE_URL;
-    try {
-        const response = await fetch(`${API_BASE_URL}/issues/`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch issues');
-        }
-        const issues: Issue[] = await response.json();
-        issues.sort((a, b) => b.upvotes - a.upvotes);
-
-        return { issues };
-    } catch (error) {
-        console.error('Error fetching issues:', error);
-        return { issues: [], error: 'Failed to load issues' };
+    const response = await fetch(`${API_BASE_URL}/issues/`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch issues');
     }
+    const issues: Issue[] = await response.json();
+    issues.sort((a, b) => b.upvotes - a.upvotes);
+
+    return issues;
 }
 
 type Issue = {
@@ -71,10 +30,7 @@ type Issue = {
     upvotes: number;
 };
 
-type LoaderData = {
-    issues: Issue[];
-    error?: string;
-};
+type LoaderData = Issue[];
 
 export async function action({ request }: ActionFunctionArgs) {
     await requireSessionData(request);
@@ -106,18 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Issues() {
-    const { issues, error } = useLoaderData<LoaderData>();
-    const fetcher = useFetcher();
-    const [popupMessage, setPopupMessage] = useState(null);
-
-    useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
-            setPopupMessage(fetcher.data.message);
-        }
-        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.error) {
-            setPopupMessage(fetcher.data.error);
-        }
-    }, [fetcher.state, fetcher.data]);
+    const issues = useLoaderData<LoaderData>();
 
     return (
         <div>
