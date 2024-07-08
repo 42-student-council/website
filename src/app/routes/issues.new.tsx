@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useNavigate, Link } from '@remix-run/react';
+import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -15,7 +15,7 @@ import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
-import { requireSessionData } from '~/utils/session.server';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 export const meta: MetaFunction = () => {
@@ -42,9 +42,9 @@ const createIssueSchema = z.object({
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    await requireSessionData(request);
+    const session = await requireSessionData(request);
 
-    return null;
+    return { session };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -78,6 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
+    const data = useLoaderData<SessionData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;
@@ -112,7 +113,7 @@ export default function IssuesNew() {
 
     return (
         <div>
-            <NavBar />
+            <NavBar login={data.login} role={data.role} />
             <div className='md:flex md:justify-center'>
                 <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
