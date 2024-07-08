@@ -47,18 +47,24 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 export default function Issues() {
     const { issues: initialIssues, session } = useLoaderData<LoaderData>();
     const [issues, setIssues] = useState<Issue[]>(initialIssues);
-    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'createdAt', direction: 'asc' });
+    const [sortConfig, setSortConfig] = useState(() => {
+        const savedSortConfig = localStorage.getItem('sortConfig');
+        return savedSortConfig ? JSON.parse(savedSortConfig) : { key: 'createdAt', direction: 'asc' };
+    });
 
     const navigate = useNavigate();
 
-    const sortIssues = (key: string) => {
-        let direction: 'asc' | 'desc';
-        if (sortConfig.key === key) {
+    const sortIssues = (key: string, initialize = false) => {
+        let direction = 'asc';
+        if (!initialize && sortConfig.key === key) {
             direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
         } else {
-            direction = 'desc'; // Default direction for the first sort is descending
+            direction = sortConfig.direction;
         }
-        setSortConfig({ key, direction });
+
+        const newSortConfig = { key, direction };
+        setSortConfig(newSortConfig);
+        localStorage.setItem('sortConfig', JSON.stringify(newSortConfig));
 
         const sortedIssues = [...issues].sort((a, b) => {
             if (key === 'votes') {
@@ -74,7 +80,10 @@ export default function Issues() {
     };
 
     useEffect(() => {
-        sortIssues('createdAt');
+        const savedSortConfig = JSON.parse(localStorage.getItem('sortConfig') || '{}');
+        if (savedSortConfig.key) {
+            sortIssues(savedSortConfig.key, true);
+        }
     }, []);
 
     const getSortSymbol = (key: string) => {
