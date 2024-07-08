@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
+import { useState, useEffect } from 'react';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
@@ -18,14 +19,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
         throw new Error('Failed to fetch issues');
     }
     const issues: Issue[] = await response.json();
-    issues.sort((a, b) => {
-        const upvotesDifference = b.upvotes - a.upvotes;
-        if (upvotesDifference !== 0) {
-            return upvotesDifference;
-        } else {
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        }
-    });
+
+    issues.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     return { issues, session } satisfies LoaderData;
 }
@@ -41,9 +36,44 @@ type Issue = {
 type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues: initialIssues, session } = useLoaderData<LoaderData>();
+    const [issues, setIssues] = useState<Issue[]>(initialIssues);
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'created_at', direction: 'asc' });
 
     const navigate = useNavigate();
+
+    const sortIssues = (key: string) => {
+        let direction: 'asc' | 'desc';
+        if (sortConfig.key === key) {
+            direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            direction = 'desc'; // Default direction for the first sort is descending
+        }
+        setSortConfig({ key, direction });
+
+        const sortedIssues = [...issues].sort((a, b) => {
+            if (key === 'upvotes') {
+                return direction === 'asc' ? a.upvotes - b.upvotes : b.upvotes - a.upvotes;
+            } else {
+                return direction === 'asc'
+                    ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                    : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            }
+        });
+
+        setIssues(sortedIssues);
+    };
+
+    useEffect(() => {
+        sortIssues('created_at');
+    }, []);
+
+    const getSortSymbol = (key: string) => {
+        if (sortConfig.key !== key) {
+            return '';
+        }
+        return sortConfig.direction === 'asc' ? '▲' : '▼';
+    };
 
     return (
         <div>
@@ -74,8 +104,24 @@ export default function Issues() {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Title</TableHead>
-                                                <TableHead className='hidden md:table-cell'>Upvotes</TableHead>
-                                                <TableHead className='hidden md:table-cell'>Created at</TableHead>
+                                                <TableHead className='hidden md:table-cell'>
+                                                    <button
+                                                        onClick={() => sortIssues('upvotes')}
+                                                        className='cursor-pointer flex items-center gap-1'
+                                                        title='Sort by upvotes'
+                                                    >
+                                                        Upvotes <span className='inline-block w-3 text-center'>{getSortSymbol('upvotes')}</span>
+                                                    </button>
+                                                </TableHead>
+                                                <TableHead className='hidden md:table-cell'>
+                                                    <button
+                                                        onClick={() => sortIssues('created_at')}
+                                                        className='cursor-pointer flex items-center gap-1'
+                                                        title='Sort by creation date'
+                                                    >
+                                                        Created at <span className='inline-block w-3 text-center'>{getSortSymbol('created_at')}</span>
+                                                    </button>
+                                                </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
