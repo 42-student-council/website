@@ -115,7 +115,7 @@ export default function IssuesNew() {
         <div>
             <NavBar />
             <div className='md:flex md:justify-center'>
-                <H1 className='m-4 md:w-3/5'>Create A Public Issue</H1>
+                <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
             <Separator />
             <div className='md:flex md:justify-center'>

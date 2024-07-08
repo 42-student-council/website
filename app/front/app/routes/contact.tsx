@@ -119,7 +119,7 @@ export default function Contact() {
         <div>
             <NavBar login={data.login} role={data.role} />
             <div className='md:flex md:justify-center'>
-                <H1 className='m-4 md:w-3/5'>Contact The Student Council</H1>
+                <H1 className='m-4 md:w-3/5'>Contact the Student Council</H1>
             </div>
             <Separator />
             <div className='md:flex md:justify-center'>
