@@ -26,11 +26,11 @@ export default function Index() {
     const data = useLoaderData<LoaderData>();
 
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <NavBar login={data.session.login} role={data.session.role} />
 
-            <div className='flex flex-col items-center mt-32'>
-                <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold'>
+            <div className='flex flex-col items-center justify-center flex-1'>
+                <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold text-center'>
                     <p>STUDENT</p>
                     <p>COUNCIL</p>
                 </div>
