@@ -123,18 +123,17 @@ export default function Contact() {
             <Separator />
             <div className='md:flex md:justify-center'>
                 <p className='mt-4 mx-4 md:w-3/5'>
-                    Do you have an issue you would like to stay private? Contact us directly instead. We will try to
-                    help you as soon as possible.
+                    Do you have an issue or suggestion you would like to stay private? Use this contact form.
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-8 mb-4'>
                 <contactFetcher.Form className='md:w-3/5' method='post'>
                     <div className='mt-4'>
                         <Label htmlFor='message' className='text-lg'>
-                            What do you want to tell us?
+                            What would you like to tell us?
                         </Label>
                         <Textarea
-                            placeholder='Please describe your issue here. Markdown is supported.'
+                            placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
                             name='message'
                             className={classNames('h-48', {
                                 'border-red-600': !!contactFetcher.data?.errors?.message,
@@ -188,10 +187,8 @@ export default function Contact() {
                     )}
 
                     <Warning title='Important' className='mt-4 w-auto'>
-                        We will store your data so we can contact you. If you want to raise concerns anonymously, please
-                        open an issue.
-                        <br />
                         Contacting is <span className='font-bold uppercase'>not anonymous</span>.
+                        We will store your data so we can get back to you.
                     </Warning>
 
                     <Button
