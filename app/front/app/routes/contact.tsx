@@ -20,7 +20,7 @@ import { SessionData, requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 const createIssueSchema = z.object({
-    contactWay: z.enum(['discord', 'email']),
+    contactWay: z.enum(['discord', 'email', 'nothing']),
     contactDetail: z.optional(z.string().email().max(255, 'E-Mail must be at most 255 characters long.')),
     message: z
         .string()
@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
                             fields: [
                                 {
                                     name: 'Contact Way',
-                                    value: `${data.contactWay === 'discord' ? 'Discord' : `E-Mail: ${data.contactDetail}`}`,
+                                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `E-Mail: ${data.contactDetail}` : 'No need to contact the student.'}`,
                                 },
                             ],
                             title: 'New Contact Request',
@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 );
             }
 
-            return json({ success: true });
+            return json({ success: true, contactWay: data.contactWay });
         },
     );
 }
@@ -90,6 +90,7 @@ export default function Contact() {
     const contactFetcher = useFetcher<{
         errors?: { contactWay?: string; contactDetail?: string; message?: string; discordError?: string };
         success?: boolean;
+        contactWay?: string;
     }>();
 
     const [message, setMessage] = useState('');
@@ -148,43 +149,57 @@ export default function Contact() {
                         <FormErrorMessage className='mt-1'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
 
-                    <RadioGroup
-                        defaultValue={contactOption}
-                        name='contactWay'
-                        onValueChange={setContactOption}
-                        className='mt-4'
-                    >
-                        <div className='flex items-center space-x-2'>
-                            <RadioGroupItem value='discord' />
-                            <Label htmlFor='discord'>Discord</Label>
-                        </div>
-                        <div className='flex items-center space-x-2'>
-                            <RadioGroupItem value='email' />
-                            <Label htmlFor='email'>E-Mail</Label>
-                        </div>
-                    </RadioGroup>
+                    <div className='mt-4'>
+                        <Label htmlFor='message' className='text-lg'>
+                            How should we reach out to you?
+                        </Label>
 
-                    {contactOption === 'email' && (
-                        <div className='mt-2'>
-                            <Label htmlFor='how-to-contact'>We need your info in order to get back to you:</Label>
-                            <Input
-                                type='email'
-                                name='contactDetail'
-                                required
-                                autoComplete='on'
-                                maxLength={255}
-                                placeholder='Please enter your E-Mail'
-                                value={contactDetail}
-                                onChange={(e) => setContactDetail(e.target.value)}
-                                className={classNames({
-                                    'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
-                                })}
-                            />
-                            <FormErrorMessage className='mt-1'>
-                                {contactFetcher.data?.errors?.contactDetail}
-                            </FormErrorMessage>
-                        </div>
-                    )}
+                        <RadioGroup
+                            defaultValue={contactOption}
+                            name='contactWay'
+                            onValueChange={setContactOption}
+                            className='pt-1'
+                        >
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem value='discord' id='discord' />
+                                <Label htmlFor='discord'>Discord</Label>
+                            </div>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem value='email' id='email' />
+                                <Label htmlFor='email'>E-Mail</Label>
+                            </div>
+                            <div className='flex items-center space-x-2'>
+                                <RadioGroupItem value='nothing' id='nothing' />
+                                <Label htmlFor='nothing'>No need to reach out to me</Label>
+                            </div>
+
+                        </RadioGroup>
+
+                        {contactOption === 'email' && (
+                            <div className='mt-2'>
+                                <Label htmlFor='how-to-contact'>We need your info in order to get back to you:</Label>
+                                <Input
+                                    type='email'
+                                    name='contactDetail'
+                                    required
+                                    autoComplete='on'
+                                    maxLength={255}
+                                    placeholder='Please enter your E-Mail'
+                                    value={contactDetail}
+                                    onChange={(e) => setContactDetail(e.target.value)}
+                                    className={classNames({
+                                        'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
+                                    })}
+                                />
+                                <FormErrorMessage className='mt-1'>
+                                    {contactFetcher.data?.errors?.contactDetail}
+                                </FormErrorMessage>
+                            </div>
+                        )}
+
+                    </div>
+
+
 
                     <Warning title='Important' className='mt-4 w-auto'>
                         Contacting is <span className='font-bold uppercase'>not anonymous</span>.
@@ -202,7 +217,7 @@ export default function Contact() {
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
                     {contactFetcher.data?.success && (
                         <p className='text-green-600 text-xs mt-1'>
-                            We have received your message, we will get back to you soon!
+                            {contactFetcher.data?.contactWay !== 'nothing' ? "We have received your message, we will get back to you soon!" : "We have received your message." }
                         </p>
                     )}
                 </contactFetcher.Form>
