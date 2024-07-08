@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, MetaFunction, Session } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
+import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
@@ -53,9 +54,23 @@ export default function About() {
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
-            <div className='mb-8 md:mb-16 md:mt-16 flex flex-col items-center'>
-                <H1 className='mt-4 mb-2 text-center'>Student Council</H1>
-                <p className='mx-4 text-lg'>(In random order.)</p>
+            <div className='mb-8 mb-8 md:mt-16 flex flex-col items-center'>
+                <div className='flex flex-col md:flex-row md:items-center justify-center'>
+                    <div className='mx-4'>
+                        <div className='mb-4'>
+                            <H1 className='mb-8 text-center'>What is the Student Council?</H1>
+                            <p className='text-xl text-center'>
+                                We are students who have been elected by you and your peers.
+                                <br />
+                                We represent the student body
+                                in the school's decision making process.
+                                <br />
+                                This platform allows you to anonymously share
+                                thoughts, ideas, and concerns with the community.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
                 {data.councilMembers.map((member) => (
@@ -83,7 +98,7 @@ export default function About() {
                                         {member.login}
                                     </Link>
                                 </Button>
-                            </p> 
+                            </p>
                         </div> */}
                     </div>
                 ))}
