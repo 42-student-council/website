@@ -37,8 +37,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Meta />
                 <Links />
             </head>
-            <body className='min-h-screen'>
-                {children}
+            <body>
+                <div className='min-h-screen'>{children}</div>
 
                 <Footer />
                 <ScrollRestoration />
