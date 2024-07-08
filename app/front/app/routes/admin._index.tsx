@@ -32,7 +32,7 @@ export default function AdminIndex() {
     const pages = [{ title: 'Council Members', to: '/admin/council-members', icon: GraduationCap }];
 
     return (
-        <div className='flex flex-row flex-wrap justify-center min-h-screen'>
+        <div className='flex flex-row flex-wrap justify-center'>
             {pages.map((page) => (
                 <NavigationCard key={page.title} {...page} />
             ))}

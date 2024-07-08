@@ -116,7 +116,7 @@ export default function Contact() {
     }, [message]);
 
     return (
-        <div className="min-h-screen">
+        <div>
             <NavBar login={data.login} role={data.role} />
             <div className='md:flex md:justify-center'>
                 <H1 className='m-4 md:w-3/5'>Contact the Student Council</H1>

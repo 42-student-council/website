@@ -112,7 +112,7 @@ export default function IssuesNew() {
     }, [description]);
 
     return (
-        <div className="min-h-screen">
+        <div>
             <NavBar />
             <div className='md:flex md:justify-center'>
                 <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>

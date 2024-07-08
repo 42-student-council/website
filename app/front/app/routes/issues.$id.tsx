@@ -164,7 +164,7 @@ export default function IssueDetail() {
     }
 
     return (
-        <div className="min-h-screen">
+        <div>
             <NavBar />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
