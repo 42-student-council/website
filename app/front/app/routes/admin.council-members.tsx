@@ -152,7 +152,7 @@ export default function AdminCouncilMembers() {
     const data = useLoaderData<LoaderData>();
 
     return (
-        <div className='flex flex-col items-center'>
+        <div className='flex flex-col items-center min-h-screen'>
             <div className='md:size-6/12'>
                 <div className='flex flex-col m-4'>
                     <H3 className='mb-4'>Add Council Member</H3>
