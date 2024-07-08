@@ -54,7 +54,7 @@ export default function About() {
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
-            <div className='mb-8 mb-8 md:mt-16 flex flex-col items-center'>
+            <div className='mb-8 mt-8 md:mt-16 flex flex-col items-center'>
                 <div className='flex flex-col md:flex-row md:items-center justify-center'>
                     <div className='mx-4'>
                         <div className='mb-4'>
