@@ -26,11 +26,11 @@ export default function Index() {
     const data = useLoaderData<LoaderData>();
 
     return (
-        <div>
+        <div className='flex flex-col min-h-screen'>
             <NavBar login={data.session.login} role={data.session.role} />
 
-            <div className='flex flex-col items-center mt-80 mb-80'>
-                <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold'>
+            <div className='flex flex-col items-center justify-center flex-1'>
+                <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold text-center'>
                     <p>STUDENT</p>
                     <p>COUNCIL</p>
                 </div>
@@ -40,39 +40,6 @@ export default function Index() {
                 <Link to='/issues/new'>
                     <Button>Have a problem?</Button>
                 </Link>
-            </div>
-            <div className='flex flex-col md:flex-row md:items-center'>
-                <img
-                    src='/img/landing-page.png'
-                    alt='Landing Page'
-                    className='mx-4 mb-4 rounded md:size-6/12 shadow-md md:shadow-2xl'
-                />
-                <div className='mx-4'>
-                    <div className='mb-4'>
-                        <H2 className='mb-2'>What is the Student Council?</H2>
-                        <p>
-                            We are students who have been elected by you and your peers. We represent the student body
-                            in the school's decision making process. This platform allows you to anonymously share
-                            thoughts, ideas, and concerns with the community. While your submissions remain anonymous to
-                            the public, the student council members will know who submitted what, to ensure accurate and
-                            effective representation.
-                        </p>
-                    </div>
-                    <div>
-                        <H3>Why?</H3>
-                        <ul className='ml-4'>
-                            <li>
-                                Because we want <span className='font-bold'>everyone to be heard</span>.
-                            </li>
-                            <li>
-                                Because we want <span className='font-bold'>transparent communication</span>.
-                            </li>
-                            <li>
-                                Because we want <span className='font-bold'>to make a difference</span>.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     );

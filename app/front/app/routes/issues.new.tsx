@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useNavigate } from '@remix-run/react';
+import { json, useFetcher, useNavigate, Link } from '@remix-run/react';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -115,14 +115,18 @@ export default function IssuesNew() {
         <div>
             <NavBar />
             <div className='md:flex md:justify-center'>
-                <H1 className='m-4 md:w-3/5'>Create A New Issue</H1>
+                <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
             <Separator />
             <div className='md:flex md:justify-center'>
                 <p className='mt-4 mx-4 md:w-3/5'>
-                    Issues are <span className='font-bold'>the</span> way to discuss with the community. While issues
-                    and their comments remain anonym to the public, the student council members will know who submitted
-                    what, to ensure accurate and effective representation.
+                    Open an anonymous issue to discuss what's important to you with the community.
+                    <br />
+                    If you would like to share your issue with the student council members only, please go to the{' '}
+                    <Link to='/contact' className='underline'>
+                        contact form
+                    </Link>
+                    .
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-8'>
@@ -148,7 +152,8 @@ export default function IssuesNew() {
                             Issue Description
                         </Label>
                         <Textarea
-                            placeholder="Start explaining your issue here... (Currently we don't support markdown, but we will in the future.)"
+                            placeholder="Please describe your issue or suggestion here...
+(Currently we don't support markdown for public issues, but we will in the future.)"
                             name='description'
                             className={classNames('h-48', {
                                 'border-red-600': !!createIssueFetcher.data?.errors?.description,
@@ -167,11 +172,11 @@ export default function IssuesNew() {
 
                     <Info className='mt-4 w-auto'>
                         <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
-                        submittng them.
+                        submitting them.
                         <div className='mb-2' />
                         Issues are anonymous to the public, this means students won't know who submitted which issue.
-                        But in order to ensure accurate and effective representation the council members know who
-                        submitted which issue.
+                        <br />
+                        However, the student council members can check the author to prevent spam.
                     </Info>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
