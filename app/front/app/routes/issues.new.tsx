@@ -122,7 +122,11 @@ export default function IssuesNew() {
                 <p className='mt-4 mx-4 md:w-3/5'>
                     Open an anonymous issue to discuss what's important to you with the community.
                     <br />
-                    If you would like to share your issue with the student council members only, please go to the <Link to='/contact' className='underline'>contact form</Link>.
+                    If you would like to share your issue with the student council members only, please go to the{' '}
+                    <Link to='/contact' className='underline'>
+                        contact form
+                    </Link>
+                    .
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-8'>

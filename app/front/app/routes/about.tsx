@@ -62,11 +62,10 @@ export default function About() {
                             <p className='text-xl text-center'>
                                 We are students who have been elected by you and your peers.
                                 <br />
-                                We represent the student body
-                                in the school's decision making process.
+                                We represent the student body in the school's decision making process.
                                 <br />
-                                This platform allows you to anonymously share
-                                thoughts, ideas, and concerns with the community.
+                                This platform allows you to anonymously share thoughts, ideas, and concerns with the
+                                community.
                             </p>
                         </div>
                     </div>

@@ -172,7 +172,6 @@ export default function Contact() {
                                 <RadioGroupItem value='nothing' id='nothing' />
                                 <Label htmlFor='nothing'>No follow-up needed</Label>
                             </div>
-
                         </RadioGroup>
 
                         {contactOption === 'email' && (
@@ -196,14 +195,11 @@ export default function Contact() {
                                 </FormErrorMessage>
                             </div>
                         )}
-
                     </div>
 
-
-
                     <Warning title='Important' className='mt-4 w-auto'>
-                        Contacting is <span className='font-bold uppercase'>not anonymous</span>.
-                        We will store your data so we can get back to you.
+                        Contacting is <span className='font-bold uppercase'>not anonymous</span>. We will store your
+                        data so we can get back to you.
                     </Warning>
 
                     <Button
@@ -217,7 +213,9 @@ export default function Contact() {
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
                     {contactFetcher.data?.success && (
                         <p className='text-green-600 text-xs mt-1'>
-                            {contactFetcher.data?.contactWay !== 'nothing' ? "We have received your message, we will get back to you soon!" : "We have received your message." }
+                            {contactFetcher.data?.contactWay !== 'nothing'
+                                ? 'We have received your message, we will get back to you soon!'
+                                : 'We have received your message.'}
                         </p>
                     )}
                 </contactFetcher.Form>
