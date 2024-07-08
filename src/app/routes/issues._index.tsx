@@ -26,7 +26,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
             },
         },
     });
-    issues.sort((a, b) => b._count.votes - a._count.votes);
+    issues.sort((a, b) => {
+        const upvotesDifference = b._count.votes - a._count.votes;
+        if (upvotesDifference !== 0) {
+            return upvotesDifference;
+        } else {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+    });
 
     return { issues, session } satisfies LoaderData;
 }
