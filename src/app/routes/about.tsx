@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { LoaderFunctionArgs, MetaFunction, Session } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
@@ -6,6 +7,7 @@ import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
+import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
@@ -24,27 +26,15 @@ function shuffle(array: any[]) {
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
-    const res = await fetch(`${process.env.API_BASE_URL}/council-members`);
+    const members = await db.councilMember.findMany();
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch council members');
-    }
+    shuffle(members);
 
-    const data: LoaderData['councilMembers'] = await res.json();
-
-    shuffle(data);
-
-    return { councilMembers: data, session } satisfies LoaderData;
+    return { councilMembers: members, session } satisfies LoaderData;
 }
 
 type LoaderData = {
-    councilMembers: {
-        first_name: string;
-        last_name: string;
-        login: string;
-        email: string;
-        profile_picture: string;
-    }[];
+    councilMembers: Prisma.CouncilMemberGetPayload<{}>[];
     session: SessionData;
 };
 
@@ -75,12 +65,12 @@ export default function About() {
                 {data.councilMembers.map((member) => (
                     <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
                         <Avatar className='rounded-xl size-60'>
-                            <AvatarImage src={member.profile_picture} className='object-cover' />
-                            <AvatarFallback>{member.first_name.slice(0, 2)}</AvatarFallback>
+                            <AvatarImage src={member.profilePictureUrl} className='object-cover' />
+                            <AvatarFallback>{member.firstName.slice(0, 2)}</AvatarFallback>
                         </Avatar>
 
                         <H3 className='mt-4'>
-                            {member.first_name} {member.last_name}
+                            {member.firstName} {member.lastName}
                         </H3>
 
                         {/* <div className='mt-4'>

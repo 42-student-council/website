@@ -5,60 +5,61 @@ import React, { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
+import { db } from '~/utils/db.server';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-type Issue = {
-    id: number;
-    title: string;
-    description: string;
-    upvotes: number;
-};
-
-type Comment = {
-    id: number;
-    text: number;
-    issueId: number;
-    created_at: string;
-};
+const rateLimiter = new RateLimiterMemory({
+    points: 5,
+    duration: 60,
+});
 
 type LoaderData = {
-    issue: Issue;
-    comments: Comment[];
-};
-
-type FetcherData = {
-    message?: string;
+    comments: {
+        createdAt: Date;
+        id: number;
+        text: string;
+    }[];
+    createdAt: Date;
+    description: string;
+    id: number;
+    title: string;
+    _count: { votes: number };
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     try {
         const { id } = params;
-        const API_BASE_URL = process.env.API_BASE_URL;
 
         if (!id) {
             throw new Error('Issue ID is required');
         }
 
-        const [issueResponse, commentsResponse] = await Promise.all([
-            fetch(`${API_BASE_URL}/issues/${id}`),
-            fetch(`${API_BASE_URL}/comments/issue/${id}`),
-        ]);
+        const issue = await db.issue.findUnique({
+            where: { id: Number(id) },
+            select: {
+                createdAt: true,
+                description: true,
+                id: true,
+                title: true,
+                _count: {
+                    select: { votes: true },
+                },
 
-        if (!issueResponse.ok) {
-            throw new Error('Failed to fetch issue');
+                comments: {
+                    select: {
+                        id: true,
+                        text: true,
+                        createdAt: true,
+                    },
+                },
+            },
+        });
+
+        if (!issue) {
+            throw new Error('Issue not found');
         }
-        if (!commentsResponse.ok) {
-            throw new Error('Failed to fetch comments');
-        }
 
-        const issue = await issueResponse.json();
-        const commentsData = await commentsResponse.json();
-
-        const comments = commentsData.map((comment) => ({
-            id: comment.pk,
-            ...comment.fields,
-        }));
-
-        return json({ issue, comments });
+        return issue satisfies LoaderData;
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
@@ -73,56 +74,57 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         const form = await request.formData();
         const text = form.get('comment_text');
         const { id } = params;
-        const API_BASE_URL = process.env.API_BASE_URL;
 
         if (text) {
-            const requestBody = {
-                text: text,
-                user: {
-                    user: user,
-                },
-            };
+            return rateLimiter
+                .consume(`${user}-${id}`, 1)
+                .then(async () => {
+                    const comment = await db.comment.create({
+                        data: {
+                            text: text.toString(),
+                            userId: user,
+                            issueId: Number(id),
+                        },
+                    });
 
-            const response = await fetch(`${API_BASE_URL}/comments/issue/${id}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            if (!response.ok) {
-                if (response.status === 429) {
-                    throw new Error('You tried to post too many comments. Please try again later.');
-                }
-                throw new Error('Failed to post comment');
-            }
-
-            const result = await response.json();
-            return json(result);
+                    return json(comment);
+                })
+                .catch(() => {
+                    return json(
+                        { message: 'You tried to post too many comments. Please try again later.' },
+                        { status: 429 },
+                    );
+                });
         }
 
         const upvoteId = form.get('id');
 
         if (upvoteId) {
-            const response = await fetch(`${API_BASE_URL}/issues/${id}/upvote/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            const existingVote = await db.issueVote.findFirst({
+                where: {
+                    issueId: Number(id),
+                    userId: user,
                 },
-                body: JSON.stringify({}),
             });
 
-            if (!response.ok) {
-                if (response.status === 400) {
-                    const result = await response.json();
-                    return json({ message: 'You have already voted on this issue.' }, { status: 400 });
-                }
-                throw new Error('Failed to upvote issue');
+            if (existingVote) {
+                await db.issueVote.delete({
+                    where: {
+                        id: existingVote.id,
+                    },
+                });
+
+                return json({ message: 'Removed your vote from the issue.' });
             }
 
-            const result = await response.json();
-            return json(result);
+            await db.issueVote.create({
+                data: {
+                    issueId: Number(id),
+                    userId: user,
+                },
+            });
+
+            return json({ message: 'Upvoted the issue.' });
         }
 
         throw new Error('Invalid action');
@@ -138,7 +140,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, comments } = useLoaderData();
+    const issue = useLoaderData<LoaderData>();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
@@ -153,11 +155,6 @@ export default function IssueDetail() {
             setPopupMessage(fetcher.data.message);
         }
     }, [fetcher.state, fetcher.data]);
-
-    useEffect(() => {
-        console.log('Issue:', issue);
-        console.log('Comments:', comments);
-    }, [issue, comments]);
 
     if (!issue) {
         return <p>Loading...</p>;
@@ -191,25 +188,25 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex justify-between items-center mb-4'>
-                        <fetcher.Form method='post' action={`/issues/${issue.id}/upvote/`} className='ml-4 flex'>
+                        <fetcher.Form method='post' className='ml-4 flex'>
                             <input type='hidden' name='id' value={issue.id} />
                             <Button
                                 type='submit'
                                 className='px-4 py-2 text-sm font-medium text-white rounded  focus:outline-none focus:ring-2 focus:ring-offset-2 '
                             >
-                                Upvote ({issue.upvotes || 0})
+                                Upvote ({issue._count.votes})
                             </Button>
                         </fetcher.Form>
                     </div>
                     <div className='mt-8'>
                         <h2 className='text-2xl font-bold'>Comments</h2>
-                        {comments.length > 0 ? (
+                        {issue.comments.length > 0 ? (
                             <ul>
-                                {comments.map((comment) => (
+                                {issue.comments.map((comment) => (
                                     <li key={comment.id} className='mt-4'>
                                         <p className='text-sm text-gray-600'>{comment.text}</p>
                                         <p className='text-xs text-gray-400'>
-                                            On {new Date(comment.created_at).toLocaleDateString()}
+                                            On {new Date(comment.createdAt).toLocaleDateString()}
                                         </p>
                                     </li>
                                 ))}

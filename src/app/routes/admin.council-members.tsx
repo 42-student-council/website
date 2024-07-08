@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
@@ -8,6 +9,7 @@ import { H3 } from '~/components/ui/H3';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
+import { db } from '~/utils/db.server';
 import { getAccessToken } from '~/utils/oauth.server';
 import { requireAdmin } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
@@ -41,25 +43,28 @@ export async function action({ request }: ActionFunctionArgs) {
 
                     const user = await res.json();
 
-                    const addMember = await fetch(`${process.env.API_BASE_URL}/council-members/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            login: user.login,
-                            first_name: user.first_name,
-                            last_name: user.last_name,
-                            email: user.email,
-                            profile_picture: user.image.link,
-                        }),
-                    });
+                    try {
+                        const newMember = await db.councilMember.create({
+                            data: {
+                                login: user.login,
+                                firstName: user.first_name,
+                                lastName: user.last_name,
+                                email: user.email,
+                                profilePictureUrl: user.image.link,
+                            },
+                        });
 
-                    if (!addMember.ok) {
-                        return json({ errors: { newLogin: 'Failed to add council member' } }, 400);
+                        return newMember;
+                    } catch (e) {
+                        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                            // code if member already exists
+                            if (e.code === 'P2002') {
+                                return json({ errors: { newLogin: 'Council member already exists' } }, 400);
+                            }
+                        }
+
+                        throw e;
                     }
-
-                    return user;
                 },
             );
         }
@@ -69,15 +74,23 @@ export async function action({ request }: ActionFunctionArgs) {
                 deleteCouncilMemberSchema,
                 (errors) => json({ errors }, 400),
                 async (data) => {
-                    const res = await fetch(`${process.env.API_BASE_URL}/council-members/${data.login}`, {
-                        method: 'DELETE',
-                    });
+                    try {
+                        await db.councilMember.delete({
+                            where: {
+                                login: data.login,
+                            },
+                        });
 
-                    if (!res.ok) {
-                        return json({ errors: { login: 'Failed to delete council member' } }, 400);
+                        return json({ success: true });
+                    } catch (e) {
+                        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+                            if (e.code === 'P2025') {
+                                return json({ errors: { login: 'Council member does not exist' } }, 400);
+                            }
+                        }
+
+                        return json({ success: true });
                     }
-
-                    return json({ success: true });
                 },
             );
         }
@@ -99,24 +112,12 @@ const deleteCouncilMemberSchema = z.object({
 });
 
 export async function loader() {
-    const res = await fetch(`${process.env.API_BASE_URL}/council-members`);
+    const data = await db.councilMember.findMany();
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch council members');
-    }
-
-    const data: LoaderData = await res.json();
-
-    return data.sort((a, b) => a.first_name.localeCompare(b.first_name));
+    return data.sort((a, b) => a.firstName.localeCompare(b.firstName));
 }
 
-type LoaderData = {
-    login: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    profile_picture: string;
-}[];
+type LoaderData = Prisma.CouncilMemberGetPayload<{}>[];
 
 function CouncilMember({
     login,
@@ -186,8 +187,8 @@ export default function AdminCouncilMembers() {
                         <CouncilMember
                             key={member.login}
                             login={member.login}
-                            firstName={member.first_name}
-                            lastName={member.last_name}
+                            firstName={member.firstName}
+                            lastName={member.lastName}
                             className={classNames('p-2 rounded', {
                                 'bg-gray-100': i % 2 === 0,
                             })}

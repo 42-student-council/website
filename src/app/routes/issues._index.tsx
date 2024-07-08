@@ -8,27 +8,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
+import { db } from '~/utils/db.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
-    const API_BASE_URL = process.env.API_BASE_URL;
-    const response = await fetch(`${API_BASE_URL}/issues/`);
-    if (!response.ok) {
-        throw new Error('Failed to fetch issues');
-    }
-    const issues: Issue[] = await response.json();
-    issues.sort((a, b) => b.upvotes - a.upvotes);
+    const issues = await db.issue.findMany({
+        select: {
+            id: true,
+            title: true,
+            description: true,
+            createdAt: true,
+            _count: {
+                select: {
+                    votes: true,
+                },
+            },
+        },
+    });
+    issues.sort((a, b) => b._count.votes - a._count.votes);
 
     return { issues, session } satisfies LoaderData;
 }
 
 type Issue = {
+    createdAt: Date;
+    description: string;
     id: number;
     title: string;
-    description: string;
-    created_at: string;
-    upvotes: number;
+    _count: {
+        votes: number;
+    };
 };
 
 type LoaderData = { issues: Issue[]; session: SessionData };
@@ -82,11 +92,11 @@ export default function Issues() {
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
                                                     </TableCell>
                                                     <TableCell className='hidden md:table-cell'>
-                                                        {issue.upvotes}
+                                                        {issue._count.votes}
                                                     </TableCell>
 
                                                     <TableCell className='hidden md:table-cell'>
-                                                        {new Date(issue.created_at).toLocaleDateString('en-GB', {
+                                                        {new Date(issue.createdAt).toLocaleDateString('en-GB', {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric',

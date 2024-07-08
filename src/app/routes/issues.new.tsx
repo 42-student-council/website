@@ -13,6 +13,7 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
+import { db } from '~/utils/db.server';
 import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
@@ -46,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-    await requireSessionData(request);
+    const session = await requireSessionData(request);
 
     const form = await request.formData();
 
@@ -55,25 +56,22 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            const res = await fetch(`${process.env.API_BASE_URL}/issues/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...data, created_at: new Date().toISOString() }),
+            await db.user.upsert({
+                where: { id: session.login },
+                update: {},
+                create: { id: session.login },
             });
-            if (!res.ok)
-                return json(
-                    {
-                        errors: {
-                            message: 'An internal server error occurred while creating the issue. Please try again.',
-                        },
-                    },
-                    500,
-                );
 
-            const createdIssue: { id: number } = await res.json();
-            return json({ id: createdIssue.id });
+            const issue = await db.issue.create({
+                data: {
+                    description: data.description,
+                    title: data.title,
+                    createdAt: new Date().toISOString(),
+                    userId: session.login,
+                },
+            });
+
+            return json({ id: issue.id });
         },
     );
 }
