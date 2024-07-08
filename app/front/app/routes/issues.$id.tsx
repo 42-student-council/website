@@ -1,6 +1,6 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import { requireSessionData } from '~/utils/session.server';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 import React, { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
@@ -23,13 +23,16 @@ type Comment = {
 type LoaderData = {
     issue: Issue;
     comments: Comment[];
+    session: SessionData;
 };
 
 type FetcherData = {
     message?: string;
 };
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+    const session = await requireSessionData(request);
+
     try {
         const { id } = params;
         const API_BASE_URL = process.env.API_BASE_URL;
@@ -58,7 +61,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
             ...comment.fields,
         }));
 
-        return json({ issue, comments });
+        return json({ issue, comments, session });
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
@@ -138,7 +141,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, comments } = useLoaderData();
+    const { issue, comments, session } = useLoaderData<LoaderData>();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
@@ -165,7 +168,7 @@ export default function IssueDetail() {
 
     return (
         <div>
-            <NavBar />
+            <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
                     <Link
@@ -220,7 +223,7 @@ export default function IssueDetail() {
                         <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef}>
                             <textarea
                                 name='comment_text'
-                                rows='3'
+                                rows={3}
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
                                 value={commentText}

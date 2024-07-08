@@ -63,7 +63,7 @@ export function ErrorBoundary() {
                 <Links />
             </head>
             <body>
-                <NavBar />
+                <NavBar login='zekao?' role='USER' />
                 <div className='flex items-center justify-center h-screen'>
                     {isRouteErrorResponse(error) ? (
                         <div className='flex flex-col items-center'>
