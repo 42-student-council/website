@@ -33,6 +33,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         // TODO: no magic number
         const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 53);
         if (!viennaCampus?.is_primary) throw redirect('/sign-in?wrongCampus');
+        //21
+        if (!apiUser.cursus_users.some((cursus: any) => cursus.cursus_id === 22)) throw redirect('/sign-in?notStudent');
 
         return createSession(
             {
