@@ -31,10 +31,11 @@ type FetcherData = {
 };
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+    const session = await requireSessionData(request);
+
     try {
         const { id } = params;
         const API_BASE_URL = process.env.API_BASE_URL;
-        const session = await requireSessionData(request);
 
         if (!id) {
             throw new Error('Issue ID is required');
