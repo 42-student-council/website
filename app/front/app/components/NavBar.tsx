@@ -31,11 +31,6 @@ const navItems = [
         icon: Home,
     },
     {
-        label: 'About',
-        href: '/about',
-        icon: Info,
-    },
-    {
         label: 'Issues',
         href: '/issues',
         icon: TriangleAlert,
@@ -44,6 +39,11 @@ const navItems = [
         label: 'Contact',
         href: '/contact',
         icon: MessageCircle,
+    },
+    {
+        label: 'About',
+        href: '/about',
+        icon: Info,
     },
 ];
 
