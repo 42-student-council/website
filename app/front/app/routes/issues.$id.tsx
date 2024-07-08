@@ -30,10 +30,11 @@ type FetcherData = {
     message?: string;
 };
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     try {
         const { id } = params;
         const API_BASE_URL = process.env.API_BASE_URL;
+        const session = await requireSessionData(request);
 
         if (!id) {
             throw new Error('Issue ID is required');
@@ -59,7 +60,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
             ...comment.fields,
         }));
 
-        return json({ issue, comments });
+        return json({ issue, comments, session });
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
