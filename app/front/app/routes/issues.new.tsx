@@ -120,7 +120,8 @@ export default function IssuesNew() {
             <Separator />
             <div className='md:flex md:justify-center'>
                 <p className='mt-4 mx-4 md:w-3/5'>
-                    Open an anonymous issue to discuss what's important to you with the community. <br />
+                    Open an anonymous issue to discuss what's important to you with the community.
+                    <br />
                     If you would like to share your issue with the student council members only, please go to the <Link to='/contact' className='underline'>contact form</Link>.
                 </p>
             </div>
@@ -169,7 +170,8 @@ export default function IssuesNew() {
                         <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
                         submitting them.
                         <div className='mb-2' />
-                        Issues are anonymous to the public, this means students won't know who submitted which issue. <br />
+                        Issues are anonymous to the public, this means students won't know who submitted which issue.
+                        <br />
                         However, the student council members can check the author to prevent spam.
                     </Info>
 
