@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
+import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
@@ -174,10 +175,13 @@ export default function IssuesNew() {
                         <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
                         submitting them.
                         <div className='mb-2' />
+                    </Info>
+
+                    <Warning title='Important' className='mt-4 w-auto'>
                         Issues are anonymous to the public, this means students won't know who submitted which issue.
                         <br />
                         However, the student council members can check the author to prevent spam.
-                    </Info>
+                    </Warning>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
