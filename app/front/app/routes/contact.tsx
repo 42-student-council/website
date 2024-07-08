@@ -170,7 +170,7 @@ export default function Contact() {
                             </div>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='nothing' id='nothing' />
-                                <Label htmlFor='nothing'>No need to reach out to me</Label>
+                                <Label htmlFor='nothing'>No follow-up needed</Label>
                             </div>
 
                         </RadioGroup>
