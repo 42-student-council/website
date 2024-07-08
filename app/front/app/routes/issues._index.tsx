@@ -18,7 +18,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
         throw new Error('Failed to fetch issues');
     }
     const issues: Issue[] = await response.json();
-    issues.sort((a, b) => b.upvotes - a.upvotes);
+    issues.sort((a, b) => {
+        const upvotesDifference = b.upvotes - a.upvotes;
+        if (upvotesDifference !== 0) {
+            return upvotesDifference;
+        } else {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+    });
 
     return { issues, session } satisfies LoaderData;
 }
