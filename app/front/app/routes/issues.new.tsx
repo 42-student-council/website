@@ -115,7 +115,7 @@ export default function IssuesNew() {
 
     return (
         <div>
-            <NavBar login={data.session.login} role={data.session.role} />
+            <NavBar login={data.login} role={data.role} />
             <div className='md:flex md:justify-center'>
                 <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
