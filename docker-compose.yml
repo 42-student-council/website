@@ -30,7 +30,7 @@ services:
             context: ./src
             dockerfile: Dockerfile_prod
         ports:
-            - '3000:3000'
+            - '${PORT}:3000'
         environment:
             POSTGRES_HOST: ${POSTGRES_HOST}
             POSTGRES_NAME: ${POSTGRES_NAME}
@@ -38,6 +38,7 @@ services:
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_PORT: ${POSTGRES_PORT}
             PORT: 3000
+            HOST: ${HOST}
             CLIENT_ID: ${CLIENT_ID}
             CLIENT_SECRET: ${CLIENT_SECRET}
             BASE_URL: ${BASE_URL}
