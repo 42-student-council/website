@@ -36,6 +36,8 @@ function AdminCrumb() {
         [] as { label: string; href: string }[],
     );
 
+    breadcrumbs.unshift({ label: 'Home', href: '/' });
+
     return (
         <Breadcrumb className='bg-white rounded-lg shadow m-4 p-2'>
             <BreadcrumbList>
