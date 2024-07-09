@@ -27,6 +27,7 @@ type LoaderData = {
         _count: { votes: number };
     };
     session: SessionData;
+    hasVoted: boolean;
 };
 
 type FetcherData = {
@@ -68,7 +69,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
             throw new Error('Issue not found');
         }
 
-        return { issue, session } satisfies LoaderData;
+        const hasVoted = await db.issueVote.findFirst({
+            where: {
+                issueId: Number(id),
+                userId: session.login,
+            },
+        });
+
+        return { issue, session, hasVoted: !!hasVoted } satisfies LoaderData;
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
@@ -149,7 +157,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, session } = useLoaderData<LoaderData>();
+    const { issue, session, hasVoted } = useLoaderData<LoaderData>();
     const fetcher = useFetcher();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
@@ -159,9 +167,6 @@ export default function IssueDetail() {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
             formRef.current?.reset();
             setCommentText('');
-        }
-        if (fetcher.state === 'idle' && fetcher.data && fetcher.data.message) {
-            setPopupMessage(fetcher.data.message);
         }
     }, [fetcher.state, fetcher.data]);
 
@@ -201,9 +206,29 @@ export default function IssueDetail() {
                             <input type='hidden' name='id' value={issue.id} />
                             <Button
                                 type='submit'
-                                className='px-4 py-2 text-sm font-medium text-white rounded  focus:outline-none focus:ring-2 focus:ring-offset-2 '
+                                className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-red-500 hover:bg-darkred-500' : 'bg-gray-500 hover:bg-black'}`}
+                                title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
                             >
-                                Upvote ({issue._count.votes})
+                                {hasVoted ? (
+                                    <>
+                                        <svg
+                                            xmlns='http://www.w3.org/2000/svg'
+                                            className='h-5 w-5 inline mr-2'
+                                            viewBox='0 0 20 20'
+                                            fill='currentColor'
+                                        >
+                                            <path
+                                                fillRule='evenodd'
+                                                d='M3.172 5.172a4 4 0 015.656 0L10 6.344l1.172-1.172a4 4 0 115.656 5.656L10 17.344 3.172 10.828a4 4 0 010-5.656z'
+                                                clipRule='evenodd'
+                                            />
+                                        </svg>
+                                        Upvoted{' '}
+                                    </>
+                                ) : (
+                                    'Upvote '
+                                )}
+                                ({issue._count.votes})
                             </Button>
                         </fetcher.Form>
                     </div>
