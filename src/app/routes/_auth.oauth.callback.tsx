@@ -34,19 +34,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
         if (!apiUser.cursus_users.some((cursus: any) => cursus.cursus_id === 21)) throw redirect('/sign-in?notStudent');
 
-        await db.user.upsert({
-            where: { id: apiUser.login },
-            update: {},
-            create: { id: apiUser.login },
-        });
-
         return createSession(
             {
-                imageUrl: apiUser.image.versions.large,
                 login: apiUser.login,
-                accessToken: res.access_token,
-                refreshToken: res.refresh_token,
-                accessTokenExpiresAt: new Date((res.created_at + res.expires_in) * 1000),
                 createdAt: new Date(),
             },
             redirectTo,
