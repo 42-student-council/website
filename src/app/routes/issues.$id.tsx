@@ -259,7 +259,7 @@ export default function IssueDetail() {
                             ></textarea>
                             <Button
                                 type='submit'
-                                className='mt-2 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2'
+                                className='mt-2 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 bg-black hover:bg-gray-800'
                                 disabled={!commentText.trim()}
                             >
                                 Submit
