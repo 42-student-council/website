@@ -7,6 +7,7 @@ import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { ChevronLeft } from 'lucide-react';
 
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
@@ -189,19 +190,11 @@ export default function IssueDetail() {
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
-                    <Link
-                        to='/issues'
-                        className='inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 mb-4'
-                    >
-                        <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            className='h-6 w-6'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            stroke='currentColor'
-                        >
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M15 19l-7-7 7-7' />
-                        </svg>
+                    <Link to='/issues'>
+                        <Button>
+                            <ChevronLeft />
+                            Go Back
+                        </Button>
                     </Link>
                     <div className='flex justify-between items-center'>
                         <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
