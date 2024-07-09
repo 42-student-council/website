@@ -206,7 +206,7 @@ export default function IssueDetail() {
                             <input type='hidden' name='id' value={issue.id} />
                             <Button
                                 type='submit'
-                                className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-red-500 hover:bg-darkred-500' : 'bg-black hover:bg-gray-800'}`}
+                                className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : 'bg-black hover:bg-gray-800'}`}
                                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
                             >
                                 {hasVoted ? (
