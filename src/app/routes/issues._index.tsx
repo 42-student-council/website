@@ -47,7 +47,11 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 export default function Issues() {
     const { issues: initialIssues, session } = useLoaderData<LoaderData>();
     const [issues, setIssues] = useState<Issue[]>(initialIssues);
-    const [sortConfig, setSortConfig] = useState<{ key: string; direction: string } | null>(null);
+    const defaultSortConfig = () => {
+        const savedSortConfig = typeof window !== 'undefined' ? localStorage.getItem('sortConfig') : null;
+        return savedSortConfig ? JSON.parse(savedSortConfig) : { key: 'createdAt', direction: 'desc' };
+    };
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: string }>(defaultSortConfig);
 
     const navigate = useNavigate();
 
@@ -66,18 +70,11 @@ export default function Issues() {
     };
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedSortConfig = localStorage.getItem('sortConfig');
-            if (savedSortConfig) {
-                const { key, direction } = JSON.parse(savedSortConfig);
-                setSortConfig({ key, direction });
-                sortIssues(key, direction);
-            }
-        }
+        sortIssues(sortConfig.key, sortConfig.direction);
     }, []);
 
     const handleSort = (key: string) => {
-        const direction = sortConfig && sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc';
+        const direction = sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc';
         setSortConfig({ key, direction });
         if (typeof window !== 'undefined') {
             localStorage.setItem('sortConfig', JSON.stringify({ key, direction }));
@@ -86,7 +83,7 @@ export default function Issues() {
     };
 
     const getSortSymbol = (key: string) => {
-        if (!sortConfig || sortConfig.key !== key) {
+        if (sortConfig.key !== key) {
             return '';
         }
         return sortConfig.direction === 'asc' ? '▲' : '▼';
