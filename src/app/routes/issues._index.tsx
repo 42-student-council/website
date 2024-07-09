@@ -47,25 +47,11 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 export default function Issues() {
     const { issues: initialIssues, session } = useLoaderData<LoaderData>();
     const [issues, setIssues] = useState<Issue[]>(initialIssues);
-    const [sortConfig, setSortConfig] = useState(() => {
-        const savedSortConfig = localStorage.getItem('sortConfig');
-        return savedSortConfig ? JSON.parse(savedSortConfig) : { key: 'createdAt', direction: 'asc' };
-    });
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: string } | null>(null);
 
     const navigate = useNavigate();
 
-    const sortIssues = (key: string, initialize = false) => {
-        let direction = 'asc';
-        if (!initialize && sortConfig.key === key) {
-            direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-        } else {
-            direction = sortConfig.direction;
-        }
-
-        const newSortConfig = { key, direction };
-        setSortConfig(newSortConfig);
-        localStorage.setItem('sortConfig', JSON.stringify(newSortConfig));
-
+    const sortIssues = (key: string, direction: string) => {
         const sortedIssues = [...issues].sort((a, b) => {
             if (key === 'votes') {
                 return direction === 'asc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
@@ -80,14 +66,27 @@ export default function Issues() {
     };
 
     useEffect(() => {
-        const savedSortConfig = JSON.parse(localStorage.getItem('sortConfig') || '{}');
-        if (savedSortConfig.key) {
-            sortIssues(savedSortConfig.key, true);
+        if (typeof window !== 'undefined') {
+            const savedSortConfig = localStorage.getItem('sortConfig');
+            if (savedSortConfig) {
+                const { key, direction } = JSON.parse(savedSortConfig);
+                setSortConfig({ key, direction });
+                sortIssues(key, direction);
+            }
         }
     }, []);
 
+    const handleSort = (key: string) => {
+        const direction = sortConfig && sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+        setSortConfig({ key, direction });
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('sortConfig', JSON.stringify({ key, direction }));
+        }
+        sortIssues(key, direction);
+    };
+
     const getSortSymbol = (key: string) => {
-        if (sortConfig.key !== key) {
+        if (!sortConfig || sortConfig.key !== key) {
             return '';
         }
         return sortConfig.direction === 'asc' ? '▲' : '▼';
@@ -124,20 +123,26 @@ export default function Issues() {
                                                 <TableHead>Title</TableHead>
                                                 <TableHead className='hidden md:table-cell'>
                                                     <button
-                                                        onClick={() => sortIssues('votes')}
+                                                        onClick={() => handleSort('votes')}
                                                         className='cursor-pointer flex items-center gap-1'
                                                         title='Sort by votes'
                                                     >
-                                                        Upvotes <span className='inline-block w-3 text-center'>{getSortSymbol('votes')}</span>
+                                                        Upvotes{' '}
+                                                        <span className='inline-block w-3 text-center'>
+                                                            {getSortSymbol('votes')}
+                                                        </span>
                                                     </button>
                                                 </TableHead>
                                                 <TableHead className='hidden md:table-cell'>
                                                     <button
-                                                        onClick={() => sortIssues('createdAt')}
+                                                        onClick={() => handleSort('createdAt')}
                                                         className='cursor-pointer flex items-center gap-1'
                                                         title='Sort by creation date'
                                                     >
-                                                        Created at <span className='inline-block w-3 text-center'>{getSortSymbol('createdAt')}</span>
+                                                        Created at{' '}
+                                                        <span className='inline-block w-3 text-center'>
+                                                            {getSortSymbol('createdAt')}
+                                                        </span>
                                                     </button>
                                                 </TableHead>
                                             </TableRow>
@@ -172,7 +177,6 @@ export default function Issues() {
                                 </CardContent>
                                 <CardFooter>
                                     <div className='text-xs text-muted-foreground'>
-                                        {/* Showing <strong>1-10</strong> of <strong>{issues.length}</strong> issues */}
                                         Showing <span className='font-bold'>{issues.length}</span>{' '}
                                         {issues.length === 1 ? 'issue' : 'issues'}
                                     </div>
