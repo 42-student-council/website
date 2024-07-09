@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  comments     Comment[]
+  commentVotes CommentVote[]
+  id           String        @id
+  issues       Issue[]
+  issueVotes   IssueVote[]
+}
+
+model Comment {
+  createdAt DateTime      @default(now())
+  id        Int           @id @default(autoincrement())
+  issue     Issue         @relation(fields: [issueId], references: [id])
+  issueId   Int
+  text      String
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String
+  votes     CommentVote[]
+}
+
+model CommentVote {
+  comment   Comment @relation(fields: [commentId], references: [id])
+  commentId Int
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@unique([commentId, userId])
+}
+
+model Issue {
+  comments    Comment[]
+  createdAt   DateTime    @default(now())
+  description String
+  id          Int         @id @default(autoincrement())
+  title       String      @db.VarChar(100)
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  votes       IssueVote[]
+}
+
+model IssueVote {
+  id      Int    @id @default(autoincrement())
+  issue   Issue  @relation(fields: [issueId], references: [id])
+  issueId Int
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+
+  @@unique([issueId, userId])
+}
+
+model CouncilMember {
+  login             String @id
+  firstName         String
+  lastName          String
+  email             String @unique
+  profilePictureUrl String
+}

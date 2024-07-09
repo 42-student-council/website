@@ -33,7 +33,7 @@ make restart
 ```sh
 make cleandb
 ```
-* **fclean**: Perform a full clean, including removing all Docker images and volumes, and delete Python cache files and migrations. (⚠️This will clear the database!⚠️)
+* **fclean**: Perform a full clean, including removing all Docker images and volumes. (⚠️This will clear the database!⚠️)
 ```sh
 make fclean
 ```

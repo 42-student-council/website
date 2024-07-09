@@ -47,7 +47,7 @@ Pull requests are reviewed by the project maintainers. Here's what we look for:
 If your changes affect the project documentation (e.g. new features, changes to existing functionality), please update the relevant documentation files as part of your pull request. This helps keep our documentation up to date and useful for everyone.
 
 ### Coding Style
-We use the [Black](https://black.readthedocs.io/) formatter for Python and [Prettier]((https://prettier.io/)) for TypeScript, HTML and CSS.
+We use [Prettier]((https://prettier.io/)) for TypeScript, HTML and CSS.
 
 **How to use Black:**
 * Use the VSCode extension and configure line length in the settings.

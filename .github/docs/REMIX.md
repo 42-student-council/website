@@ -10,7 +10,7 @@ This section provides an overview of the Remix frontend architecture and instruc
 ## Project Structure
 Our Remix frontend project structure looks like this:
 ```
-front/
+src/
 │
 ├── app/
 │ ├── components/
