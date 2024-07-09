@@ -1,4 +1,5 @@
 import { type LoaderFunction, redirect, MetaFunction } from '@remix-run/node';
+import { db } from '~/utils/db.server';
 import { checkState, createState, generateOauthUrl, getTokens } from '~/utils/oauth.server';
 import { createSession } from '~/utils/session.server';
 
@@ -32,6 +33,12 @@ export const loader: LoaderFunction = async ({ request }) => {
         if (!viennaCampus?.is_primary) throw redirect('/sign-in?wrongCampus');
 
         if (!apiUser.cursus_users.some((cursus: any) => cursus.cursus_id === 21)) throw redirect('/sign-in?notStudent');
+
+        await db.user.upsert({
+            where: { id: apiUser.login },
+            update: {},
+            create: { id: apiUser.login },
+        });
 
         return createSession(
             {
