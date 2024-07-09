@@ -54,9 +54,9 @@ export default function Issues() {
     const sortIssues = (key: string, direction: string) => {
         const sortedIssues = [...issues].sort((a, b) => {
             if (key === 'votes') {
-                return direction === 'desc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
+                return direction === 'asc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
             } else {
-                return direction === 'desc'
+                return direction === 'asc'
                     ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             }
@@ -77,7 +77,7 @@ export default function Issues() {
     }, []);
 
     const handleSort = (key: string) => {
-        const direction = sortConfig && sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+        const direction = sortConfig && sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc';
         setSortConfig({ key, direction });
         if (typeof window !== 'undefined') {
             localStorage.setItem('sortConfig', JSON.stringify({ key, direction }));
