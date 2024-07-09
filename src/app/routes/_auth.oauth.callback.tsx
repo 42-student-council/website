@@ -1,4 +1,5 @@
 import { type LoaderFunction, redirect, MetaFunction } from '@remix-run/node';
+import { db } from '~/utils/db.server';
 import { checkState, createState, generateOauthUrl, getTokens } from '~/utils/oauth.server';
 import { createSession } from '~/utils/session.server';
 
@@ -35,11 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
         return createSession(
             {
-                imageUrl: apiUser.image.versions.large,
                 login: apiUser.login,
-                accessToken: res.access_token,
-                refreshToken: res.refresh_token,
-                accessTokenExpiresAt: new Date((res.created_at + res.expires_in) * 1000),
                 createdAt: new Date(),
             },
             redirectTo,

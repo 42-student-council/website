@@ -19,6 +19,20 @@ model User {
   id           String        @id
   issues       Issue[]
   issueVotes   IssueVote[]
+  role         UserRole      @default(USER)
+  sessions     Session[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Session {
+  id        String   @id
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model Comment {

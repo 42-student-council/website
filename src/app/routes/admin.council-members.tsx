@@ -58,6 +58,19 @@ export async function action({ request }: ActionFunctionArgs) {
                             },
                         });
 
+                        await db.user.upsert({
+                            where: {
+                                id: user.login,
+                            },
+                            update: {
+                                role: 'ADMIN',
+                            },
+                            create: {
+                                id: user.login,
+                                role: 'ADMIN',
+                            },
+                        });
+
                         return newMember;
                     } catch (e) {
                         if (e instanceof Prisma.PrismaClientKnownRequestError) {
@@ -82,6 +95,19 @@ export async function action({ request }: ActionFunctionArgs) {
                         await db.councilMember.delete({
                             where: {
                                 login: data.login,
+                            },
+                        });
+
+                        await db.user.upsert({
+                            where: {
+                                id: data.login,
+                            },
+                            update: {
+                                role: 'USER',
+                            },
+                            create: {
+                                id: data.login,
+                                role: 'USER',
                             },
                         });
 

@@ -60,12 +60,6 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            await db.user.upsert({
-                where: { id: session.login },
-                update: {},
-                create: { id: session.login },
-            });
-
             const issue = await db.issue.create({
                 data: {
                     description: data.description,
