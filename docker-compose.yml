@@ -1,121 +1,80 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres
-    volumes:
-      - db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${POSTGRES_NAME}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    profiles:
-      - dev
-      - prod
+    db:
+        image: postgres
+        volumes:
+            - db:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=${POSTGRES_NAME}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        profiles:
+            - dev
+            - prod
 
-  web:
-    build:
-      context: ./app
-      dockerfile: ./Dockerfile
-      args:
-        POSTGRES_HOST: ${POSTGRES_HOST}
-        POSTGRES_NAME: ${POSTGRES_NAME}
-        POSTGRES_USER: ${POSTGRES_USER}
-        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-        POSTGRES_PORT: ${POSTGRES_PORT}
-    working_dir: /code/app
-    command: sh ./startup/entrypoint.sh
-    restart: always
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-    profiles:
-      - dev
-      - prod
+    # React and Nginx need different configurations based on
+    # whether we are in prod or dev.
+    #
+    # React:
+    #   - In order to enable hot reloading (HMR), we need to
+    #     mount the code into a shared volume, which we cannot
+    #     do in prod
+    #
+    # Nginx:
+    #   - Depends on react, I did not find any way
+    #     to create conditional dependencies in
+    #     docker-compose
+    frontend_prod:
+        build:
+            context: ./src
+            dockerfile: Dockerfile_prod
+        ports:
+            - '3000:3000'
+        environment:
+            POSTGRES_HOST: ${POSTGRES_HOST}
+            POSTGRES_NAME: ${POSTGRES_NAME}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_PORT: ${POSTGRES_PORT}
+            PORT: 3000
+            CLIENT_ID: ${CLIENT_ID}
+            CLIENT_SECRET: ${CLIENT_SECRET}
+            BASE_URL: ${BASE_URL}
+            SESSION_SECRET: ${SESSION_SECRET}
+            DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
+            DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
+            SUPER_ADMIN: ${SUPER_ADMIN}
+            DATABASE_URL: ${DATABASE_URL}
+        profiles:
+            - prod
 
-  # React and Nginx need different configurations based on
-  # whether we are in prod or dev.
-  #
-  # React:
-  #   - In order to enable hot reloading (HMR), we need to 
-  #     mount the code into a shared volume, which we cannot
-  #     do in prod
-  #
-  # Nginx:
-  #   - Depends on react, I did not find any way
-  #     to create conditional dependencies in
-  #     docker-compose
-  react_prod:
-    build:
-      context: ./app/front
-      dockerfile: Dockerfile_prod
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: 3000
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
-      BASE_URL: ${BASE_URL}
-      SESSION_SECRET: ${SESSION_SECRET}
-      API_BASE_URL: ${API_BASE_URL}
-      DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
-      DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
-      SUPER_ADMIN: ${SUPER_ADMIN}
-    profiles:
-      - prod
-
-  nginx_prod:
-    image: nginx:latest
-    ports:
-      - "${NGINX_PORT}:80"
-    volumes:
-      - ./nginx/nginx_prod.conf:/etc/nginx/nginx.conf
-    profiles:
-      - prod
-    depends_on:
-      - web
-      - react_prod
-
-  react_dev:
-    build:
-      context: ./app/front
-      dockerfile: Dockerfile_dev
-    ports:
-      - "5173:5173"
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: 5173
-      CLIENT_ID: ${CLIENT_ID}
-      CLIENT_SECRET: ${CLIENT_SECRET}
-      BASE_URL: ${BASE_URL}
-      SESSION_SECRET: ${SESSION_SECRET}
-      API_BASE_URL: ${API_BASE_URL}
-      DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
-      DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
-      SUPER_ADMIN: ${SUPER_ADMIN}
-    volumes:
-      - ./app/front:/app
-      - /app/node_modules
-    profiles:
-      - dev
-
-  nginx_dev:
-    image: nginx:latest
-    ports:
-      - "${NGINX_PORT}:80"
-    volumes:
-      - ./nginx/nginx_dev.conf:/etc/nginx/nginx.conf
-    profiles:
-      - dev
-    depends_on:
-      - web
-      - react_dev
+    frontend_dev:
+        build:
+            context: ./src
+            dockerfile: Dockerfile_dev
+        ports:
+            - '5173:5173'
+        environment:
+            POSTGRES_HOST: ${POSTGRES_HOST}
+            POSTGRES_NAME: ${POSTGRES_NAME}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_PORT: ${POSTGRES_PORT}
+            PORT: 5173
+            CLIENT_ID: ${CLIENT_ID}
+            CLIENT_SECRET: ${CLIENT_SECRET}
+            BASE_URL: ${BASE_URL}
+            SESSION_SECRET: ${SESSION_SECRET}
+            DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
+            DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
+            SUPER_ADMIN: ${SUPER_ADMIN}
+            DATABASE_URL: ${DATABASE_URL}
+        volumes:
+            - ./src:/app
+            - /app/node_modules
+        profiles:
+            - dev
 
 volumes:
-  db:
+    db:

@@ -20,10 +20,8 @@ The decision to start this project was sparked by the need to facilitate communi
 
 The application is containerized and built with Docker Compose (see [doc](.github/docs/DOCKER.MD)). The technology stack includes:
 
-- **Backend**: Django (Python) ([doc](.github/docs/DJANGO.md))
-- **Frontend**: Remix (TypeScript) ([doc](.github/docs/REMIX.MD))
+- **Frontend / Backend**: Remix (TypeScript) ([doc](.github/docs/REMIX.MD))
 - **Database**: PostgreSQL
-- **Webserver**: Nginx
 
 ## Getting Started
 

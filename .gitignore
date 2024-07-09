@@ -3,10 +3,6 @@
 venv
 .env
 
-# DATABASE
-
-*migrations/
-
 # CACHE
 
 .vscode
@@ -17,7 +13,3 @@ venv
 
 node_modules/
 format.sh
-
-# PACKAGES
-
-*.json

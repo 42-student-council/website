@@ -26,7 +26,5 @@ cleandb:
 	@docker volume rm $(shell docker volume ls -q)
 
 fclean: clean
-	@rm -rf app/app/__pycache__
-	@find app/db/migrations/ -type f ! -name '__init__.py' -delete
 	@docker rmi -f $(shell docker images -q)
 	@docker volume rm $(shell docker volume ls -q)
