@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
+import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
 
 export const meta: MetaFunction = () => {
@@ -30,7 +31,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             },
         },
     });
-    issues.sort((a, b) => b._count.votes - a._count.votes);
+    issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return { issues, session } satisfies LoaderData;
 }
@@ -48,9 +49,49 @@ type Issue = {
 type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues: initialIssues, session } = useLoaderData<LoaderData>();
+    const [issues, setIssues] = useState<Issue[]>(initialIssues);
+    const defaultSortConfig = () => {
+        const savedSortConfig = typeof window !== 'undefined' ? localStorage.getItem('sortConfig') : null;
+        return savedSortConfig ? JSON.parse(savedSortConfig) : { key: 'createdAt', direction: 'desc' };
+    };
+    const [sortConfig, setSortConfig] = useState<{ key: string; direction: string }>(defaultSortConfig);
 
     const navigate = useNavigate();
+
+    const sortIssues = (key: string, direction: string) => {
+        const sortedIssues = [...issues].sort((a, b) => {
+            if (key === 'votes') {
+                return direction === 'asc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
+            } else {
+                return direction === 'asc'
+                    ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                    : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            }
+        });
+
+        setIssues(sortedIssues);
+    };
+
+    useEffect(() => {
+        sortIssues(sortConfig.key, sortConfig.direction);
+    }, []);
+
+    const handleSort = (key: string) => {
+        const direction = sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc';
+        setSortConfig({ key, direction });
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('sortConfig', JSON.stringify({ key, direction }));
+        }
+        sortIssues(key, direction);
+    };
+
+    const getSortSymbol = (key: string) => {
+        if (sortConfig.key !== key) {
+            return '';
+        }
+        return sortConfig.direction === 'asc' ? '▲' : '▼';
+    };
 
     return (
         <div>
@@ -81,8 +122,30 @@ export default function Issues() {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Title</TableHead>
-                                                <TableHead className='hidden md:table-cell'>Upvotes</TableHead>
-                                                <TableHead className='hidden md:table-cell'>Created at</TableHead>
+                                                <TableHead className='hidden md:table-cell'>
+                                                    <button
+                                                        onClick={() => handleSort('votes')}
+                                                        className='cursor-pointer flex items-center gap-1'
+                                                        title='Sort by votes'
+                                                    >
+                                                        Upvotes{' '}
+                                                        <span className='inline-block w-3 text-center'>
+                                                            {getSortSymbol('votes')}
+                                                        </span>
+                                                    </button>
+                                                </TableHead>
+                                                <TableHead className='hidden md:table-cell'>
+                                                    <button
+                                                        onClick={() => handleSort('createdAt')}
+                                                        className='cursor-pointer flex items-center gap-1'
+                                                        title='Sort by creation date'
+                                                    >
+                                                        Created at{' '}
+                                                        <span className='inline-block w-3 text-center'>
+                                                            {getSortSymbol('createdAt')}
+                                                        </span>
+                                                    </button>
+                                                </TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -115,7 +178,6 @@ export default function Issues() {
                                 </CardContent>
                                 <CardFooter>
                                     <div className='text-xs text-muted-foreground'>
-                                        {/* Showing <strong>1-10</strong> of <strong>{issues.length}</strong> issues */}
                                         Showing <span className='font-bold'>{issues.length}</span>{' '}
                                         {issues.length === 1 ? 'issue' : 'issues'}
                                     </div>
