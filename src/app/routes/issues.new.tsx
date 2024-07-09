@@ -47,6 +47,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return { session };
 }
 
+type LoaderData = {
+    session: SessionData;
+};
+
 export async function action({ request }: ActionFunctionArgs) {
     const session = await requireSessionData(request);
 
@@ -78,7 +82,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
-    const data = useLoaderData<SessionData>();
+    const data = useLoaderData<LoaderData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;

@@ -1,9 +1,8 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData, useSearchParams } from '@remix-run/react';
-import { AlertCircle, Info } from 'lucide-react';
+import { Warning } from '~/components/alert/Warning';
 import { FTIcon } from '~/components/icon/42';
 import { H1 } from '~/components/ui/H1';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 
 export const meta: MetaFunction = () => {
@@ -17,6 +16,7 @@ type LoaderData = {
     oauthFailed: boolean;
     oauthDenied: boolean;
     wrongCampus: boolean;
+    notStudent: boolean;
 };
 
 export const loader: LoaderFunction = ({ request }) => {
@@ -26,6 +26,7 @@ export const loader: LoaderFunction = ({ request }) => {
         oauthFailed: typeof url.searchParams.get('oauthFailed') === 'string',
         oauthDenied: typeof url.searchParams.get('oauthDenied') === 'string',
         wrongCampus: typeof url.searchParams.get('wrongCampus') === 'string',
+        notStudent: typeof url.searchParams.get('notStudent') === 'string',
     } satisfies LoaderData;
 };
 
@@ -42,34 +43,37 @@ export default function Index() {
             </p>
             <div className='w-80 mt-4 flex flex-col justify-center items-center space-y-4'>
                 {data.oauthFailed && (
-                    <Alert variant='destructive'>
-                        <AlertCircle className='h-4 w-4' />
-                        <AlertTitle>OAuth Sign-In Failed</AlertTitle>
-                        <AlertDescription>
-                            We were unable to complete your sign-in request. Please try again in a few minutes. If the
-                            issue persists please contact us on Discord.
-                        </AlertDescription>
-                    </Alert>
+                    <Warning title='OAuth Sign-In Failed'>
+                        We were unable to complete your sign-in request. Please try again in a few minutes. If the issue
+                        persists please open an issue in our{' '}
+                        <Link
+                            to='https://github.com/42-student-council/website/issues'
+                            target='_blank'
+                            className='underline'
+                        >
+                            GitHub Repository
+                        </Link>
+                        .
+                    </Warning>
                 )}
                 {data.oauthDenied && (
-                    <Alert variant='destructive'>
-                        <AlertCircle className='h-4 w-4' />
-                        <AlertTitle>OAuth Sign-In Denied</AlertTitle>
-                        <AlertDescription>
-                            You denied us the access to the public data of your 42 account.
-                        </AlertDescription>
-                    </Alert>
+                    <Warning title='OAuth Sign-In Denied'>
+                        You denied us the access to the public data of your 42 account.
+                    </Warning>
                 )}
                 {data.wrongCampus && (
-                    <Alert variant='destructive'>
-                        <AlertCircle className='h-4 w-4' />
-                        <AlertTitle>Wrong Campus</AlertTitle>
-                        <AlertDescription>
-                            The <span className='font-bold'>42 Vienna Student Council Website</span> is only accessible
-                            to <span className='font-bold'>42 Vienna Students</span>. We don't allow anyone else to
-                            access our platform.
-                        </AlertDescription>
-                    </Alert>
+                    <Warning title='Wrong Campus'>
+                        The <span className='font-bold'>42 Vienna Student Council Website</span> is only accessible to{' '}
+                        <span className='font-bold'>42 Vienna Students</span>. We don't allow anyone else to access our
+                        platform.
+                    </Warning>
+                )}
+                {data.notStudent && (
+                    <Warning title='Not a Student'>
+                        The <span className='font-bold'>42 Vienna Student Council Website</span> is only accessible to{' '}
+                        <span className='font-bold'>42 Vienna Students</span>. We don't allow anyone else to access our
+                        platform.
+                    </Warning>
                 )}
 
                 <Link to={`/oauth/callback?${searchParams}`} className='w-full'>
