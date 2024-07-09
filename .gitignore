@@ -3,10 +3,6 @@
 venv
 .env
 
-# DATABASE
-
-*migrations/
-
 # CACHE
 
 .vscode
