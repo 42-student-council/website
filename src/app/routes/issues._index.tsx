@@ -54,9 +54,9 @@ export default function Issues() {
     const sortIssues = (key: string, direction: string) => {
         const sortedIssues = [...issues].sort((a, b) => {
             if (key === 'votes') {
-                return direction === 'asc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
+                return direction === 'desc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
             } else {
-                return direction === 'asc'
+                return direction === 'desc'
                     ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             }
