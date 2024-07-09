@@ -1,4 +1,5 @@
 import { type Session, createCookieSessionStorage, redirect } from '@remix-run/node';
+import { db } from './db.server';
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -109,8 +110,8 @@ export async function requireSessionData(
 async function getSessionRole(login: string): Promise<SessionRole> {
     if (login === process.env.SUPER_ADMIN) return SessionRole.ADMIN;
 
-    const member = await fetch(`${process.env.API_BASE_URL}/council-members/${login}`);
-    if (!member.ok) {
+    const member = await db.councilMember.findUnique({ where: { login } });
+    if (!member) {
         return SessionRole.USER;
     }
 
