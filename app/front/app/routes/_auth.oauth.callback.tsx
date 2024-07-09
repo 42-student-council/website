@@ -34,6 +34,8 @@ export const loader: LoaderFunction = async ({ request }) => {
         const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 53);
         if (!viennaCampus?.is_primary) throw redirect('/sign-in?wrongCampus');
 
+        if (!apiUser.cursus_users.some((cursus: any) => cursus.cursus_id === 21)) throw redirect('/sign-in?notStudent');
+
         return createSession(
             {
                 imageUrl: apiUser.image.versions.large,
