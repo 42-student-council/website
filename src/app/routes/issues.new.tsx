@@ -20,11 +20,10 @@ import { validateForm } from '~/utils/validation';
 
 export const meta: MetaFunction = () => {
     return [
-        { title: 'Student Council | New Issue' },
+        { title: 'New Issue' },
         {
             name: 'description',
-            content:
-                'Have a problem and want to tell the community about it in an anonym way? Then this is the place to go!',
+            content: "Open an anonymous issue to discuss what's important to you with the community.",
         },
     ];
 };

@@ -6,10 +6,7 @@ import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 
 export const meta: MetaFunction = () => {
-    return [
-        { title: 'Student Council | Sign In' },
-        { name: 'description', content: '42 Vienna Student Council Sign In!' },
-    ];
+    return [{ title: 'Sign In' }, { name: 'description', content: '42 Vienna Student Council Sign In!' }];
 };
 
 type LoaderData = {

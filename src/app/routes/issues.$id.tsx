@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import React, { useState, useEffect, useRef } from 'react';
@@ -7,6 +7,16 @@ import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+    return [
+        { title: `Issue | ${data?.issue.title ?? `#${params.id ?? 'Unknown'}`}` },
+        {
+            name: 'description',
+            conent: `${(data?.issue.description ?? 'Unknown').substring(0, 100)}${data?.issue.description.length || 0 > 100 ? '...' : ''}`,
+        },
+    ];
+};
 
 const rateLimiter = new RateLimiterMemory({
     points: 5,
