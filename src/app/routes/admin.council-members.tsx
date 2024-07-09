@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { ActionFunctionArgs, json } from '@remix-run/node';
+import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { Info, Trash2 } from 'lucide-react';
@@ -13,6 +13,10 @@ import { db } from '~/utils/db.server';
 import { getAccessToken } from '~/utils/oauth.server';
 import { requireAdmin } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+
+export const meta: MetaFunction = () => {
+    return [{ title: 'Admin | Council Members' }, { name: 'description', content: 'Admin Page' }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
     await requireAdmin(request);

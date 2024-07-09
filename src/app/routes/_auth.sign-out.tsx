@@ -2,10 +2,7 @@ import type { ActionFunction, LoaderFunction, MetaFunction } from '@remix-run/no
 import { destroySession } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
-    return [
-        { title: 'Student Council | Sign Out' },
-        { name: 'description', content: '42 Vienna Student Council Sign Out!' },
-    ];
+    return [{ title: 'Sign Out' }, { name: 'description', content: '42 Vienna Student Council Sign Out!' }];
 };
 
 export const action: ActionFunction = async ({ request }) => {

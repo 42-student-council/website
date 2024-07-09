@@ -1,8 +1,12 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Outlet, useLocation } from '@remix-run/react';
 import { ChevronRight } from 'lucide-react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage } from '~/components/ui/breadcrumb';
 import { requireAdmin } from '~/utils/session.server';
+
+export const meta: MetaFunction = () => {
+    return [{ title: 'Admin' }, { name: 'description', content: 'Admin Page' }];
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
     await requireAdmin(request);

@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { PlusCircle } from 'lucide-react';
@@ -9,6 +9,10 @@ import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { db } from '~/utils/db.server';
+
+export const meta: MetaFunction = () => {
+    return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);

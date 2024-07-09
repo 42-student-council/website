@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { Info } from 'lucide-react';
@@ -18,6 +18,10 @@ import { Textarea } from '~/components/ui/textarea';
 import { sendDiscordWebhook } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+
+export const meta: MetaFunction = () => {
+    return [{ title: 'Contact' }, { name: 'description', content: 'Admin Page' }];
+};
 
 const createIssueSchema = z.object({
     contactWay: z.enum(['discord', 'email', 'nothing']),

@@ -3,10 +3,7 @@ import { checkState, createState, generateOauthUrl, getTokens } from '~/utils/oa
 import { createSession } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
-    return [
-        { title: 'Student Council OAuth2 Callback' },
-        { name: 'description', content: 'You should not be reading this.' },
-    ];
+    return [{ title: 'OAuth2 Callback' }, { name: 'description', content: 'You should not be reading this.' }];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {

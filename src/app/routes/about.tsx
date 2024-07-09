@@ -11,7 +11,7 @@ import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
-    return [{ title: 'About the Student Council' }, { name: 'description', content: 'Who is the student council?' }];
+    return [{ title: 'About' }, { name: 'description', content: 'Who is the student council?' }];
 };
 
 function shuffle(array: any[]) {
