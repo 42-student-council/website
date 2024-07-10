@@ -122,7 +122,7 @@ export default function Issues() {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Title</TableHead>
-                                                <TableHead className='hidden md:table-cell'>
+                                                <TableHead className='table-cell'>
                                                     <button
                                                         onClick={() => handleSort('votes')}
                                                         className='cursor-pointer flex items-center gap-1'
@@ -134,7 +134,7 @@ export default function Issues() {
                                                         </span>
                                                     </button>
                                                 </TableHead>
-                                                <TableHead className='hidden md:table-cell'>
+                                                <TableHead className='table-cell'>
                                                     <button
                                                         onClick={() => handleSort('createdAt')}
                                                         className='cursor-pointer flex items-center gap-1'
@@ -158,11 +158,11 @@ export default function Issues() {
                                                     <TableCell className='font-medium'>
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
                                                     </TableCell>
-                                                    <TableCell className='hidden md:table-cell'>
+                                                    <TableCell className='table-cell'>
                                                         {issue._count.votes}
                                                     </TableCell>
 
-                                                    <TableCell className='hidden md:table-cell'>
+                                                    <TableCell className='table-cell'>
                                                         {new Date(issue.createdAt).toLocaleDateString('en-GB', {
                                                             year: 'numeric',
                                                             month: 'long',
