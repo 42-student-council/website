@@ -158,9 +158,7 @@ export default function Issues() {
                                                     <TableCell className='font-medium'>
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
                                                     </TableCell>
-                                                    <TableCell className='table-cell'>
-                                                        {issue._count.votes}
-                                                    </TableCell>
+                                                    <TableCell className='table-cell'>{issue._count.votes}</TableCell>
 
                                                     <TableCell className='table-cell'>
                                                         {new Date(issue.createdAt).toLocaleDateString('en-GB', {
