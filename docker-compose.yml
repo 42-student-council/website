@@ -46,7 +46,7 @@ services:
             DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
             DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
             SUPER_ADMIN: ${SUPER_ADMIN}
-            DATABASE_URL: ${DATABASE_URL}
+            DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_NAME}
         profiles:
             - prod
 
@@ -70,7 +70,7 @@ services:
             DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
             DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
             SUPER_ADMIN: ${SUPER_ADMIN}
-            DATABASE_URL: ${DATABASE_URL}
+            DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_NAME}
         volumes:
             - ./src:/app
             - /app/node_modules
