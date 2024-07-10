@@ -64,10 +64,12 @@ export default function About() {
             <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
                 {data.councilMembers.map((member) => (
                     <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
-                        <Avatar className='rounded-xl size-60'>
-                            <AvatarImage src={member.profilePictureUrl} className='object-cover' />
-                            <AvatarFallback>{member.firstName.slice(0, 2)}</AvatarFallback>
-                        </Avatar>
+                        <Link to={`https://profile.intra.42.fr/users/${member.login}`} target='_blank'>
+                            <Avatar className='rounded-xl size-60'>
+                                <AvatarImage src={member.profilePictureUrl} className='object-cover' />
+                                <AvatarFallback>{member.firstName.slice(0, 2)}</AvatarFallback>
+                            </Avatar>
+                        </Link>
 
                         <H3 className='mt-4'>
                             {member.firstName} {member.lastName}
