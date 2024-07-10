@@ -41,6 +41,8 @@ const storage = createSessionStorage<SessionData, SessionData>({
         return id;
     },
     readData: async (id: string): Promise<SessionData | null> => {
+        if (typeof id !== 'string') return null;
+
         const data = await db.session.findFirst({
             where: { id },
             select: {
@@ -59,6 +61,8 @@ const storage = createSessionStorage<SessionData, SessionData>({
         } satisfies SessionData;
     },
     updateData: async (id: string, data: {}, expires?: Date | undefined): Promise<void> => {
+        if (typeof id !== 'string') return;
+
         if (expires && expires < new Date()) {
             await db.session.delete({ where: { id } });
             return;
@@ -70,6 +74,8 @@ const storage = createSessionStorage<SessionData, SessionData>({
         });
     },
     deleteData: async (id: string): Promise<void> => {
+        if (typeof id !== 'string') return;
+
         await db.session.delete({ where: { id } });
     },
 });
