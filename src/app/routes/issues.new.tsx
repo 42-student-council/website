@@ -183,7 +183,7 @@ export default function IssuesNew() {
                     </div>
 
                     <Info title='Note' className='mt-4 w-auto'>
-                        To maintain complete anonymity, the author of an issue does not get stored.
+                        To maintain complete anonymity, the author of an issue does <strong>not</strong> get stored.
                         <br />
                         Consequently, you won't be able to edit an issue after submitting it.
                     </Info>
