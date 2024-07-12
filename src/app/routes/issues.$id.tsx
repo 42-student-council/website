@@ -205,10 +205,6 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
-                        <Info className='mb-4'>
-                            To ensure every student can only vote once, each vote gets stored with the user ID in a
-                            database, making votes not fully anonymous to the student council.
-                        </Info>
                         <fetcher.Form method='post' className='flex'>
                             <input type='hidden' name='id' value={issue.id} />
 
@@ -239,6 +235,10 @@ export default function IssueDetail() {
                                 ({issue._count.votes})
                             </Button>
                         </fetcher.Form>
+                        <Info title='Note' className='mt-4 w-1/2'>
+                            To ensure every student can only vote once, each vote gets stored with the user ID in a
+                            database, making votes <strong>not fully anonymous</strong> to the student council.
+                        </Info>
                     </div>
                     <div className='mt-8'>
                         <h2 className='text-2xl font-bold'>Comments</h2>
