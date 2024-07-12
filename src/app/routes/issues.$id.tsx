@@ -14,7 +14,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
         { title: `Issue | ${data?.issue.title ?? `#${params.id ?? 'Unknown'}`}` },
         {
             name: 'description',
-            conent: `${(data?.issue.description ?? 'Unknown').substring(0, 100)}${data?.issue.description.length || 0 > 100 ? '...' : ''}`,
+            content: `${(data?.issue.description ?? 'Unknown').substring(0, 100)}${data?.issue.description.length || 0 > 100 ? '...' : ''}`,
         },
     ];
 };
