@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { ChevronLeft } from 'lucide-react';
+import { Info } from '~/components/alert/Info';
 
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
@@ -203,9 +204,14 @@ export default function IssueDetail() {
                     <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'>
                         {issue.description}
                     </p>
-                    <div className='flex justify-between items-center mb-4'>
-                        <fetcher.Form method='post' className='ml-4 flex'>
+                    <div className='flex flex-col b-4'>
+                        <Info className='mb-4'>
+                            To ensure every student can only vote once, each vote gets stored with the user ID in a
+                            database, making votes not fully anonymous to the student council.
+                        </Info>
+                        <fetcher.Form method='post' className='flex'>
                             <input type='hidden' name='id' value={issue.id} />
+
                             <Button
                                 type='submit'
                                 className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : 'bg-black hover:bg-gray-800'}`}
