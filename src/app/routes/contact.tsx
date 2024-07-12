@@ -208,7 +208,6 @@ export default function Contact() {
 
                     <Button
                         type='submit'
-                        variant='secondary'
                         disabled={!!contactFetcher.formData || !!contactFetcher.data?.success}
                         className='mt-4'
                     >

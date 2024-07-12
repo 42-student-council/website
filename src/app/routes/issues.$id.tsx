@@ -218,7 +218,7 @@ export default function IssueDetail() {
                             <input type='hidden' name='id' value={issue.id} />
                             <Button
                                 type='submit'
-                                className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : 'bg-black hover:bg-gray-800'}`}
+                                className={hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : ''}
                                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
                             >
                                 {hasVoted ? (
@@ -271,7 +271,7 @@ export default function IssueDetail() {
                             ></textarea>
                             <Button
                                 type='submit'
-                                className='mt-2 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 bg-black hover:bg-gray-800'
+                                className='mt-2'
                                 disabled={!commentText.trim()}
                             >
                                 Submit
@@ -287,7 +287,7 @@ export default function IssueDetail() {
                         <p>{popupMessage}</p>
                         <Button
                             onClick={() => setPopupMessage(null)}
-                            className='mt-4 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
+                            className='mt-4'
                         >
                             Close
                         </Button>
