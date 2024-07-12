@@ -25,7 +25,7 @@ export const meta: MetaFunction = () => {
 
 const createIssueSchema = z.object({
     contactWay: z.enum(['discord', 'email', 'nothing']),
-    contactDetail: z.optional(z.string().email().max(255, 'E-Mail must be at most 255 characters long.')),
+    contactDetail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
     message: z
         .string()
         .min(10, 'Message must be at least 10 characters long.')
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
                             fields: [
                                 {
                                     name: 'Contact Way',
-                                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `E-Mail: ${data.contactDetail}` : 'No need to contact the student.'}`,
+                                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.'}`,
                                 },
                             ],
                             title: 'New Contact Request',
@@ -170,7 +170,7 @@ export default function Contact() {
                             </div>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='email' id='email' />
-                                <Label htmlFor='email'>E-Mail</Label>
+                                <Label htmlFor='email'>Email</Label>
                             </div>
                             <div className='flex items-center space-x-2'>
                                 <RadioGroupItem value='nothing' id='nothing' />
@@ -187,7 +187,7 @@ export default function Contact() {
                                     required
                                     autoComplete='on'
                                     maxLength={255}
-                                    placeholder='Please enter your E-Mail'
+                                    placeholder='Please enter your email'
                                     value={contactDetail}
                                     onChange={(e) => setContactDetail(e.target.value)}
                                     className={classNames({
