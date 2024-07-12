@@ -8,6 +8,7 @@ import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { ChevronLeft } from 'lucide-react';
+import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
@@ -119,7 +120,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                 })
                 .catch(() => {
                     return json(
-                        { message: 'You tried to post too many comments. Please try again later.' },
+                        { errors: { message: 'You tried to post too many comments. Please try again later.' } },
                         { status: 429 },
                     );
                 });
@@ -169,17 +170,26 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function IssueDetail() {
     const { issue, session, hasVoted } = useLoaderData<LoaderData>();
-    const fetcher = useFetcher();
+    const fetcher = useFetcher<{ errors?: { message?: string } }>();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
 
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.message) {
+        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
             formRef.current?.reset();
             setCommentText('');
         }
     }, [fetcher.state, fetcher.data]);
+
+    useEffect(() => {
+        const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
+        if (savedCommentText) setCommentText(savedCommentText);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
+    }, [commentText]);
 
     if (!issue) {
         return <p>Loading...</p>;
@@ -272,6 +282,7 @@ export default function IssueDetail() {
                             >
                                 Submit
                             </Button>
+                            <FormErrorMessage className='mt-1'>{fetcher.data?.errors?.message}</FormErrorMessage>
                         </fetcher.Form>
                     </div>
                 </div>
