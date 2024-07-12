@@ -14,10 +14,8 @@ datasource db {
 }
 
 model User {
-  comments     Comment[]
   commentVotes CommentVote[]
   id           String        @id
-  issues       Issue[]
   issueVotes   IssueVote[]
   role         UserRole      @default(USER)
   sessions     Session[]
@@ -41,8 +39,6 @@ model Comment {
   issue     Issue         @relation(fields: [issueId], references: [id])
   issueId   Int
   text      String
-  user      User          @relation(fields: [userId], references: [id])
-  userId    String
   votes     CommentVote[]
 }
 
@@ -62,8 +58,6 @@ model Issue {
   description String
   id          Int         @id @default(autoincrement())
   title       String      @db.VarChar(100)
-  user        User        @relation(fields: [userId], references: [id])
-  userId      String
   votes       IssueVote[]
 }
 
