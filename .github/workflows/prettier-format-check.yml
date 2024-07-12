@@ -23,7 +23,10 @@ jobs:
       - name: Run Prettier
         id: prettier
         run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
-      - name: Push changes
+      - name: Commit changes
         run: |
           git diff --exit-code || git commit -am "style: apply Prettier formatting"
-          git push origin HEAD
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          branch: ${{ github.ref }}
