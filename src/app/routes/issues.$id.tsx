@@ -110,7 +110,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     const comment = await db.comment.create({
                         data: {
                             text: text.toString(),
-                            userId: user,
                             issueId: Number(id),
                         },
                     });

@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
@@ -17,6 +18,11 @@ import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+
+const rateLimiter = new RateLimiterMemory({
+    points: 2,
+    duration: 60,
+});
 
 export const meta: MetaFunction = () => {
     return [
@@ -60,16 +66,25 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
-            const issue = await db.issue.create({
-                data: {
-                    description: data.description,
-                    title: data.title,
-                    createdAt: new Date().toISOString(),
-                    userId: session.login,
-                },
-            });
+            return rateLimiter
+                .consume(session.login, 1)
+                .then(async () => {
+                    const issue = await db.issue.create({
+                        data: {
+                            description: data.description,
+                            title: data.title,
+                            createdAt: new Date().toISOString(),
+                        },
+                    });
 
-            return json({ id: issue.id });
+                    return json({ id: issue.id });
+                })
+                .catch(() => {
+                    return json(
+                        { errors: { message: 'You tried to create too many issues. Please try again later.' } },
+                        { status: 429 },
+                    );
+                });
         },
     );
 }
