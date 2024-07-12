@@ -2,6 +2,9 @@ name: Prettier Formatter
 
 on: [push, pull_request]
 
+permissions:
+  contents: write
+
 jobs:
   prettier:
     runs-on: ubuntu-latest
