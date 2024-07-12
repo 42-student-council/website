@@ -1,0 +1,35 @@
+name: Prettier Formatter
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types: review_requested
+
+
+permissions:
+  contents: write
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: npm install
+      - name: Configure GitHub Actions bot
+        run : |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Run Prettier
+        id: prettier
+        run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
+      - name: Commit changes
+        run: |
+          git diff --exit-code || git commit -am "bot: apply Prettier formatting"
+      - name: Push changes
+        run: |
+          git push origin ${{ github.ref_name }}
