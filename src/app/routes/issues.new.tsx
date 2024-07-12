@@ -182,10 +182,11 @@ export default function IssuesNew() {
                         </FormErrorMessage>
                     </div>
 
-                    <Info className='mt-4 w-auto'>
-                        <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
-                        submitting them.
-                        <div className='mb-2' />
+                    <Info title='Note' className='mt-4 w-auto'>
+                        <ul>
+                            <li>Currently you are not able to edit issues after submitting them.</li>
+                            <li>Issues are completely anonymous to both other students and the student council.</li>
+                        </ul>
                     </Info>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
