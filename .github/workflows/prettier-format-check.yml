@@ -1,9 +1,6 @@
-name: Prettier Formatter
+name: Prettier Format Check
 
 on: [push, pull_request]
-
-permissions:
-  contents: write
 
 jobs:
   prettier:
@@ -16,15 +13,10 @@ jobs:
           node-version: '14'
       - name: Install dependencies
         run: npm install
-      - name: Configure GitHub Actions bot
-        run : |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Run Prettier
         id: prettier
-        run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
-      - name: Commit changes
-        run: |
-          git diff --exit-code || git commit -am "style: apply Prettier formatting"
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.8.0
+        run: npx prettier --config .prettierrc --check "**/*.{js,jsx,ts,tsx,html,css,scss}"
+      - name: Display Prettier Output
+        if: failure()
+        run: cat $GITHUB_WORKSPACE/.github/workflows/prettier.log
+        continue-on-error: true
