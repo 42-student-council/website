@@ -77,7 +77,7 @@ export default function About() {
 
                         {/* <div className='mt-4'>
                            <p className='text-lg'>
-                                E-Mail:
+                                Email:
                                 <Button variant='link' className='pb-0 text-base'>
                                     <a href={`mailto:${member.email}`}>{member.email}</a>
                                 </Button>
