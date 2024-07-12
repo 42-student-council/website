@@ -183,10 +183,9 @@ export default function IssuesNew() {
                     </div>
 
                     <Info title='Note' className='mt-4 w-auto'>
-                        <ul>
-                            <li>Currently you are not able to edit issues after submitting them.</li>
-                            <li>Issues are completely anonymous to both other students and the student council.</li>
-                        </ul>
+                        To maintain complete anonymity, the author of an issue does not get stored.
+                        <br />
+                        Consequently, you won't be able to edit an issue after submitting it.
                     </Info>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
