@@ -181,6 +181,15 @@ export default function IssueDetail() {
         }
     }, [fetcher.state, fetcher.data]);
 
+    useEffect(() => {
+        const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
+        if (savedCommentText) setCommentText(savedCommentText);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
+    }, [commentText]);
+
     if (!issue) {
         return <p>Loading...</p>;
     }
