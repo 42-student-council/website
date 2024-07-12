@@ -176,7 +176,7 @@ export default function IssuesNew() {
                     <Warning title='Important' className='mt-4 w-auto'>
                         Issues are anonymous to the public, this means students won't know who submitted which issue.
                         <br />
-                        However, the student council members can check the author to prevent spam.
+                        However, the student council members can check the author if necessary to prevent spam.
                     </Warning>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
