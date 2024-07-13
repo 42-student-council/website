@@ -23,7 +23,7 @@ export const meta: MetaFunction = () => {
 const createIssueSchema = z.object({
     anonymous: z.enum(['yes', 'no']),
     contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
-    contactDetail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
+    contactEmail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
     message: z
         .string()
         .min(10, 'Message must be at least 10 characters long.')
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
                 embed.fields.push({
                     name: 'Contact Way',
-                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.'}`,
+                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.'}`,
                 });
             } else {
                 embed.author = {
@@ -100,7 +100,7 @@ export default function Contact() {
         errors?: {
             anonymous?: string;
             contactWay?: string;
-            contactDetail?: string;
+            contactEmail?: string;
             message?: string;
             discordError?: string;
         };
@@ -112,14 +112,14 @@ export default function Contact() {
     const [message, setMessage] = useState('');
     const [contactOption, setContactOption] = useState<string>('');
     const [anonymousOption, setAnonymousOption] = useState<string>('');
-    const [contactDetail, setContactDetail] = useState<string>('');
+    const [contactEmail, setContactEmail] = useState<string>('');
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
             setContactOption('');
             setAnonymousOption('');
-            setContactDetail(`${data.login}@student.42vienna.com`);
+            setContactEmail(`${data.login}@student.42vienna.com`);
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
             localStorage.removeItem('contact-option');
@@ -137,8 +137,8 @@ export default function Contact() {
         const savedContactOption = localStorage.getItem('contact-option');
         if (savedContactOption) setContactOption(savedContactOption);
 
-        let savedEmail = localStorage.getItem('contact-email');
-        setContactDetail(savedEmail || `${data.login}@student.42vienna.com`);
+        const savedContactEmail = localStorage.getItem('contact-email');
+        setContactEmail(savedContactEmail || `${data.login}@student.42vienna.com`);
     }, []);
 
     useEffect(() => {
@@ -158,8 +158,8 @@ export default function Contact() {
     }, [contactOption]);
 
     useEffect(() => {
-        localStorage.setItem('contact-email', contactDetail);
-    }, [contactDetail]);
+        localStorage.setItem('contact-email', contactEmail);
+    }, [contactEmail]);
 
     const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
 
@@ -261,24 +261,24 @@ export default function Contact() {
 
                                 {contactOption === 'email' && (
                                     <div className='mt-2'>
-                                        <Label htmlFor='contactDetail'>
+                                        <Label htmlFor='contactEmail'>
                                             We need your info in order to get back to you:
                                         </Label>
                                         <Input
                                             type='email'
-                                            name='contactDetail'
+                                            name='contactEmail'
                                             required
                                             autoComplete='on'
                                             maxLength={255}
                                             placeholder='Please enter your email'
-                                            value={contactDetail}
-                                            onChange={(e) => setContactDetail(e.target.value)}
+                                            value={contactEmail}
+                                            onChange={(e) => setContactEmail(e.target.value)}
                                             className={classNames({
-                                                'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
+                                                'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
                                             })}
                                         />
                                         <FormErrorMessage className='mt-2'>
-                                            {contactFetcher.data?.errors?.contactDetail}
+                                            {contactFetcher.data?.errors?.contactEmail}
                                         </FormErrorMessage>
                                     </div>
                                 )}
