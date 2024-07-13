@@ -66,11 +66,6 @@ export async function action({ request }: ActionFunctionArgs) {
                 embed.author = {
                     name: 'Anonymous',
                 };
-
-                embed.fields.push({
-                    name: 'Contact Way',
-                    value: 'Anonymous',
-                });
             }
 
             try {
