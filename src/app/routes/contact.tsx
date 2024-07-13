@@ -158,7 +158,9 @@ export default function Contact() {
     }, [contactOption]);
 
     useEffect(() => {
-        localStorage.setItem('contact-email', contactEmail);
+        if (contactEmail) {
+            localStorage.setItem('contact-email', contactEmail);
+        }
     }, [contactEmail]);
 
     const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
