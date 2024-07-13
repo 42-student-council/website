@@ -44,26 +44,37 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
+            const embed = {
+                color: 0xffe135,
+                description: data.message,
+                fields: [],
+                title: 'New Contact Request',
+                author: undefined as any,
+            };
+
+            if (data.anonymous === 'no') {
+                embed.author = {
+                    name: session.login,
+                    url: `https://profile.intra.42.fr/users/${session.login}`,
+                    icon_url: session.imageUrl,
+                };
+                embed.fields.push({
+                    name: 'Contact Way',
+                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.'}`,
+                });
+            } else {
+                embed.author = {
+                    name: 'Anonymous',
+                };
+                embed.fields.push({
+                    name: 'Contact Way',
+                    value: 'Anonymous',
+                });
+            }
+
             try {
                 await sendDiscordWebhook({
-                    embeds: [
-                        {
-                            author: {
-                                name: session.login,
-                                url: `https://profile.intra.42.fr/users/${session.login}`,
-                                icon_url: session.imageUrl,
-                            },
-                            color: 0xffe135,
-                            description: data.message,
-                            fields: [
-                                {
-                                    name: 'Contact Way',
-                                    value: `${data.anonymous === 'yes' ? 'Anonymous' : (data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.')}`,
-                                },
-                            ],
-                            title: 'New Contact Request',
-                        },
-                    ],
+                    embeds: [embed],
                     username: 'Webportal',
                     wait: true,
                 });
