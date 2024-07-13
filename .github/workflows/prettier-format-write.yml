@@ -32,4 +32,4 @@ jobs:
           git diff --exit-code || git commit -am "bot: apply Prettier formatting"
       - name: Push changes
         run: |
-          git push origin ${{ github.ref_name }}
+          git push origin ${{ github.head_ref || github.ref_name }}
