@@ -127,7 +127,7 @@ export default function Contact() {
             </div>
             <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='mt-4 md:w-3/5'>
+                <p className='mt-4 md:w-3/5 text-xl'>
                     Do you have an issue or suggestion you would like to stay private? Use this contact form.
                 </p>
             </div>
