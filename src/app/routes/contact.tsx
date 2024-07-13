@@ -184,6 +184,7 @@ export default function Contact() {
                             name='anonymous'
                             onValueChange={setAnonymousOption}
                             className='pt-1'
+                            required
                         >
                             <div className='inline-flex'>
                                 <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -210,6 +211,7 @@ export default function Contact() {
                                     name='contactWay'
                                     onValueChange={setContactOption}
                                     className='pt-1'
+                                    required={anonymousOption === 'no'}
                                 >
                                     <div className='inline-flex'>
                                         <Label className='inline-flex items-center space-x-2 cursor-pointer'>
