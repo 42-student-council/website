@@ -164,17 +164,23 @@ export default function Contact() {
                             onValueChange={setContactOption}
                             className='pt-1'
                         >
-                            <div className='flex items-center space-x-2'>
-                                <RadioGroupItem value='discord' id='discord' />
-                                <Label htmlFor='discord'>Discord</Label>
+                            <div className='inline-flex'>
+                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                    <RadioGroupItem value='discord' id='discord' />
+                                    <span>Discord</span>
+                                </Label>
                             </div>
-                            <div className='flex items-center space-x-2'>
-                                <RadioGroupItem value='email' id='email' />
-                                <Label htmlFor='email'>Email</Label>
+                            <div className='inline-flex'>
+                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                    <RadioGroupItem value='email' id='email' />
+                                    <span>Email</span>
+                                </Label>
                             </div>
-                            <div className='flex items-center space-x-2'>
-                                <RadioGroupItem value='nothing' id='nothing' />
-                                <Label htmlFor='nothing'>No follow-up needed</Label>
+                            <div className='inline-flex'>
+                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                    <RadioGroupItem value='nothing' id='nothing' />
+                                    <span>No follow-up needed</span>
+                                </Label>
                             </div>
                         </RadioGroup>
 
