@@ -110,7 +110,9 @@ export default function Contact() {
     const [message, setMessage] = useState('');
     const [contactOption, setContactOption] = useState<string | null>(null);
     const [anonymousOption, setAnonymousOption] = useState<string | null>(null);
-    const [contactDetail, setContactDetail] = useState(`${data.login}@student.42vienna.com`);
+    const [contactDetail, setContactDetail] = useState(
+        localStorage.getItem('contact-email') || `${data.login}@student.42vienna.com`
+    );
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
@@ -121,6 +123,7 @@ export default function Contact() {
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
             localStorage.removeItem('contact-option');
+            localStorage.removeItem('contact-email');
         }
     }, [contactFetcher.data?.success]);
 
@@ -148,6 +151,10 @@ export default function Contact() {
             localStorage.setItem('contact-option', contactOption);
         }
     }, [contactOption]);
+
+    useEffect(() => {
+        localStorage.setItem('contact-email', contactDetail);
+    }, [contactDetail]);
 
     const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
 
