@@ -182,17 +182,11 @@ export default function IssuesNew() {
                         </FormErrorMessage>
                     </div>
 
-                    <Info className='mt-4 w-auto'>
-                        <span className='font-bold'>Note:</span> Currently you are not able to edit issues after
-                        submitting them.
-                        <div className='mb-2' />
-                    </Info>
-
-                    <Warning title='Important' className='mt-4 w-auto'>
-                        Issues are anonymous to the public, this means students won't know who submitted which issue.
+                    <Info title='Note' className='mt-4 w-auto'>
+                        To maintain complete anonymity, the author of an issue does <strong>not</strong> get stored.
                         <br />
-                        However, the student council members can check the author if necessary to prevent spam.
-                    </Warning>
+                        Consequently, you won't be able to edit an issue after submitting it.
+                    </Info>
 
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
