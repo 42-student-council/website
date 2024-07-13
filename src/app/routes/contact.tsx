@@ -97,8 +97,8 @@ export default function Contact() {
     }>();
 
     const [message, setMessage] = useState('');
-    const [contactOption, setContactOption] = useState('discord');
-    const [anonymousOption, setAnonymousOption] = useState('no');
+    const [contactOption, setContactOption] = useState<string | null>(null);
+    const [anonymousOption, setAnonymousOption] = useState<string | null>(null);
     const [contactDetail, setContactDetail] = useState(`${data.login}@student.42vienna.com`);
 
     useEffect(() => {
@@ -119,6 +119,8 @@ export default function Contact() {
     useEffect(() => {
         localStorage.setItem('contact-message', message);
     }, [message]);
+
+    const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
 
     return (
         <div>
@@ -160,7 +162,7 @@ export default function Contact() {
                         </Label>
 
                         <RadioGroup
-                            defaultValue={anonymousOption}
+                            value={anonymousOption}
                             name='anonymous'
                             onValueChange={setAnonymousOption}
                             className='pt-1'
@@ -186,7 +188,7 @@ export default function Contact() {
                                 </Label>
 
                                 <RadioGroup
-                                    defaultValue={contactOption}
+                                    value={contactOption}
                                     name='contactWay'
                                     onValueChange={setContactOption}
                                     className='pt-1'
@@ -238,7 +240,7 @@ export default function Contact() {
 
                     <Button
                         type='submit'
-                        disabled={!!contactFetcher.formData || !!contactFetcher.data?.success}
+                        disabled={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
                         className='mt-4'
                     >
                         {contactFetcher.formData ? 'Loading...' : 'Send Message'}
