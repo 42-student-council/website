@@ -276,7 +276,7 @@ export default function IssueDetail() {
                             >
                                 Submit
                             </Button>
-                            <FormErrorMessage className='mt-1'>{fetcher.data?.errors?.message}</FormErrorMessage>
+                            <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
                         </fetcher.Form>
                     </div>
                 </div>

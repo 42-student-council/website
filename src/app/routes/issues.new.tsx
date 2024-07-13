@@ -157,7 +157,7 @@ export default function IssuesNew() {
                         onChange={(e) => setTitle(e.target.value)}
                         defaultValue={title}
                     />
-                    <FormErrorMessage className='mt-1'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
                         <Label htmlFor='description' className='text-lg'>
@@ -177,7 +177,7 @@ export default function IssuesNew() {
                             onChange={(e) => setDescription(e.target.value)}
                             defaultValue={description}
                         />
-                        <FormErrorMessage className='mt-1'>
+                        <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
                         </FormErrorMessage>
                     </div>
@@ -197,7 +197,7 @@ export default function IssuesNew() {
                     <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
                     </Button>
-                    <FormErrorMessage className='mt-1'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
                 </createIssueFetcher.Form>
             </div>
         </div>

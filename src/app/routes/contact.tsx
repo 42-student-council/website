@@ -150,7 +150,7 @@ export default function Contact() {
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
                         />
-                        <FormErrorMessage className='mt-1'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
+                        <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
 
                     <div className='mt-4'>
@@ -200,7 +200,7 @@ export default function Contact() {
                                         'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
                                     })}
                                 />
-                                <FormErrorMessage className='mt-1'>
+                                <FormErrorMessage className='mt-2'>
                                     {contactFetcher.data?.errors?.contactDetail}
                                 </FormErrorMessage>
                             </div>
@@ -222,7 +222,7 @@ export default function Contact() {
                     </Button>
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
                     {contactFetcher.data?.success && (
-                        <p className='text-green-600 text-xs mt-1'>
+                        <p className='text-green-600 text-xs mt-2'>
                             {contactFetcher.data?.contactWay !== 'nothing'
                                 ? 'We have received your message, we will get back to you soon!'
                                 : 'We have received your message.'}

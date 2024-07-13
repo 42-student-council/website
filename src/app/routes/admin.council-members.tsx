@@ -172,7 +172,7 @@ function CouncilMember({
                 </deleteFetcher.Form>
             </div>
 
-            <FormErrorMessage className='mt-1'>{deleteFetcher.data?.errors?.login}</FormErrorMessage>
+            <FormErrorMessage className='mt-2'>{deleteFetcher.data?.errors?.login}</FormErrorMessage>
         </div>
     );
 }
@@ -194,7 +194,7 @@ export default function AdminCouncilMembers() {
                                 Add
                             </Button>
                         </div>
-                        <FormErrorMessage className='mt-1'>
+                        <FormErrorMessage className='mt-2'>
                             {addCouncilMemberFetcher.data?.errors?.newLogin}
                         </FormErrorMessage>
                         <p></p>
