@@ -220,7 +220,7 @@ export default function IssueDetail() {
 
                             <Button
                                 type='submit'
-                                className={`px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : 'bg-black hover:bg-gray-800'}`}
+                                className={hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : ''}
                                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
                             >
                                 {hasVoted ? (
@@ -275,11 +275,7 @@ export default function IssueDetail() {
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)} // Step 2
                             ></textarea>
-                            <Button
-                                type='submit'
-                                className='mt-2 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 bg-black hover:bg-gray-800'
-                                disabled={!commentText.trim()}
-                            >
+                            <Button type='submit' className='mt-2' disabled={!commentText.trim()}>
                                 Submit
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
@@ -291,10 +287,7 @@ export default function IssueDetail() {
                 <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
                     <div className='bg-white p-6 rounded shadow-lg'>
                         <p>{popupMessage}</p>
-                        <Button
-                            onClick={() => setPopupMessage(null)}
-                            className='mt-4 px-4 py-2 text-sm font-medium text-white rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500'
-                        >
+                        <Button onClick={() => setPopupMessage(null)} className='mt-4'>
                             Close
                         </Button>
                     </div>
