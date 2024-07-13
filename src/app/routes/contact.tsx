@@ -108,17 +108,35 @@ export default function Contact() {
             setAnonymousOption('no');
             setContactDetail(`${data.login}@student.42vienna.com`);
             localStorage.removeItem('contact-message');
+            localStorage.removeItem('anonymous-option');
+            localStorage.removeItem('contact-option');
         }
     }, [contactFetcher.data?.success]);
 
     useEffect(() => {
         const savedMessage = localStorage.getItem('contact-message');
+        const savedAnonymousOption = localStorage.getItem('anonymous-option');
+        const savedContactOption = localStorage.getItem('contact-option');
         if (savedMessage) setMessage(savedMessage);
+        if (savedAnonymousOption) setAnonymousOption(savedAnonymousOption);
+        if (savedContactOption) setContactOption(savedContactOption);
     }, []);
 
     useEffect(() => {
         localStorage.setItem('contact-message', message);
     }, [message]);
+
+    useEffect(() => {
+        if (anonymousOption) {
+            localStorage.setItem('anonymous-option', anonymousOption);
+        }
+    }, [anonymousOption]);
+
+    useEffect(() => {
+        if (contactOption) {
+            localStorage.setItem('contact-option', contactOption);
+        }
+    }, [contactOption]);
 
     const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
 
