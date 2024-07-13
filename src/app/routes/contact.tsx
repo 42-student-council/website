@@ -104,8 +104,8 @@ export default function Contact() {
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
-            setContactOption('discord');
-            setAnonymousOption('no');
+            setContactOption(null);
+            setAnonymousOption(null);
             setContactDetail(`${data.login}@student.42vienna.com`);
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
