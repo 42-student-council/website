@@ -131,7 +131,7 @@ export default function Contact() {
             <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <p className='mt-4 md:w-3/5 text-xl'>
-                    Do you have an issue or suggestion you would like to stay private? Use this contact form.
+                    Do you have an issue or suggestion you would like to tell us in private? Use this contact form.
                 </p>
             </div>
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
