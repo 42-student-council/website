@@ -101,24 +101,28 @@ export default function Contact() {
     const data = useLoaderData<SessionData>();
 
     const contactFetcher = useFetcher<{
-        errors?: { anonymous?: string; contactWay?: string; contactDetail?: string; message?: string; discordError?: string };
+        errors?: {
+            anonymous?: string;
+            contactWay?: string;
+            contactDetail?: string;
+            message?: string;
+            discordError?: string;
+        };
         success?: boolean;
         contactWay?: string;
         anonymous?: string;
     }>();
 
     const [message, setMessage] = useState('');
-    const [contactOption, setContactOption] = useState<string | null>(null);
-    const [anonymousOption, setAnonymousOption] = useState<string | null>(null);
-    const [contactDetail, setContactDetail] = useState(
-        localStorage.getItem('contact-email') || `${data.login}@student.42vienna.com`
-    );
+    const [contactOption, setContactOption] = useState<string>('');
+    const [anonymousOption, setAnonymousOption] = useState<string>('');
+    const [contactDetail, setContactDetail] = useState<string>('');
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
-            setContactOption(null);
-            setAnonymousOption(null);
+            setContactOption('discord');
+            setAnonymousOption('no');
             setContactDetail(`${data.login}@student.42vienna.com`);
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
@@ -129,11 +133,16 @@ export default function Contact() {
 
     useEffect(() => {
         const savedMessage = localStorage.getItem('contact-message');
-        const savedAnonymousOption = localStorage.getItem('anonymous-option');
-        const savedContactOption = localStorage.getItem('contact-option');
         if (savedMessage) setMessage(savedMessage);
+
+        const savedAnonymousOption = localStorage.getItem('anonymous-option');
         if (savedAnonymousOption) setAnonymousOption(savedAnonymousOption);
+
+        const savedContactOption = localStorage.getItem('contact-option');
         if (savedContactOption) setContactOption(savedContactOption);
+
+        let savedEmail = localStorage.getItem('contact-email');
+        if (savedEmail) setContactDetail(savedEmail);
     }, []);
 
     useEffect(() => {
@@ -218,7 +227,10 @@ export default function Contact() {
                             </div>
                         </RadioGroup>
 
-                        <fieldset disabled={anonymousOption === 'yes'} className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <fieldset
+                            disabled={anonymousOption === 'yes'}
+                            className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
                             <div className='mt-4'>
                                 <Label htmlFor='contactWay' className='text-lg'>
                                     How should we reach out to you?
@@ -253,7 +265,9 @@ export default function Contact() {
 
                                 {contactOption === 'email' && (
                                     <div className='mt-2'>
-                                        <Label htmlFor='contactDetail'>We need your info in order to get back to you:</Label>
+                                        <Label htmlFor='contactDetail'>
+                                            We need your info in order to get back to you:
+                                        </Label>
                                         <Input
                                             type='email'
                                             name='contactDetail'
