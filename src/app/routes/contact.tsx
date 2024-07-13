@@ -22,7 +22,7 @@ export const meta: MetaFunction = () => {
 
 const createIssueSchema = z.object({
     anonymous: z.enum(['yes', 'no']),
-    contactWay: z.enum(['discord', 'email', 'nothing']),
+    contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
     contactDetail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
     message: z
         .string()
@@ -47,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
             const embed = {
                 color: 0xffe135,
                 description: data.message,
-                fields: [],
+                fields: [] as { name: string; value: string }[],
                 title: 'New Contact Request',
                 author: undefined as any,
             };
@@ -56,8 +56,8 @@ export async function action({ request }: ActionFunctionArgs) {
                 embed.author = {
                     name: session.login,
                     url: `https://profile.intra.42.fr/users/${session.login}`,
-                    icon_url: session.imageUrl,
                 };
+
                 embed.fields.push({
                     name: 'Contact Way',
                     value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.'}`,
@@ -66,6 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 embed.author = {
                     name: 'Anonymous',
                 };
+
                 embed.fields.push({
                     name: 'Contact Way',
                     value: 'Anonymous',
@@ -142,7 +143,7 @@ export default function Contact() {
         if (savedContactOption) setContactOption(savedContactOption);
 
         let savedEmail = localStorage.getItem('contact-email');
-        if (savedEmail) setContactDetail(savedEmail);
+        setContactDetail(savedEmail || `${data.login}@student.42vienna.com`);
     }, []);
 
     useEffect(() => {
