@@ -133,7 +133,7 @@ export default function Contact() {
             </div>
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
                 <contactFetcher.Form className='md:w-3/5' method='post'>
-                    <div className='mt-4'>
+                    <div className='mt-2'>
                         <Label htmlFor='message' className='text-lg'>
                             What would you like to tell us?
                         </Label>
