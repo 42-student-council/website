@@ -126,12 +126,12 @@ export default function IssuesNew() {
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
-            <div className='md:flex md:justify-center'>
-                <H1 className='m-4 md:w-3/5'>Create a Public Issue</H1>
+            <div className='md:flex md:justify-center mx-4 md:mx-0'>
+                <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
             <Separator />
-            <div className='md:flex md:justify-center'>
-                <p className='mt-4 mx-4 md:w-3/5'>
+            <div className='md:flex md:justify-center mx-4 md:mx-0'>
+                <p className='mt-4 md:w-3/5'>
                     Open an anonymous issue to discuss what's important to you with the community.
                     <br />
                     If you would like to share your issue with the student council members only, please go to the{' '}
@@ -141,7 +141,7 @@ export default function IssuesNew() {
                     .
                 </p>
             </div>
-            <div className='flex justify-center mt-4 mx-8'>
+            <div className='flex justify-center mt-4 mx-4 md:mx-0'>
                 <createIssueFetcher.Form className='md:w-3/5' method='post'>
                     <Label htmlFor='title' className='text-lg'>
                         Issue Title

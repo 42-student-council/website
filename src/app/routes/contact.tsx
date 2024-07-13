@@ -122,16 +122,16 @@ export default function Contact() {
     return (
         <div>
             <NavBar login={data.login} role={data.role} />
-            <div className='md:flex md:justify-center'>
-                <H1 className='m-4 md:w-3/5'>Contact the Student Council</H1>
+            <div className='md:flex md:justify-center mx-4 md:mx-0'>
+                <H1 className='my-4 md:w-3/5'>Contact the Student Council</H1>
             </div>
             <Separator />
-            <div className='md:flex md:justify-center'>
-                <p className='mt-4 mx-4 md:w-3/5'>
+            <div className='md:flex md:justify-center mx-4 md:mx-0'>
+                <p className='mt-4 md:w-3/5'>
                     Do you have an issue or suggestion you would like to stay private? Use this contact form.
                 </p>
             </div>
-            <div className='flex justify-center mt-4 mx-8 mb-4'>
+            <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
                 <contactFetcher.Form className='md:w-3/5' method='post'>
                     <div className='mt-4'>
                         <Label htmlFor='message' className='text-lg'>
