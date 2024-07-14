@@ -187,7 +187,7 @@ export default function AdminCouncilMembers() {
     const data = useLoaderData<LoaderData>();
 
     const [newLogin, setNewLogin] = useState('');
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [isButtonInvalid, setIsButtonInvalid] = useState(true);
 
     useEffect(() => {
         let isLoginValid = true;
@@ -197,7 +197,7 @@ export default function AdminCouncilMembers() {
             isLoginValid = false;
         }
 
-        setIsButtonDisabled(!isLoginValid || !!addCouncilMemberFetcher.data?.errors?.newLogin);
+        setIsButtonInvalid(!isLoginValid || !!addCouncilMemberFetcher.data?.errors?.newLogin);
     }, [newLogin, addCouncilMemberFetcher.data]);
 
     return (
@@ -222,7 +222,7 @@ export default function AdminCouncilMembers() {
                                 name='_action'
                                 value='add'
                                 className='ml-4'
-                                disabled={isButtonDisabled}
+                                invalid={isButtonInvalid}
                             >
                                 Add
                             </Button>

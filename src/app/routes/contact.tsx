@@ -253,7 +253,7 @@ export default function Contact() {
                         </RadioGroup>
 
                         <fieldset
-                            disabled={anonymousOption === 'yes'}
+                            invalid={anonymousOption === 'yes'}
                             className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             <div className='mt-4'>
@@ -317,7 +317,7 @@ export default function Contact() {
 
                     <Button
                         type='submit'
-                        disabled={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
+                        invalid={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
                         className='mt-4'
                     >
                         {contactFetcher.formData ? 'Loading...' : 'Send Message'}

@@ -290,7 +290,7 @@ export default function IssueDetail() {
                             <Button
                                 type='submit'
                                 className='mt-2'
-                                disabled={
+                                invalid={
                                     commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH
                                 }
                             >

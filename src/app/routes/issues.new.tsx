@@ -211,7 +211,7 @@ export default function IssuesNew() {
                         Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
                     </Info>
 
-                    <Button type='submit' disabled={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
+                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
                     </Button>
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
