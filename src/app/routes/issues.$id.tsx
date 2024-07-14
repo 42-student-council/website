@@ -258,12 +258,13 @@ export default function IssueDetail() {
                                     <li key={comment.id} className='mt-4'>
                                         <p className='text-sm text-gray-600'>{comment.text}</p>
                                         <p className='text-xs text-gray-400'>
-                                            On {new Date(comment.createdAt).toLocaleString([], {
+                                            On{' '}
+                                            {new Date(comment.createdAt).toLocaleString([], {
                                                 year: 'numeric',
                                                 month: 'numeric',
                                                 day: 'numeric',
                                                 hour: '2-digit',
-                                                minute: '2-digit'
+                                                minute: '2-digit',
                                             })}
                                         </p>
                                     </li>
