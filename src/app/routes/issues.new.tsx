@@ -101,6 +101,9 @@ export default function IssuesNew() {
         id?: number;
     }>();
     const navigate = useNavigate();
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
@@ -109,9 +112,6 @@ export default function IssuesNew() {
             navigate(`/issues/${createIssueFetcher.data.id}`);
         }
     }, [createIssueFetcher.data, navigate]);
-
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
 
     useEffect(() => {
         const savedTitle = localStorage.getItem('create-issue-title');
@@ -128,7 +128,23 @@ export default function IssuesNew() {
         localStorage.setItem('create-issue-description', description);
     }, [description]);
 
-    const isFormValid = title.length >= TITLE_MIN_LENGTH && title.length <= TITLE_MAX_LENGTH && description.length >= DESCRIPTION_MIN_LENGTH && description.length <= DESCRIPTION_MAX_LENGTH;
+    useEffect(() => {
+        let isTitleValid = true;
+        try {
+            createIssueSchema.shape.title.parse(title);
+        } catch (e) {
+            isTitleValid = false;
+        }
+
+        let isDescriptionValid = true;
+        try {
+            createIssueSchema.shape.description.parse(description);
+        } catch (e) {
+            isDescriptionValid = false;
+        }
+
+        setIsFormValid(isTitleValid && isDescriptionValid);
+    }, [title, description]);
 
     return (
         <div>
