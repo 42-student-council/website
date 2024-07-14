@@ -161,7 +161,7 @@ export default function Issues() {
                                                     <TableCell className='table-cell'>{issue._count.votes}</TableCell>
 
                                                     <TableCell className='table-cell'>
-                                                        {new Date(issue.createdAt).toLocaleDateString('en-GB', {
+                                                        {new Date(issue.createdAt).toLocaleDateString([], {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric',
