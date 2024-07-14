@@ -294,7 +294,7 @@ export default function IssueDetail() {
                                     commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH
                                 }
                             >
-                                Submit
+                                Comment
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
                         </fetcher.Form>
