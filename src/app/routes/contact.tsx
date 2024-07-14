@@ -1,14 +1,11 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
+import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
-import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
@@ -24,8 +21,9 @@ export const meta: MetaFunction = () => {
 };
 
 const createIssueSchema = z.object({
-    contactWay: z.enum(['discord', 'email', 'nothing']),
-    contactDetail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
+    anonymous: z.enum(['yes', 'no']),
+    contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
+    contactEmail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
     message: z
         .string()
         .min(10, 'Message must be at least 10 characters long.')
@@ -46,26 +44,33 @@ export async function action({ request }: ActionFunctionArgs) {
         createIssueSchema,
         (errors) => json({ errors }, 400),
         async (data) => {
+            const embed = {
+                color: 0xffe135,
+                description: data.message,
+                fields: [] as { name: string; value: string }[],
+                title: 'New Contact Request',
+                author: undefined as any,
+            };
+
+            if (data.anonymous === 'no') {
+                embed.author = {
+                    name: session.login,
+                    url: `https://profile.intra.42.fr/users/${session.login}`,
+                };
+
+                embed.fields.push({
+                    name: 'Contact Way',
+                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.'}`,
+                });
+            } else {
+                embed.author = {
+                    name: 'Anonymous',
+                };
+            }
+
             try {
                 await sendDiscordWebhook({
-                    embeds: [
-                        {
-                            author: {
-                                name: session.login,
-                                url: `https://profile.intra.42.fr/users/${session.login}`,
-                                icon_url: session.imageUrl,
-                            },
-                            color: 0xffe135,
-                            description: data.message,
-                            fields: [
-                                {
-                                    name: 'Contact Way',
-                                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactDetail}` : 'No need to contact the student.'}`,
-                                },
-                            ],
-                            title: 'New Contact Request',
-                        },
-                    ],
+                    embeds: [embed],
                     username: 'Webportal',
                     wait: true,
                 });
@@ -83,7 +88,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 );
             }
 
-            return json({ success: true, contactWay: data.contactWay });
+            return json({ success: true, contactWay: data.contactWay, anonymous: data.anonymous });
         },
     );
 }
@@ -92,32 +97,73 @@ export default function Contact() {
     const data = useLoaderData<SessionData>();
 
     const contactFetcher = useFetcher<{
-        errors?: { contactWay?: string; contactDetail?: string; message?: string; discordError?: string };
+        errors?: {
+            anonymous?: string;
+            contactWay?: string;
+            contactEmail?: string;
+            message?: string;
+            discordError?: string;
+        };
         success?: boolean;
         contactWay?: string;
+        anonymous?: string;
     }>();
 
     const [message, setMessage] = useState('');
-    const [contactOption, setContactOption] = useState('discord');
-    const [contactDetail, setContactDetail] = useState(`${data.login}@student.42vienna.com`);
+    const [contactOption, setContactOption] = useState<string>('');
+    const [anonymousOption, setAnonymousOption] = useState<string>('');
+    const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
-            setContactOption('discord');
-            setContactDetail(`${data.login}@student.42vienna.com`);
+            setContactOption('');
+            setAnonymousOption('');
             localStorage.removeItem('contact-message');
+            localStorage.removeItem('anonymous-option');
+            localStorage.removeItem('contact-option');
         }
     }, [contactFetcher.data?.success]);
 
     useEffect(() => {
         const savedMessage = localStorage.getItem('contact-message');
         if (savedMessage) setMessage(savedMessage);
+
+        const savedAnonymousOption = localStorage.getItem('anonymous-option');
+        if (savedAnonymousOption) setAnonymousOption(savedAnonymousOption);
+
+        const savedContactOption = localStorage.getItem('contact-option');
+        if (savedContactOption) setContactOption(savedContactOption);
+
+        const savedContactEmail = localStorage.getItem('contact-email');
+        if (savedContactEmail) setContactEmail(savedContactEmail);
     }, []);
 
     useEffect(() => {
         localStorage.setItem('contact-message', message);
     }, [message]);
+
+    useEffect(() => {
+        if (anonymousOption) {
+            localStorage.setItem('anonymous-option', anonymousOption);
+        }
+    }, [anonymousOption]);
+
+    useEffect(() => {
+        if (contactOption) {
+            localStorage.setItem('contact-option', contactOption);
+        }
+    }, [contactOption]);
+
+    useEffect(() => {
+        if (!contactEmail || contactEmail === `${data.login}@student.42vienna.com`) {
+            localStorage.removeItem('contact-email');
+        } else {
+            localStorage.setItem('contact-email', contactEmail);
+        }
+    }, [contactEmail]);
+
+    const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
 
     return (
         <div>
@@ -128,7 +174,7 @@ export default function Contact() {
             <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <p className='mt-4 md:w-3/5 text-xl'>
-                    Do you have an issue or suggestion you would like to stay private? Use this contact form.
+                    Do you have an issue or suggestion you would like to tell us in private? Use this contact form.
                 </p>
             </div>
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
@@ -154,67 +200,97 @@ export default function Contact() {
                     </div>
 
                     <div className='mt-4'>
-                        <Label htmlFor='message' className='text-lg'>
-                            How should we reach out to you?
+                        <Label htmlFor='anonymous' className='text-lg'>
+                            Do you wish to stay anonymous?
                         </Label>
 
                         <RadioGroup
-                            defaultValue={contactOption}
-                            name='contactWay'
-                            onValueChange={setContactOption}
+                            value={anonymousOption}
+                            name='anonymous'
+                            onValueChange={setAnonymousOption}
                             className='pt-1'
+                            required
                         >
                             <div className='inline-flex'>
                                 <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                    <RadioGroupItem value='discord' id='discord' />
-                                    <span>Discord</span>
+                                    <RadioGroupItem value='yes' id='yes' />
+                                    <span>Yes</span>
                                 </Label>
                             </div>
                             <div className='inline-flex'>
                                 <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                    <RadioGroupItem value='email' id='email' />
-                                    <span>Email</span>
-                                </Label>
-                            </div>
-                            <div className='inline-flex'>
-                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                    <RadioGroupItem value='nothing' id='nothing' />
-                                    <span>No follow-up needed</span>
+                                    <RadioGroupItem value='no' id='no' />
+                                    <span>No</span>
                                 </Label>
                             </div>
                         </RadioGroup>
 
-                        {contactOption === 'email' && (
-                            <div className='mt-2'>
-                                <Label htmlFor='how-to-contact'>We need your info in order to get back to you:</Label>
-                                <Input
-                                    type='email'
-                                    name='contactDetail'
-                                    required
-                                    autoComplete='on'
-                                    maxLength={255}
-                                    placeholder='Please enter your email'
-                                    value={contactDetail}
-                                    onChange={(e) => setContactDetail(e.target.value)}
-                                    className={classNames({
-                                        'border-red-600': !!contactFetcher.data?.errors?.contactDetail,
-                                    })}
-                                />
-                                <FormErrorMessage className='mt-2'>
-                                    {contactFetcher.data?.errors?.contactDetail}
-                                </FormErrorMessage>
-                            </div>
-                        )}
-                    </div>
+                        <fieldset
+                            disabled={anonymousOption === 'yes'}
+                            className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                            <div className='mt-4'>
+                                <Label htmlFor='contactWay' className='text-lg'>
+                                    How should we reach out to you?
+                                </Label>
 
-                    <Warning title='Important' className='mt-4 w-auto'>
-                        Contacting is <span className='font-bold uppercase'>not anonymous</span>. We will store your
-                        data so we can get back to you.
-                    </Warning>
+                                <RadioGroup
+                                    value={contactOption}
+                                    name='contactWay'
+                                    onValueChange={setContactOption}
+                                    className='pt-1'
+                                    required={anonymousOption === 'no'}
+                                >
+                                    <div className='inline-flex'>
+                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                            <RadioGroupItem value='discord' id='discord' />
+                                            <span>Discord</span>
+                                        </Label>
+                                    </div>
+                                    <div className='inline-flex'>
+                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                            <RadioGroupItem value='email' id='email' />
+                                            <span>Email</span>
+                                        </Label>
+                                    </div>
+                                    <div className='inline-flex'>
+                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                            <RadioGroupItem value='nothing' id='nothing' />
+                                            <span>No follow-up needed</span>
+                                        </Label>
+                                    </div>
+                                </RadioGroup>
+
+                                {contactOption === 'email' && (
+                                    <div className='mt-2'>
+                                        <Label htmlFor='contactEmail'>
+                                            We need your info in order to get back to you:
+                                        </Label>
+                                        <Input
+                                            type='email'
+                                            name='contactEmail'
+                                            required
+                                            autoComplete='on'
+                                            maxLength={255}
+                                            placeholder='Please enter your email'
+                                            value={contactEmail}
+                                            onChange={(e) => setContactEmail(e.target.value)}
+                                            className={classNames({
+                                                'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
+                                            })}
+                                        />
+                                        <FormErrorMessage className='mt-2'>
+                                            {contactFetcher.data?.errors?.contactEmail}
+                                        </FormErrorMessage>
+                                    </div>
+                                )}
+                            </div>
+                        </fieldset>
+                    </div>
 
                     <Button
                         type='submit'
-                        disabled={!!contactFetcher.formData || !!contactFetcher.data?.success}
+                        disabled={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
                         className='mt-4'
                     >
                         {contactFetcher.formData ? 'Loading...' : 'Send Message'}
@@ -222,7 +298,7 @@ export default function Contact() {
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
                     {contactFetcher.data?.success && (
                         <p className='text-green-600 text-xs mt-2'>
-                            {contactFetcher.data?.contactWay !== 'nothing'
+                            {contactFetcher.data?.anonymous === 'no' && contactFetcher.data?.contactWay !== 'nothing'
                                 ? 'We have received your message, we will get back to you soon!'
                                 : 'We have received your message.'}
                         </p>
