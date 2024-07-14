@@ -146,6 +146,12 @@ export default function IssuesNew() {
         setIsFormValid(isTitleValid && isDescriptionValid);
     }, [title, description]);
 
+    const handleSubmit = (e) => {
+        if (!isFormValid || createIssueFetcher.formData) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
@@ -165,7 +171,7 @@ export default function IssuesNew() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='md:w-3/5' method='post'>
+                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <Label htmlFor='title' className='text-lg'>
                         Issue Title
                     </Label>

@@ -177,6 +177,7 @@ export default function IssueDetail() {
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
@@ -193,6 +194,20 @@ export default function IssueDetail() {
     useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
     }, [commentText]);
+
+    useEffect(() => {
+        let isCommentTextValid = true;
+        if (commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH) {
+            isCommentTextValid = false;
+        }
+        setIsFormValid(isCommentTextValid);
+    }, [commentText]);
+
+    const handleSubmit = (e) => {
+        if (!isFormValid || fetcher.formData) {
+            e.preventDefault();
+        }
+    };
 
     if (!issue) {
         return <p>Loading...</p>;
@@ -276,23 +291,21 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef}>
+                        <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                             <textarea
                                 name='comment_text'
                                 rows={3}
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
                                 value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)} // Step 2
+                                onChange={(e) => setCommentText(e.target.value)}
                                 minLength={COMMENT_MIN_LENGTH}
                                 maxLength={COMMENT_MAX_LENGTH}
                             ></textarea>
                             <Button
                                 type='submit'
                                 className='mt-2'
-                                invalid={
-                                    commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH
-                                }
+                                invalid={!isFormValid}
                             >
                                 Comment
                             </Button>

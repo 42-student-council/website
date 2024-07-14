@@ -66,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
                 embed.fields.push({
                     name: 'Contact Way',
-                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.'}`,
+                    value: data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.',
                 });
             } else {
                 embed.author = {
@@ -192,6 +192,12 @@ export default function Contact() {
         setIsFormValid(isMessageValid && isContactValid && isEmailValid);
     }, [message, anonymousOption, contactOption, contactEmail]);
 
+    const handleSubmit = (e) => {
+        if (!isFormValid || contactFetcher.formData) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <div>
             <NavBar login={data.login} role={data.role} />
@@ -205,7 +211,7 @@ export default function Contact() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
-                <contactFetcher.Form className='md:w-3/5' method='post'>
+                <contactFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <div className='mt-2'>
                         <Label htmlFor='message' className='text-lg'>
                             What would you like to tell us?
