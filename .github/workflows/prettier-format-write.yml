@@ -39,7 +39,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Run Prettier
         id: prettier
-        run: npx prettier --config testfiles/pull_request-comment/.prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
+        run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
       - name: Commit changes
         run: |
           git diff --exit-code || git commit -am "bot: apply Prettier formatting"
