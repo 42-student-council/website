@@ -7,7 +7,14 @@ export const meta: MetaFunction = () => {
     return [{ title: 'OAuth2 Callback' }, { name: 'description', content: 'You should not be reading this.' }];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+
+
+
+
+
+export const loader: LoaderFunction = async ({ request }) =>
+    
+    {
     const url = new URL(request.url);
     const code = url.searchParams.get('code');
     const redirectTo = url.searchParams.get('redirectTo');
