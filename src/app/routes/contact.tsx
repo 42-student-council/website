@@ -117,6 +117,7 @@ export default function Contact() {
     const [contactOption, setContactOption] = useState<string>('');
     const [anonymousOption, setAnonymousOption] = useState<string>('');
     const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
+    const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
@@ -167,7 +168,27 @@ export default function Contact() {
         }
     }, [contactEmail]);
 
-    const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
+    useEffect(() => {
+        let isMessageValid = true;
+        try {
+            createIssueSchema.shape.message.parse(message);
+        } catch (e) {
+            isMessageValid = false;
+        }
+
+        const isContactValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption);
+
+        let isEmailValid = true;
+        if (contactOption === 'email') {
+            try {
+                createIssueSchema.shape.contactEmail.parse(contactEmail);
+            } catch (e) {
+                isEmailValid = false;
+            }
+        }
+
+        setIsFormValid(isMessageValid && isContactValid && isEmailValid);
+    }, [message, anonymousOption, contactOption, contactEmail]);
 
     return (
         <div>
