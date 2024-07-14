@@ -20,14 +20,18 @@ export const meta: MetaFunction = () => {
     return [{ title: 'Contact' }, { name: 'description', content: 'Admin Page' }];
 };
 
+const MESSAGE_MIN_LENGTH = 10;
+const MESSAGE_MAX_LENGTH = 4096;
+const EMAIL_MAX_LENGTH = 255;
+
 const createIssueSchema = z.object({
     anonymous: z.enum(['yes', 'no']),
     contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
-    contactEmail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
+    contactEmail: z.optional(z.string().email().max(EMAIL_MAX_LENGTH, `Email must be at most ${EMAIL_MAX_LENGTH} characters long.`)),
     message: z
         .string()
-        .min(10, 'Message must be at least 10 characters long.')
-        .max(4096, 'Message must be at most 4096 characters long.'),
+        .min(MESSAGE_MIN_LENGTH, `Message must be at least ${MESSAGE_MIN_LENGTH} characters long.`)
+        .max(MESSAGE_MAX_LENGTH, `Message must be at most ${MESSAGE_MAX_LENGTH} characters long.`),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -191,8 +195,8 @@ export default function Contact() {
                             })}
                             required
                             autoComplete='off'
-                            minLength={10}
-                            maxLength={4096}
+                            minLength={MESSAGE_MIN_LENGTH}
+                            maxLength={MESSAGE_MAX_LENGTH}
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
                         />
@@ -271,7 +275,7 @@ export default function Contact() {
                                             name='contactEmail'
                                             required
                                             autoComplete='on'
-                                            maxLength={255}
+                                            maxLength={EMAIL_MAX_LENGTH}
                                             placeholder='Please enter your email'
                                             value={contactEmail}
                                             onChange={(e) => setContactEmail(e.target.value)}

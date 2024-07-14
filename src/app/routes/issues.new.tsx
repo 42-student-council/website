@@ -19,6 +19,11 @@ import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
+const TITLE_MIN_LENGTH = 5;
+const TITLE_MAX_LENGTH = 50;
+const DESCRIPTION_MIN_LENGTH = 10;
+const DESCRIPTION_MAX_LENGTH = 5000;
+
 const rateLimiter = new RateLimiterMemory({
     points: 2,
     duration: 60,
@@ -38,12 +43,12 @@ const createIssueSchema = z.object({
     title: z
         .string()
         .trim()
-        .min(5, 'Title must be at least 5 characters long.')
-        .max(50, 'Title must be at most 50 characters long.'),
+        .min(TITLE_MIN_LENGTH, `Title must be at least ${TITLE_MIN_LENGTH} characters long.`)
+        .max(TITLE_MAX_LENGTH, `Title must be at most ${TITLE_MAX_LENGTH} characters long.`),
     description: z
         .string()
-        .min(10, 'Description must be at least 10 characters long.')
-        .max(5000, 'Description must be at most 5000 characters long.'),
+        .min(DESCRIPTION_MIN_LENGTH, `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters long.`)
+        .max(DESCRIPTION_MAX_LENGTH, `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long.`),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -123,7 +128,7 @@ export default function IssuesNew() {
         localStorage.setItem('create-issue-description', description);
     }, [description]);
 
-    const isFormValid = title.length >= 5 && title.length <= 50 && description.length >= 10 && description.length <= 5000;
+    const isFormValid = title.length >= TITLE_MIN_LENGTH && title.length <= TITLE_MAX_LENGTH && description.length >= DESCRIPTION_MIN_LENGTH && description.length <= DESCRIPTION_MAX_LENGTH;
 
     return (
         <div>
@@ -153,8 +158,8 @@ export default function IssuesNew() {
                         name='title'
                         required
                         autoComplete='off'
-                        minLength={5}
-                        maxLength={50}
+                        minLength={TITLE_MIN_LENGTH}
+                        maxLength={TITLE_MAX_LENGTH}
                         className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
                         onChange={(e) => setTitle(e.target.value)}
                         defaultValue={title}
@@ -174,8 +179,8 @@ export default function IssuesNew() {
                             })}
                             required
                             autoComplete='off'
-                            minLength={10}
-                            maxLength={5000}
+                            minLength={DESCRIPTION_MIN_LENGTH}
+                            maxLength={DESCRIPTION_MAX_LENGTH}
                             onChange={(e) => setDescription(e.target.value)}
                             defaultValue={description}
                         />
