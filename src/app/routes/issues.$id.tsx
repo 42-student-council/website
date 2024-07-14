@@ -179,6 +179,8 @@ export default function IssueDetail() {
     const [commentText, setCommentText] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
+    const commentRef = useRef(null);
+
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
             formRef.current?.reset();
@@ -190,6 +192,12 @@ export default function IssueDetail() {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
         if (savedCommentText) setCommentText(savedCommentText);
     }, []);
+
+    useEffect(() => {
+        if (commentRef.current) {
+            commentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [commentText]);
 
     useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
@@ -301,6 +309,7 @@ export default function IssueDetail() {
                                 onChange={(e) => setCommentText(e.target.value)}
                                 minLength={COMMENT_MIN_LENGTH}
                                 maxLength={COMMENT_MAX_LENGTH}
+                                ref={commentRef}
                             ></textarea>
                             <Button
                                 type='submit'

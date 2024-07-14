@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
@@ -121,6 +121,9 @@ export default function Contact() {
     const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
     const [isFormValid, setIsFormValid] = useState(false);
 
+    const messageRef = useRef(null);
+    const contactEmailRef = useRef(null);
+
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
@@ -145,6 +148,15 @@ export default function Contact() {
         const savedContactEmail = localStorage.getItem('contact-email');
         if (savedContactEmail) setContactEmail(savedContactEmail);
     }, []);
+
+    useEffect(() => {
+        if (messageRef.current) {
+            messageRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (contactEmailRef.current) {
+            contactEmailRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [message, contactEmail]);
 
     useEffect(() => {
         localStorage.setItem('contact-message', message);
@@ -228,6 +240,7 @@ export default function Contact() {
                             maxLength={MESSAGE_MAX_LENGTH}
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
+                            ref={messageRef}
                         />
                         <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
@@ -311,6 +324,7 @@ export default function Contact() {
                                             className={classNames({
                                                 'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
                                             })}
+                                            ref={contactEmailRef}
                                         />
                                         <FormErrorMessage className='mt-2'>
                                             {contactFetcher.data?.errors?.contactEmail}

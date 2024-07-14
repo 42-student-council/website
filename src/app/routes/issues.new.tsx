@@ -2,7 +2,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run
 import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
@@ -105,6 +105,9 @@ export default function IssuesNew() {
     const [description, setDescription] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
+    const titleRef = useRef(null);
+    const descriptionRef = useRef(null);
+
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
             localStorage.removeItem('create-issue-title');
@@ -119,6 +122,15 @@ export default function IssuesNew() {
         if (savedTitle) setTitle(savedTitle);
         if (savedDescription) setDescription(savedDescription);
     }, []);
+
+    useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (descriptionRef.current) {
+            descriptionRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [title, description]);
 
     useEffect(() => {
         localStorage.setItem('create-issue-title', title);
@@ -185,6 +197,7 @@ export default function IssuesNew() {
                         className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
                         onChange={(e) => setTitle(e.target.value)}
                         defaultValue={title}
+                        ref={titleRef}
                     />
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
@@ -205,6 +218,7 @@ export default function IssuesNew() {
                             maxLength={DESCRIPTION_MAX_LENGTH}
                             onChange={(e) => setDescription(e.target.value)}
                             defaultValue={description}
+                            ref={descriptionRef}
                         />
                         <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
