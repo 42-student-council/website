@@ -112,7 +112,7 @@ export default function Contact() {
     const [message, setMessage] = useState('');
     const [contactOption, setContactOption] = useState<string>('');
     const [anonymousOption, setAnonymousOption] = useState<string>('');
-    const [contactEmail, setContactEmail] = useState<string>('');
+    const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
@@ -123,7 +123,6 @@ export default function Contact() {
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
             localStorage.removeItem('contact-option');
-            localStorage.removeItem('contact-email');
         }
     }, [contactFetcher.data?.success]);
 
@@ -138,7 +137,7 @@ export default function Contact() {
         if (savedContactOption) setContactOption(savedContactOption);
 
         const savedContactEmail = localStorage.getItem('contact-email');
-        setContactEmail(savedContactEmail || `${data.login}@student.42vienna.com`);
+        if (savedContactEmail) setContactEmail(savedContactEmail);
     }, []);
 
     useEffect(() => {
@@ -158,7 +157,9 @@ export default function Contact() {
     }, [contactOption]);
 
     useEffect(() => {
-        if (contactEmail) {
+        if (!contactEmail || contactEmail === `${data.login}@student.42vienna.com`) {
+            localStorage.removeItem('contact-email');
+        } else {
             localStorage.setItem('contact-email', contactEmail);
         }
     }, [contactEmail]);
