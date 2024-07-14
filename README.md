@@ -14,7 +14,7 @@ We have decided to open source this project for greater transparency and to enco
 
 ## About the Project
 
-The decision to start this project was sparked by the need to facilitate communication between students and staff. The 42 Vienna Student Council website gives you an **anonymous** way to express your concerns.
+The decision to start this project was sparked by the need to facilitate communication between students and staff. The 42 Vienna Student Council Website gives you an **anonymous** way to express your concerns.
 
 ## Tech Stack
 
