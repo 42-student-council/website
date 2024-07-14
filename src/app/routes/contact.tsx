@@ -119,7 +119,6 @@ export default function Contact() {
             setMessage('');
             setContactOption('');
             setAnonymousOption('');
-            setContactEmail(`${data.login}@student.42vienna.com`);
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
             localStorage.removeItem('contact-option');
