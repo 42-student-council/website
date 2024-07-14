@@ -3,10 +3,8 @@ import { LoaderFunctionArgs, MetaFunction, Session } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
-import { H2 } from '~/components/ui/H2';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 
