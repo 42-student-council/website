@@ -27,7 +27,9 @@ const EMAIL_MAX_LENGTH = 255;
 const createIssueSchema = z.object({
     anonymous: z.enum(['yes', 'no']),
     contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
-    contactEmail: z.optional(z.string().email().max(EMAIL_MAX_LENGTH, `Email must be at most ${EMAIL_MAX_LENGTH} characters long.`)),
+    contactEmail: z.optional(
+        z.string().email().max(EMAIL_MAX_LENGTH, `Email must be at most ${EMAIL_MAX_LENGTH} characters long.`),
+    ),
     message: z
         .string()
         .min(MESSAGE_MIN_LENGTH, `Message must be at least ${MESSAGE_MIN_LENGTH} characters long.`)

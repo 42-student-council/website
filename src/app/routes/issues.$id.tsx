@@ -287,7 +287,13 @@ export default function IssueDetail() {
                                 minLength={COMMENT_MIN_LENGTH}
                                 maxLength={COMMENT_MAX_LENGTH}
                             ></textarea>
-                            <Button type='submit' className='mt-2' disabled={commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH}>
+                            <Button
+                                type='submit'
+                                className='mt-2'
+                                disabled={
+                                    commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH
+                                }
+                            >
                                 Submit
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>

@@ -217,7 +217,13 @@ export default function AdminCouncilMembers() {
                                 value={newLogin}
                                 onChange={(e) => setNewLogin(e.target.value)}
                             />
-                            <Button type='submit' name='_action' value='add' className='ml-4' disabled={isButtonDisabled}>
+                            <Button
+                                type='submit'
+                                name='_action'
+                                value='add'
+                                className='ml-4'
+                                disabled={isButtonDisabled}
+                            >
                                 Add
                             </Button>
                         </div>
