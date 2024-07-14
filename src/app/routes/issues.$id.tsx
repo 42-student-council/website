@@ -11,6 +11,9 @@ import { ChevronLeft } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 
+const COMMENT_MIN_LENGTH = 3;
+const COMMENT_MAX_LENGTH = 5000;
+
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
         { title: `Issue | ${data?.issue.title ?? `#${params.id ?? 'Unknown'}`}` },
@@ -281,8 +284,10 @@ export default function IssueDetail() {
                                 placeholder='Add a comment...'
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)} // Step 2
+                                minLength={COMMENT_MIN_LENGTH}
+                                maxLength={COMMENT_MAX_LENGTH}
                             ></textarea>
-                            <Button type='submit' className='mt-2' disabled={!commentText.trim()}>
+                            <Button type='submit' className='mt-2' disabled={commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH}>
                                 Submit
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
