@@ -190,11 +190,14 @@ export default function AdminCouncilMembers() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
     useEffect(() => {
-        const isValid =
-            newLogin.length >= LOGIN_MIN_LENGTH &&
-            newLogin.length <= LOGIN_MAX_LENGTH &&
-            !addCouncilMemberFetcher.data?.errors?.newLogin;
-        setIsButtonDisabled(!isValid);
+        let isLoginValid = true;
+        try {
+            addCouncilMemberSchema.shape.newLogin.parse(newLogin);
+        } catch (e) {
+            isLoginValid = false;
+        }
+
+        setIsButtonDisabled(!isLoginValid || !!addCouncilMemberFetcher.data?.errors?.newLogin);
     }, [newLogin, addCouncilMemberFetcher.data]);
 
     return (
