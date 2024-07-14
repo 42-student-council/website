@@ -25,8 +25,11 @@ const storage = createSessionStorage<SessionData, SessionData>({
             where: { id: data.login },
             create: {
                 id: data.login,
+                profilePictureUrl: data.profilePicture,
             },
-            update: {},
+            update: {
+                profilePictureUrl: data.profilePicture,
+            },
         });
 
         const id = nanoid(30);
@@ -58,6 +61,7 @@ const storage = createSessionStorage<SessionData, SessionData>({
             login: data.user.id,
             sessionId: id,
             createdAt: data.createdAt,
+            profilePicture: data.user.profilePictureUrl,
         } satisfies SessionData;
     },
     updateData: async (id: string, data: {}, expires?: Date | undefined): Promise<void> => {
@@ -85,6 +89,7 @@ export async function createSession(data: Omit<SessionData, 'sessionId' | 'role'
 
     session.set('login', data.login);
     session.set('createdAt', data.createdAt);
+    session.set('profilePicture', data.profilePicture);
 
     return redirect(redirectTo, {
         headers: {
@@ -187,4 +192,5 @@ export interface SessionData {
     sessionId: string;
     createdAt: Date;
     role: UserRole;
+    profilePicture: string | null;
 }
