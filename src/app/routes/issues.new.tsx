@@ -123,6 +123,8 @@ export default function IssuesNew() {
         localStorage.setItem('create-issue-description', description);
     }, [description]);
 
+    const isFormValid = title.length >= 5 && title.length <= 50 && description.length >= 10 && description.length <= 5000;
+
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
@@ -188,7 +190,7 @@ export default function IssuesNew() {
                         Consequently, you won't be able to edit an issue after submitting it.
                     </Info>
 
-                    <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
+                    <Button type='submit' disabled={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
                     </Button>
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
