@@ -23,11 +23,13 @@ export const loader: LoaderFunction = async ({ request }) => {
         const res = await getTokens(code);
         // curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" https://api.intra.42.fr/v2/me
         // TODO: rate limits and all of htat
-        const apiUser = await fetch('https://api.intra.42.fr/v2/mes', {
+        const apiUser = await fetch('https://api.intra.42.fr/v2/me', {
             headers: { authorization: `Bearer ${res.access_token}` },
         })
             .then((res) => res.json())
-            .catch(() => {
+            .catch((e) => {
+                console.error(e);
+
                 throw redirect('/sign-in?apiError');
             });
 
