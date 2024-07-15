@@ -283,7 +283,7 @@ export default function IssueDetail() {
                                 onChange={(e) => setCommentText(e.target.value)} // Step 2
                             ></textarea>
                             <Button type='submit' className='mt-2' disabled={!commentText.trim()}>
-                                Submit
+                                Comment
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
                         </fetcher.Form>
