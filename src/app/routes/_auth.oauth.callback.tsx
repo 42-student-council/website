@@ -23,15 +23,16 @@ export const loader: LoaderFunction = async ({ request }) => {
         const res = await getTokens(code);
         // curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" https://api.intra.42.fr/v2/me
         // TODO: rate limits and all of htat
-        const apiUser = await fetch('https://api.intra.42.fr/v2/me', {
+        const response = await fetch('https://api.intra.42.fr/v2/me', {
             headers: { authorization: `Bearer ${res.access_token}` },
-        })
-            .then((res) => res.json())
-            .catch((e) => {
-                console.error(e);
+        });
 
-                throw redirect('/sign-in?apiError');
-            });
+        if (!response.ok) {
+            console.error(response.status, response.statusText);
+
+            throw redirect('/sign-in?apiError');
+        }
+        const apiUser = await response.json();
 
         // TODO: no magic number
         const viennaCampus = apiUser?.campus_users?.find((campus: any) => campus.campus_id === 53);
