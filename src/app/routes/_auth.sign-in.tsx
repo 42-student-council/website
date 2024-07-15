@@ -14,6 +14,7 @@ type LoaderData = {
     oauthDenied: boolean;
     wrongCampus: boolean;
     notStudent: boolean;
+    apiError: boolean;
 };
 
 export const loader: LoaderFunction = ({ request }) => {
@@ -24,6 +25,7 @@ export const loader: LoaderFunction = ({ request }) => {
         oauthDenied: typeof url.searchParams.get('oauthDenied') === 'string',
         wrongCampus: typeof url.searchParams.get('wrongCampus') === 'string',
         notStudent: typeof url.searchParams.get('notStudent') === 'string',
+        apiError: typeof url.searchParams.get('apiError') === 'string',
     } satisfies LoaderData;
 };
 
@@ -70,6 +72,11 @@ export default function Index() {
                         The <span className='font-bold'>42 Vienna Student Council Website</span> is only accessible to{' '}
                         <span className='font-bold'>42 Vienna Students</span>. We don't allow anyone else to access our
                         platform.
+                    </Warning>
+                )}
+                {data.apiError && (
+                    <Warning title='There was an API Error'>
+                        The Intra API returned an error. Please try again in a few minutes.
                     </Warning>
                 )}
 
