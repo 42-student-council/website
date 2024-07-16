@@ -68,7 +68,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
                 embed.fields.push({
                     name: 'Contact Way',
-                    value: data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.',
+                    value:
+                        data.contactWay === 'discord'
+                            ? 'Discord'
+                            : data.contactWay === 'email'
+                              ? `Email: ${data.contactEmail}`
+                              : 'No need to contact the student.',
                 });
             } else {
                 embed.author = {

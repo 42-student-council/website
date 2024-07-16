@@ -299,7 +299,13 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                        <fetcher.Form
+                            method='post'
+                            action={`/issues/${issue.id}/`}
+                            className='mt-4'
+                            ref={formRef}
+                            onSubmit={handleSubmit}
+                        >
                             <textarea
                                 name='comment_text'
                                 required
@@ -312,11 +318,7 @@ export default function IssueDetail() {
                                 maxLength={COMMENT_MAX_LENGTH}
                                 ref={commentRef}
                             ></textarea>
-                            <Button
-                                type='submit'
-                                className='mt-2'
-                                invalid={!isFormValid}
-                            >
+                            <Button type='submit' className='mt-2' invalid={!isFormValid}>
                                 Comment
                             </Button>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
