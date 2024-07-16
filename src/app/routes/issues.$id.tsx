@@ -302,6 +302,7 @@ export default function IssueDetail() {
                         <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                             <textarea
                                 name='comment_text'
+                                required
                                 rows={3}
                                 className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                                 placeholder='Add a comment...'
