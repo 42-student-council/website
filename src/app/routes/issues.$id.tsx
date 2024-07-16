@@ -245,7 +245,7 @@ export default function IssueDetail() {
                                 ({issue._count.votes})
                             </Button>
                         </fetcher.Form>
-                        <Info title='Note' className='mt-4 w-1/2'>
+                        <Info title='Note' className='mt-4 md:w-1/2'>
                             To ensure every student can only vote once, each vote gets stored with the user ID in a
                             database, making votes <strong>not fully anonymous</strong> to the student council.
                         </Info>
