@@ -1,16 +1,7 @@
 import { HTMLAttributes, useState } from 'react';
 import { Button } from './ui/button';
-import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from './ui/sheet';
-import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings, CirclePlus } from 'lucide-react';
 import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
 import {
@@ -20,9 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Avatar } from './ui/avatar';
 import { ScrollArea } from './ui/scroll-area';
-import { ScrollAreaCorner } from '@radix-ui/react-scroll-area';
 
 const navItems = [
     {
@@ -34,6 +23,11 @@ const navItems = [
         label: 'Issues',
         href: '/issues',
         icon: TriangleAlert,
+    },
+    {
+        label: 'New Issue',
+        href: '/issues/new',
+        icon: CirclePlus,
     },
     {
         label: 'Contact',
@@ -96,6 +90,7 @@ function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                                 ' underline font-bold': isActive,
                             });
                         }}
+                        end
                     >
                         {item.label}
                     </NavLink>
@@ -139,6 +134,7 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                                             onClick={() => {
                                                 setOpen(false);
                                             }}
+                                            end
                                         >
                                             <item.icon className='size-5 mr-4' /> <p>{item.label}</p>
                                         </NavLink>

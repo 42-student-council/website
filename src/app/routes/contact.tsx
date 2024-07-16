@@ -55,13 +55,15 @@ export async function action({ request }: ActionFunctionArgs) {
                 description: data.message,
                 fields: [] as { name: string; value: string }[],
                 title: 'New Contact Request',
-                author: undefined as any,
+                author: undefined as { name: string; url?: string; icon_url?: string } | undefined,
             };
+            console.log(session);
 
             if (data.anonymous === 'no') {
                 embed.author = {
                     name: session.login,
                     url: `https://profile.intra.42.fr/users/${session.login}`,
+                    icon_url: session.profilePicture ?? undefined,
                 };
 
                 embed.fields.push({

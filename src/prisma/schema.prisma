@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  commentVotes CommentVote[]
-  id           String        @id
-  issueVotes   IssueVote[]
-  role         UserRole      @default(USER)
-  sessions     Session[]
+  commentVotes      CommentVote[]
+  id                String        @id
+  issueVotes        IssueVote[]
+  profilePictureUrl String?
+  role              UserRole      @default(USER)
+  sessions          Session[]
 }
 
 enum UserRole {
