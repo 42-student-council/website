@@ -180,7 +180,7 @@ export default function IssuesNew() {
                         </FormErrorMessage>
                     </div>
 
-                    <Info title='Note' className='mt-4 w-auto'>
+                    <Info title='Note' className='mt-4 w-3/5'>
                         To maintain complete anonymity, the author of an issue does not get stored.
                         <br />
                         Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
