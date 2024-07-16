@@ -36,7 +36,7 @@ export default function Index() {
                     Official Website of the 42 Vienna Student Council
                 </p>
                 <Link to='/issues'>
-                    <Button>What's up?</Button>
+                    <Button size='lg'>What's up?</Button>
                 </Link>
             </div>
         </div>
