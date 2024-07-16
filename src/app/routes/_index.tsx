@@ -1,7 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import { H2 } from '~/components/ui/H2';
-import { H3 } from '~/components/ui/H3';
 import { Button } from '~/components/ui/button';
 import { Link, useLoaderData } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
@@ -37,8 +35,8 @@ export default function Index() {
                 <p className='text-2xl text-center text-slate-600 mb-4'>
                     Official Website of the 42 Vienna Student Council
                 </p>
-                <Link to='/issues/new'>
-                    <Button>Have a problem?</Button>
+                <Link to='/issues'>
+                    <Button>What's up?</Button>
                 </Link>
             </div>
         </div>
