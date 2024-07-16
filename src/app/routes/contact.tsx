@@ -122,6 +122,8 @@ export default function Contact() {
     const [anonymousOption, setAnonymousOption] = useState<string>('');
     const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
     const [isFormValid, setIsFormValid] = useState(false);
+    const [anonymousError, setAnonymousError] = useState<string | null>(null);
+    const [contactError, setContactError] = useState<string | null>(null);
 
     const messageRef = useRef(null);
     const contactEmailRef = useRef(null);
@@ -168,11 +170,17 @@ export default function Contact() {
         if (anonymousOption) {
             localStorage.setItem('anonymous-option', anonymousOption);
         }
+        if (anonymousOption) {
+            setAnonymousError(null);
+        }
     }, [anonymousOption]);
 
     useEffect(() => {
         if (contactOption) {
             localStorage.setItem('contact-option', contactOption);
+        }
+        if (contactOption) {
+            setContactError(null);
         }
     }, [contactOption]);
 
@@ -207,7 +215,23 @@ export default function Contact() {
     }, [message, anonymousOption, contactOption, contactEmail]);
 
     const handleSubmit = (e) => {
-        if (!isFormValid || contactFetcher.formData) {
+        let hasError = false;
+
+        if (!anonymousOption) {
+            setAnonymousError('Please select an option.');
+            hasError = true;
+        } else {
+            setAnonymousError(null);
+        }
+
+        if (anonymousOption === 'no' && !contactOption) {
+            setContactError('Please select an option.');
+            hasError = true;
+        } else {
+            setContactError(null);
+        }
+
+        if (hasError || !isFormValid || contactFetcher.formData) {
             e.preventDefault();
         }
     };
@@ -257,7 +281,6 @@ export default function Contact() {
                             name='anonymous'
                             onValueChange={setAnonymousOption}
                             className='pt-1'
-                            required
                         >
                             <div className='inline-flex'>
                                 <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -272,6 +295,7 @@ export default function Contact() {
                                 </Label>
                             </div>
                         </RadioGroup>
+                        {anonymousError && <FormErrorMessage className='mt-2'>{anonymousError}</FormErrorMessage>}
 
                         <fieldset
                             invalid={anonymousOption === 'yes'}
@@ -287,7 +311,6 @@ export default function Contact() {
                                     name='contactWay'
                                     onValueChange={setContactOption}
                                     className='pt-1'
-                                    required={anonymousOption === 'no'}
                                 >
                                     <div className='inline-flex'>
                                         <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -308,6 +331,7 @@ export default function Contact() {
                                         </Label>
                                     </div>
                                 </RadioGroup>
+                                {contactError && <FormErrorMessage className='mt-2'>{contactError}</FormErrorMessage>}
 
                                 {contactOption === 'email' && (
                                     <div className='mt-2'>
