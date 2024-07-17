@@ -18,9 +18,9 @@ The decision to start this project was sparked by the need to facilitate communi
 
 ## Tech Stack
 
-The application is containerized and built with Docker Compose (see [doc](.github/docs/DOCKER.MD)). The technology stack includes:
+The application is containerized and built with Docker Compose (see [doc](.github/docs/DOCKER.md)). The technology stack includes:
 
-- **Frontend / Backend**: Remix (TypeScript) ([doc](.github/docs/REMIX.MD))
+- **Frontend / Backend**: Remix (TypeScript) ([doc](.github/docs/REMIX.md))
 - **Database**: PostgreSQL
 
 ## Getting Started
