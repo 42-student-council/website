@@ -211,7 +211,10 @@ export default function IssueDetail() {
                             Issue #{issue.id}: {issue.title}
                         </h1>
                     </div>
-                    <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4' style={{ whiteSpace: 'pre-wrap' }}>
+                    <p
+                        className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'
+                        style={{ whiteSpace: 'pre-wrap' }}
+                    >
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
