@@ -1,0 +1,103 @@
+name: Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  actions : write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env    :
+      VERSION:
+      PROCEED:
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref        : main
+          fetch-depth: 0
+
+      - name: Configure GitHub Actions bot
+        run : |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Get version number
+        run : echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_ENV"
+
+      - name: Check tag version
+        run : |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          new_tag=${{ env.VERSION }}
+          if [[ $(printf '%s\n' "$latest_tag" "$new_tag" | sort -rV | head -n1) == "$new_tag" ]]; then
+            echo "PROCEED=true" >> "$GITHUB_ENV"
+          else
+            echo "PROCEED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: ⏫ Update version number in script #TODO
+        if  : env.PROCEED == 'true'
+        run : |
+          sed -i "s/^current_version=.*/current_version=\"${{ env.VERSION }}\"/" 42free.sh
+          git add 42free.sh
+          git commit -m "bot: update version number to ${{ env.VERSION }} [ignore]" || exit 0
+          git push origin main
+          git tag -f ${{ env.VERSION }}
+          git push -f origin ${{ env.VERSION }}
+
+      - name: 📝 Generate changelog from commit messages
+        if  : ${{ env.PROCEED }} == 'true'
+        uses: ardalanamini/auto-changelog@v4
+        id  : changelog
+        with:
+          github-token            : ${{ github.token }}
+          commit-types            : |
+            feat: New Features
+            add: New Features
+            improve: Improvements
+            fix: Bug Fixes
+            build: Build System & Dependencies
+            perf: Performance Improvements
+            doc: Documentation
+            docs: Documentation
+            test: Tests
+            refactor: Refactors
+            chore: Chores
+            style: Code Style
+            ci: CI
+            cd: CD
+            revert: Reverts
+            bot: Bots
+          default-commit-type     : Other Changes
+          release-name            : ${{ env.VERSION }}
+          release-name-prefix     : ""
+          mention-authors         : true
+          mention-new-contributors: true
+          include-compare-link    : true
+          include-pr-links        : true
+          include-commit-links    : true
+          semver                  : true
+          use-github-autolink     : true
+
+      - name: 🚀 Release and upload asset
+        if  : env.PROCEED == 'true'
+        uses: softprops/action-gh-release@v2
+        env :
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body        : ${{ steps.changelog.outputs.changelog }}
+
+      - name: 🛠️ Append dev to version number in script #TODO
+        if  : env.PROCEED == 'true'
+        run : |
+          new_version="${{ env.VERSION }}+dev"
+          sed -i "s/^current_version=.*/current_version=\"$new_version\"/" 42free.sh
+          git add 42free.sh
+          git commit -m "bot: update version number to $new_version [ignore]"
+          git push origin main
