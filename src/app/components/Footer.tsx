@@ -2,6 +2,8 @@ import { Link } from '@remix-run/react';
 import { Heart } from 'lucide-react';
 import { GitHub } from './icon/GitHub';
 
+const version = process.env.VERSION || '1.0.0'; // TODO
+
 export function Footer() {
     return (
         <footer
@@ -16,6 +18,15 @@ export function Footer() {
                     Made with <Heart className='text-rose-500 fill-current' /> by the{' '}
                     <Link to='/about' target='_blank' className='hover:underline'>
                         Student Council
+                    </Link>
+                </div>
+                <div className='text-sm text-gray-500 dark:text-gray-400'>
+                    <Link
+                        to='https://github.com/42-student-council/website/releases'
+                        target='_blank'
+                        className='hover:underline'
+                    >
+                        Version {version}
                     </Link>
                 </div>
                 <div>

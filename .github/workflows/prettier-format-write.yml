@@ -42,7 +42,7 @@ jobs:
         run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
       - name: Commit changes
         run: |
-          git diff --exit-code || git commit -am "bot: apply Prettier formatting"
+          git diff --exit-code || git commit -am "bot: apply Prettier formatting [ignore]"
       - name: Push changes
         run: |
           git push
