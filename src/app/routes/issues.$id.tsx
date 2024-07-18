@@ -212,8 +212,7 @@ export default function IssueDetail() {
                         </h1>
                     </div>
                     <p
-                        className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'
-                        style={{ whiteSpace: 'pre-wrap' }}
+                        className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4 whitespace-pre-wrap'
                     >
                         {issue.description}
                     </p>
@@ -259,7 +258,7 @@ export default function IssueDetail() {
                             <ul>
                                 {issue.comments.map((comment) => (
                                     <li key={comment.id} className='mt-4'>
-                                        <p className='text-sm text-gray-600' style={{ whiteSpace: 'pre-wrap' }}>
+                                        <p className='text-sm text-gray-600 whitespace-pre-wrap'>
                                             {comment.text}
                                         </p>
                                         <p className='text-xs text-gray-400'>
