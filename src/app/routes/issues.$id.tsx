@@ -211,9 +211,7 @@ export default function IssueDetail() {
                             Issue #{issue.id}: {issue.title}
                         </h1>
                     </div>
-                    <p
-                        className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4 whitespace-pre-wrap'
-                    >
+                    <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4 whitespace-pre-wrap'>
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
@@ -258,9 +256,7 @@ export default function IssueDetail() {
                             <ul>
                                 {issue.comments.map((comment) => (
                                     <li key={comment.id} className='mt-4'>
-                                        <p className='text-sm text-gray-600 whitespace-pre-wrap'>
-                                            {comment.text}
-                                        </p>
+                                        <p className='text-sm text-gray-600 whitespace-pre-wrap'>{comment.text}</p>
                                         <p className='text-xs text-gray-400'>
                                             On{' '}
                                             {new Date(comment.createdAt).toLocaleString([], {
