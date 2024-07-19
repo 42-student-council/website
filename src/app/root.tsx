@@ -1,6 +1,5 @@
-import { LinksFunction } from '@remix-run/node';
+import { LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
 import {
-    Link,
     Links,
     Meta,
     Outlet,
@@ -8,11 +7,13 @@ import {
     ScrollRestoration,
     isRouteErrorResponse,
     useRouteError,
+    useLoaderData,
 } from '@remix-run/react';
 import stylesheet from '~/tailwind.css?url';
 import { Footer } from './components/Footer';
 import NavBar from './components/NavBar';
 import { H1 } from './components/ui/H1';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const links: LinksFunction = () => {
     return [
@@ -28,7 +29,18 @@ export const links: LinksFunction = () => {
     ];
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+    const session = await requireSessionData(request);
+    return { session };
+}
+
+type LoaderData = {
+    session: SessionData;
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
+    const data = useLoaderData<LoaderData>();
+
     return (
         <html lang='en'>
             <head>
@@ -38,8 +50,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body>
+                <NavBar login={data.session.login} role={data.session.role} />
                 <div className='min-h-screen'>{children}</div>
-
                 <Footer />
                 <ScrollRestoration />
                 <Scripts />
@@ -63,7 +75,6 @@ export function ErrorBoundary() {
                 <Links />
             </head>
             <body>
-                <NavBar login='zekao?' role='USER' />
                 <div className='flex items-center justify-center h-screen'>
                     {isRouteErrorResponse(error) ? (
                         <div className='flex flex-col items-center'>
