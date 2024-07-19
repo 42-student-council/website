@@ -2,7 +2,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run
 import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
@@ -16,6 +16,11 @@ import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+
+const TITLE_MIN_LENGTH = 5;
+const TITLE_MAX_LENGTH = 50;
+const DESCRIPTION_MIN_LENGTH = 10;
+const DESCRIPTION_MAX_LENGTH = 5000;
 
 const rateLimiter = new RateLimiterMemory({
     points: 2,
@@ -36,12 +41,12 @@ const createIssueSchema = z.object({
     title: z
         .string()
         .trim()
-        .min(5, 'Title must be at least 5 characters long.')
-        .max(50, 'Title must be at most 50 characters long.'),
+        .min(TITLE_MIN_LENGTH, `Title must be at least ${TITLE_MIN_LENGTH} characters long.`)
+        .max(TITLE_MAX_LENGTH, `Title must be at most ${TITLE_MAX_LENGTH} characters long.`),
     description: z
         .string()
-        .min(10, 'Description must be at least 10 characters long.')
-        .max(5000, 'Description must be at most 5000 characters long.'),
+        .min(DESCRIPTION_MIN_LENGTH, `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters long.`)
+        .max(DESCRIPTION_MAX_LENGTH, `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long.`),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -94,6 +99,12 @@ export default function IssuesNew() {
         id?: number;
     }>();
     const navigate = useNavigate();
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const titleRef = useRef(null);
+    const descriptionRef = useRef(null);
 
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
@@ -103,9 +114,6 @@ export default function IssuesNew() {
         }
     }, [createIssueFetcher.data, navigate]);
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-
     useEffect(() => {
         const savedTitle = localStorage.getItem('create-issue-title');
         const savedDescription = localStorage.getItem('create-issue-description');
@@ -114,12 +122,45 @@ export default function IssuesNew() {
     }, []);
 
     useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (descriptionRef.current) {
+            descriptionRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [title, description]);
+
+    useEffect(() => {
         localStorage.setItem('create-issue-title', title);
     }, [title]);
 
     useEffect(() => {
         localStorage.setItem('create-issue-description', description);
     }, [description]);
+
+    useEffect(() => {
+        let isTitleValid = true;
+        try {
+            createIssueSchema.shape.title.parse(title);
+        } catch (e) {
+            isTitleValid = false;
+        }
+
+        let isDescriptionValid = true;
+        try {
+            createIssueSchema.shape.description.parse(description);
+        } catch (e) {
+            isDescriptionValid = false;
+        }
+
+        setIsFormValid(isTitleValid && isDescriptionValid);
+    }, [title, description]);
+
+    const handleSubmit = (e) => {
+        if (!isFormValid || createIssueFetcher.formData) {
+            e.preventDefault();
+        }
+    };
 
     return (
         <div>
@@ -140,7 +181,7 @@ export default function IssuesNew() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='md:w-3/5' method='post'>
+                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <Label htmlFor='title' className='text-lg'>
                         Issue Title
                     </Label>
@@ -149,11 +190,12 @@ export default function IssuesNew() {
                         name='title'
                         required
                         autoComplete='off'
-                        minLength={5}
-                        maxLength={50}
+                        minLength={TITLE_MIN_LENGTH}
+                        maxLength={TITLE_MAX_LENGTH}
                         className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
                         onChange={(e) => setTitle(e.target.value)}
                         defaultValue={title}
+                        ref={titleRef}
                     />
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
@@ -170,10 +212,11 @@ export default function IssuesNew() {
                             })}
                             required
                             autoComplete='off'
-                            minLength={10}
-                            maxLength={5000}
+                            minLength={DESCRIPTION_MIN_LENGTH}
+                            maxLength={DESCRIPTION_MAX_LENGTH}
                             onChange={(e) => setDescription(e.target.value)}
                             defaultValue={description}
+                            ref={descriptionRef}
                         />
                         <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
@@ -186,7 +229,7 @@ export default function IssuesNew() {
                         Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
                     </Info>
 
-                    <Button type='submit' disabled={!!createIssueFetcher.formData} className='mt-4'>
+                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
                         {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
                     </Button>
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
