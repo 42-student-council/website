@@ -51,6 +51,41 @@ const config = {
                     foreground: 'hsl(var(--card-foreground))',
                 },
                 upvoteButtonRed: 'rgb(244,63,94)',
+                dark: {
+                    border: 'hsl(var(--dark-border))',
+                    input: 'hsl(var(--dark-input))',
+                    ring: 'hsl(var(--dark-ring))',
+                    background: 'hsl(var(--dark-background))',
+                    foreground: 'hsl(var(--dark-foreground))',
+                    primary: {
+                        DEFAULT: 'hsl(var(--dark-primary))',
+                        foreground: 'hsl(var(--dark-primary-foreground))',
+                    },
+                    secondary: {
+                        DEFAULT: 'hsl(var(--dark-secondary))',
+                        foreground: 'hsl(var(--dark-secondary-foreground))',
+                    },
+                    destructive: {
+                        DEFAULT: 'hsl(var(--dark-destructive))',
+                        foreground: 'hsl(var(--dark-destructive-foreground))',
+                    },
+                    muted: {
+                        DEFAULT: 'hsl(var(--dark-muted))',
+                        foreground: 'hsl(var(--dark-muted-foreground))',
+                    },
+                    accent: {
+                        DEFAULT: 'hsl(var(--dark-accent))',
+                        foreground: 'hsl(var(--dark-accent-foreground))',
+                    },
+                    popover: {
+                        DEFAULT: 'hsl(var(--dark-popover))',
+                        foreground: 'hsl(var(--dark-popover-foreground))',
+                    },
+                    card: {
+                        DEFAULT: 'hsl(var(--dark-card))',
+                        foreground: 'hsl(var(--dark-card-foreground))',
+                    },
+                },
             },
             borderRadius: {
                 lg: 'var(--radius)',

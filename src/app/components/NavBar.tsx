@@ -1,7 +1,7 @@
 import { HTMLAttributes, useState } from 'react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings, CirclePlus } from 'lucide-react';
+import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings, CirclePlus, Moon, Sun } from 'lucide-react';
 import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
 import {
@@ -41,13 +41,16 @@ const navItems = [
     },
 ];
 
-function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLAttributes<HTMLDivElement>) {
+function User({ login, role, toggleDarkMode, isDarkMode }: { login: string; role: 'ADMIN' | 'USER'; toggleDarkMode: () => void; isDarkMode: boolean } & HTMLAttributes<HTMLDivElement>) {
     const location = useLocation();
 
     return (
-        <div className='font-bold text-slate-500'>
+        <div className='flex items-center font-bold text-slate-500'>
+            <button onClick={toggleDarkMode} className='mr-4 p-2'>
+                {isDarkMode ? <Sun className='w-6 h-6' /> : <Moon className='w-6 h-6' />}
+            </button>
             <DropdownMenu>
-                <DropdownMenuTrigger className='flex flex-row items-center font-bold text-slate-600 hover:text-slate-800 transition-colors duration-300'>
+                <DropdownMenuTrigger className='flex-row font-bold text-slate-600 hover:text-slate-800 transition-colors duration-300'>
                     <span className='mr-2'>{login}</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
@@ -77,7 +80,7 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
     );
 }
 
-function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
+function MainNav({ login, role, toggleDarkMode, isDarkMode }: { login: string; role: 'ADMIN' | 'USER'; toggleDarkMode: () => void; isDarkMode: boolean }) {
     return (
         <div className='hidden md:flex flex-row justify-between w-full items-center'>
             <div className='mr-4 gap-2 flex'>
@@ -96,12 +99,12 @@ function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                     </NavLink>
                 ))}
             </div>
-            <User login={login} role={role} />
+            <User login={login} role={role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
         </div>
     );
 }
 
-function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
+function MobileNav({ login, role, toggleDarkMode, isDarkMode }: { login: string; role: 'ADMIN' | 'USER'; toggleDarkMode: () => void; isDarkMode: boolean }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -113,7 +116,7 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                             <MenuIcon />
                         </Button>
                     </SheetTrigger>
-                    <User login={login} role={role} />
+                    <User login={login} role={role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
                 </div>
 
                 <SheetContent side='left'>
@@ -149,12 +152,12 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     );
 }
 
-export default function NavBar({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
+export default function NavBar({ login, role, toggleDarkMode, isDarkMode }: { login: string; role: 'ADMIN' | 'USER'; toggleDarkMode: () => void; isDarkMode: boolean }) {
     return (
         <header className='w-full border-b'>
             <div className='flex h-14 items-center px-4'>
-                <MainNav login={login} role={role} />
-                <MobileNav login={login} role={role} />
+                <MainNav login={login} role={role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+                <MobileNav login={login} role={role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
             </div>
         </header>
     );

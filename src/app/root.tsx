@@ -9,6 +9,7 @@ import {
     useRouteError,
     useLoaderData,
 } from '@remix-run/react';
+import { useEffect, useState } from 'react';
 import stylesheet from '~/tailwind.css?url';
 import { Footer } from './components/Footer';
 import NavBar from './components/NavBar';
@@ -40,6 +41,26 @@ type LoaderData = {
 
 export function Layout({ children }: { children: React.ReactNode }) {
     const data = useLoaderData<LoaderData>();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const darkModePreference = localStorage.getItem('darkMode') === 'true';
+        setIsDarkMode(darkModePreference);
+        if (darkModePreference) {
+            document.documentElement.classList.add('dark');
+        }
+    }, []);
+
+    const toggleDarkMode = () => {
+        const newDarkModeState = !isDarkMode;
+        setIsDarkMode(newDarkModeState);
+        localStorage.setItem('darkMode', newDarkModeState.toString());
+        if (newDarkModeState) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    };
 
     return (
         <html lang='en'>
@@ -49,8 +70,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Meta />
                 <Links />
             </head>
-            <body>
-                <NavBar login={data.session.login} role={data.session.role} />
+            <body className={isDarkMode ? 'dark' : ''}>
+                <NavBar login={data.session.login} role={data.session.role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
                 <div className='min-h-screen'>{children}</div>
                 <Footer />
                 <ScrollRestoration />
