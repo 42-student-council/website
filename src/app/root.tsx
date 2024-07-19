@@ -8,6 +8,7 @@ import {
     isRouteErrorResponse,
     useRouteError,
     useLoaderData,
+    useLocation,
 } from '@remix-run/react';
 import { useEffect, useState } from 'react';
 import stylesheet from '~/tailwind.css?url';
@@ -15,6 +16,8 @@ import { Footer } from './components/Footer';
 import NavBar from './components/NavBar';
 import { H1 } from './components/ui/H1';
 import { requireSessionData, SessionData } from '~/utils/session.server';
+
+const hideNavBarPaths = ['/sign-in', '/admin'];
 
 export const links: LinksFunction = () => {
     return [
@@ -39,7 +42,7 @@ type LoaderData = {
     session: SessionData;
 };
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children, currentPath }: { children: React.ReactNode, currentPath: string }) {
     const data = useLoaderData<LoaderData>();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -71,7 +74,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
             <body className={isDarkMode ? 'dark' : ''}>
-                <NavBar login={data.session.login} role={data.session.role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+                {!hideNavBarPaths.includes(currentPath) && (
+                    <NavBar login={data.session.login} role={data.session.role} toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />
+                )}
                 <div className='min-h-screen'>{children}</div>
                 <Footer />
                 <ScrollRestoration />
@@ -82,7 +87,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    return <Outlet />;
+    const location = useLocation();
+    return <Layout currentPath={location.pathname}><Outlet /></Layout>;
 }
 
 export function ErrorBoundary() {
