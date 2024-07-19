@@ -20,7 +20,7 @@ export function Footer() {
                 </div>
                 <div>
                     <Link
-                        to='https://github.com/42-student-council/website'
+                        to='https://github.com/42-student-council/website/issues'
                         target='_blank'
                         className='hover:underline'
                     >
