@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
-import { useState, useEffect, HTMLAttributes } from 'react';
+import { useState, HTMLAttributes } from 'react';
 import { db } from '~/utils/db.server';
 import { UserRole } from '@prisma/client';
 import classNames from 'classnames';
@@ -76,7 +76,7 @@ export default function Issues() {
     const { issues, session } = useLoaderData<LoaderData>();
 
     return (
-        <div className=''>
+        <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
                 <Tabs defaultValue='all' className='w-11/12'>
@@ -96,7 +96,6 @@ export default function Issues() {
                                 <CardTitle>Issues</CardTitle>
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
-                            {/* <CardContent className='w-[90vw]'> */}
                             <CardContent>
                                 <IssuesTable issues={issues} />
                             </CardContent>
@@ -114,7 +113,7 @@ export default function Issues() {
     );
 }
 
-function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
+function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
     const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
             accessorKey: 'title',
@@ -157,7 +156,6 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
         },
         {
             accessorKey: 'createdAt',
-
             header: ({ column }) => {
                 return (
                     <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -202,8 +200,8 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
 
     return (
         <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
-            <div className=''>
-                <Table className=''>
+            <div>
+                <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
