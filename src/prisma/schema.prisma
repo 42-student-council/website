@@ -35,7 +35,6 @@ model Session {
 }
 
 model Comment {
-  archived  Boolean       @default(false)
   createdAt DateTime      @default(now())
   id        Int           @id @default(autoincrement())
   issue     Issue         @relation(fields: [issueId], references: [id])
@@ -55,7 +54,6 @@ model CommentVote {
 }
 
 model Issue {
-  archived    Boolean     @default(false)
   comments    Comment[]
   createdAt   DateTime    @default(now())
   description String

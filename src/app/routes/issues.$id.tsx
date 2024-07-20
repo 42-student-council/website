@@ -1,16 +1,15 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 import { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
+import { useLoaderData, Link, useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft, Fullscreen } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
-import { UserRole } from '@prisma/client';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -32,7 +31,6 @@ const rateLimiter = new RateLimiterMemory({
 
 type LoaderData = {
     issue: {
-        archived: boolean;
         comments: {
             createdAt: Date;
             id: number;
@@ -63,9 +61,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         }
 
         const issue = await db.issue.findUnique({
-            where: { id: Number(id), archived: session.role === UserRole.ADMIN ? undefined : false },
+            where: { id: Number(id) },
             select: {
-                archived: true,
                 createdAt: true,
                 description: true,
                 id: true,
@@ -110,35 +107,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         const form = await request.formData();
         const text = form.get('comment_text');
         const { id } = params;
-
-        const action = form.get('_action');
-
-        switch (action) {
-            case 'archive': {
-                requireAdminSession(session);
-
-                await db.issue.update({
-                    where: { id: Number(id) },
-                    data: {
-                        archived: true,
-                    },
-                });
-
-                break;
-            }
-            case 'unarchive': {
-                requireAdminSession(session);
-
-                await db.issue.update({
-                    where: { id: Number(id) },
-                    data: {
-                        archived: false,
-                    },
-                });
-
-                break;
-            }
-        }
 
         if (text) {
             return rateLimiter
@@ -264,30 +232,6 @@ export default function IssueDetail() {
                             Go Back
                         </Button>
                     </Link>
-                    {session.role === UserRole.ADMIN && (
-                        <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
-                            <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
-                            <div className='flex flex-col justify-between items-center m-4'>
-                                <Form method='POST'>
-                                    <input
-                                        type='hidden'
-                                        name='_action'
-                                        value={issue.archived ? 'unarchive' : 'archive'}
-                                    />
-                                    <div className='flex flex-row items-center'>
-                                        <Button type='submit' className=' bg-rose-500 hover:bg-rose-600'>
-                                            {issue.archived ? 'Unarchive' : 'Archive'}
-                                        </Button>
-                                        <p className='text-center text-rose-800 font-bold ml-4'>
-                                            {issue.archived
-                                                ? 'Only admins can see this issue.'
-                                                : 'This issue is visible to students.'}
-                                        </p>
-                                    </div>
-                                </Form>
-                            </div>
-                        </div>
-                    )}
                     <div className='flex justify-between items-center'>
                         <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
                             Issue #{issue.id}: {issue.title}
