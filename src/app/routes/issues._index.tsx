@@ -130,9 +130,9 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
                         Title
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
-                                <ArrowUpAZ className='ml-2 h-4 w-4' />
-                            ) : (
                                 <ArrowDownAZ className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowUpAZ className='ml-2 h-4 w-4' />
                             ))}
                     </Button>
                 );
