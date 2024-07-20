@@ -50,7 +50,6 @@ const config = {
                     DEFAULT: 'hsl(var(--card))',
                     foreground: 'hsl(var(--card-foreground))',
                 },
-                upvoteButtonRed: 'rgb(244,63,94)',
             },
             borderRadius: {
                 lg: 'var(--radius)',
