@@ -130,9 +130,9 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
                         Title
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
-                                <ArrowDownAZ className='ml-2 h-4 w-4' />
-                            ) : (
                                 <ArrowUpAZ className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowDownAZ className='ml-2 h-4 w-4' />
                             ))}
                     </Button>
                 );
@@ -147,9 +147,9 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
                         Votes
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
-                                <ArrowDown01 className='ml-2 h-4 w-4' />
-                            ) : (
                                 <ArrowUp01 className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowDown01 className='ml-2 h-4 w-4' />
                             ))}
                     </Button>
                 );
@@ -164,9 +164,9 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
                         Created at
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
-                                <CalendarArrowDown className='ml-2 h-4 w-4' />
-                            ) : (
                                 <CalendarArrowUp className='ml-2 h-4 w-4' />
+                            ) : (
+                                <CalendarArrowDown className='ml-2 h-4 w-4' />
                             ))}
                     </Button>
                 );
