@@ -7,13 +7,25 @@ import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft, Fullscreen } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 import { UserRole } from '@prisma/client';
+import { Checkbox } from '~/components/ui/checkbox';
+import { z } from 'zod';
+import { validateForm } from '~/utils/validation';
+import classNames from 'classnames';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
+
+const createCommentSchema = z.object({
+    comment_text: z
+        .string()
+        .min(COMMENT_MIN_LENGTH, 'Comment is too short')
+        .max(COMMENT_MAX_LENGTH, 'Comment is too long'),
+    official_statement: z.optional(z.enum(['on'])),
+});
 
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
@@ -36,6 +48,7 @@ type LoaderData = {
         comments: {
             createdAt: Date;
             id: number;
+            official: boolean;
             text: string;
         }[];
         createdAt: Date;
@@ -76,9 +89,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
                 comments: {
                     select: {
+                        createdAt: true,
                         id: true,
                         text: true,
-                        createdAt: true,
+                        official: true,
                     },
                 },
             },
@@ -126,6 +140,40 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
                 break;
             }
+            case 'post-comment': {
+                return validateForm(
+                    form,
+                    createCommentSchema,
+                    (errors) => json({ errors }, 400),
+                    async (data) => {
+                        if (data.official_statement === 'on') requireAdminSession(session);
+
+                        return rateLimiter
+                            .consume(`${user}-${id}`, 1)
+                            .then(async () => {
+                                const comment = await db.comment.create({
+                                    data: {
+                                        official: data.official_statement === 'on',
+                                        text: data.comment_text,
+                                        issueId: Number(id),
+                                    },
+                                });
+
+                                return json(comment);
+                            })
+                            .catch(() => {
+                                return json(
+                                    {
+                                        errors: {
+                                            message: 'You tried to post too many comments. Please try again later.',
+                                        },
+                                    },
+                                    { status: 429 },
+                                );
+                            });
+                    },
+                );
+            }
             case 'unarchive': {
                 requireAdminSession(session);
 
@@ -138,27 +186,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
                 break;
             }
-        }
-
-        if (text) {
-            return rateLimiter
-                .consume(`${user}-${id}`, 1)
-                .then(async () => {
-                    const comment = await db.comment.create({
-                        data: {
-                            text: text.toString(),
-                            issueId: Number(id),
-                        },
-                    });
-
-                    return json(comment);
-                })
-                .catch(() => {
-                    return json(
-                        { errors: { message: 'You tried to post too many comments. Please try again later.' } },
-                        { status: 429 },
-                    );
-                });
         }
 
         const upvoteId = form.get('id');
@@ -337,9 +364,27 @@ export default function IssueDetail() {
                         {issue.comments.length > 0 ? (
                             <ul>
                                 {issue.comments.map((comment) => (
-                                    <li key={comment.id} className='mt-4'>
-                                        <p className='text-sm text-gray-600 whitespace-pre-wrap'>{comment.text}</p>
-                                        <p className='text-xs text-gray-400'>
+                                    <li
+                                        key={comment.id}
+                                        className={classNames('mt-4', {
+                                            'border-y-8 border-green-300 rounded px-2 bg-green-300': comment.official,
+                                        })}
+                                    >
+                                        {comment.official && (
+                                            <p className='text-lg text-green-800 font-bold'>Student Council Answer</p>
+                                        )}
+                                        <p
+                                            className={classNames('text-sm text-gray-600 whitespace-pre-wrap', {
+                                                'text-slate-800': comment.official,
+                                            })}
+                                        >
+                                            {comment.text}
+                                        </p>
+                                        <p
+                                            className={classNames('text-xs text-gray-400', {
+                                                'text-slate-600': comment.official,
+                                            })}
+                                        >
                                             On{' '}
                                             {new Date(comment.createdAt).toLocaleString([], {
                                                 year: 'numeric',
@@ -355,13 +400,8 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form
-                            method='post'
-                            action={`/issues/${issue.id}/`}
-                            className='mt-4'
-                            ref={formRef}
-                            onSubmit={handleSubmit}
-                        >
+                        <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                            <input type='hidden' name='_action' value='post-comment' />
                             <textarea
                                 name='comment_text'
                                 required
@@ -374,9 +414,23 @@ export default function IssueDetail() {
                                 maxLength={COMMENT_MAX_LENGTH}
                                 ref={commentRef}
                             ></textarea>
-                            <Button type='submit' className='mt-2' invalid={!isFormValid}>
-                                Comment
-                            </Button>
+                            <div className='flex flex-col'>
+                                {session.role === UserRole.ADMIN && (
+                                    <div className='flex items-center space-x-2 my-4'>
+                                        <Checkbox name='official_statement' id='official_statement' />
+                                        <label
+                                            htmlFor='official_statement'
+                                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                        >
+                                            Post as official statement
+                                        </label>
+                                    </div>
+                                )}
+
+                                <Button type='submit' className='mt-2' invalid={!isFormValid}>
+                                    Comment
+                                </Button>
+                            </div>
                             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
                         </fetcher.Form>
                     </div>
