@@ -3,7 +3,6 @@ import { useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
     ArrowUpAZ,
-    ArrowUpDown,
     PlusCircle,
     CalendarArrowDown,
     CalendarArrowUp,
@@ -80,7 +79,6 @@ export default function Issues() {
         <div className=''>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                {/* <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'> */}
                 <Tabs defaultValue='all' className='w-11/12'>
                     <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
@@ -111,7 +109,6 @@ export default function Issues() {
                         </Card>
                     </TabsContent>
                 </Tabs>
-                {/* </main> */}
             </div>
         </div>
     );
@@ -255,37 +252,6 @@ function IssuesTable({ issues, ...props }: HTMLAttributes<HTMLTableElement> & { 
             <ScrollBar orientation='horizontal' />
         </ScrollArea>
     );
-
-    // return (
-
-    //         <TableBody>
-    //             {issues.map((issue) => (
-    //                 <TableRow
-    //                     key={issue.id}
-    //                     onClick={() => navigate(`/issues/${issue.id}`)}
-    //                     className={classNames('hover:cursor-pointer hover:bg-slate-100', {
-    //                         'bg-rose-200': issue.archived,
-    //                     })}
-    //                 >
-    //                     <TableCell className='font-medium'>
-    //                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
-    //                     </TableCell>
-    //                     <TableCell className='table-cell'>{issue._count.votes}</TableCell>
-
-    //                     <TableCell className='table-cell'>
-    //                         {new Date(issue.createdAt).toLocaleDateString([], {
-    //                             year: 'numeric',
-    //                             month: 'long',
-    //                             day: 'numeric',
-    //                             hour: '2-digit',
-    //                             minute: '2-digit',
-    //                         })}
-    //                     </TableCell>
-    //                 </TableRow>
-    //             ))}
-    //         </TableBody>
-    //     </Table>
-    // );
 }
 
 export function ErrorBoundary() {
