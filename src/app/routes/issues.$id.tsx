@@ -239,7 +239,7 @@ export default function IssueDetail() {
                         </Link>
                     </div>
                     <div className='mt-4'>
-                        <H2 className='break-all'>{issue.title}</H2>
+                        <H2 className='hyphens-auto'>{issue.title}</H2>
                     </div>
                     <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto mt-2'>
                         {issue.description}
