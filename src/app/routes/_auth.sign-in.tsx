@@ -18,11 +18,11 @@ type LoaderData = {
     apiError: boolean;
 };
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
     const redirectTo = url.searchParams.get('redirectTo');
 
-    const session = getSessionData(request);
+    const session = await getSessionData(request);
     if (session != null) {
         return redirect(redirectTo ?? '/');
     }
