@@ -1,6 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import NavBar from '~/components/NavBar';
-import { requireSessionData, SessionData } from '~/utils/session.server';
+import { requireSessionData } from '~/utils/session.server';
 import { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
 import { useLoaderData, Link, useFetcher } from '@remix-run/react';
@@ -42,12 +41,7 @@ type LoaderData = {
         title: string;
         _count: { votes: number };
     };
-    session: SessionData;
     hasVoted: boolean;
-};
-
-type FetcherData = {
-    message?: string;
 };
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
@@ -92,7 +86,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
             },
         });
 
-        return { issue, session, hasVoted: !!hasVoted } satisfies LoaderData;
+        return { issue, hasVoted: !!hasVoted } satisfies LoaderData;
     } catch (error) {
         console.error(error);
         throw new Error('Error loading data');
@@ -172,7 +166,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, session, hasVoted } = useLoaderData<LoaderData>();
+    const { issue, hasVoted } = useLoaderData<LoaderData>();
     const fetcher = useFetcher<{ errors?: { message?: string } }>();
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
@@ -223,7 +217,6 @@ export default function IssueDetail() {
 
     return (
         <div>
-            <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
                     <Link to='/issues'>

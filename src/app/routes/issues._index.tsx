@@ -1,12 +1,10 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { useLoaderData, Link, useNavigate } from '@remix-run/react';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import { Tabs, TabsContent } from '~/components/ui/tabs';
-import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
@@ -16,8 +14,6 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
     const issues = await db.issue.findMany({
         select: {
             id: true,
@@ -33,7 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session } satisfies LoaderData;
+    return { issues } satisfies LoaderData;
 }
 
 type Issue = {
@@ -46,10 +42,10 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData };
+type LoaderData = { issues: Issue[] };
 
 export default function Issues() {
-    const { issues: initialIssues, session } = useLoaderData<LoaderData>();
+    const { issues: initialIssues } = useLoaderData<LoaderData>();
     const [issues, setIssues] = useState<Issue[]>(initialIssues);
     const defaultSortConfig = () => {
         const savedSortConfig = typeof window !== 'undefined' ? localStorage.getItem('sortConfig') : null;
@@ -95,7 +91,6 @@ export default function Issues() {
 
     return (
         <div>
-            <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col sm:gap-4 sm:py-4'>
                 <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
                     <Tabs defaultValue='all'>
@@ -192,7 +187,6 @@ export default function Issues() {
 export function ErrorBoundary() {
     return (
         <div>
-            <NavBar login='zekao?' role='USER' />
             <div className='mt-4 mx-4'>
                 <Warning title='Error'>
                     Something went wrong whilst fetching the issues. Please try again later.

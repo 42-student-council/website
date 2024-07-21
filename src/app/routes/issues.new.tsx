@@ -1,11 +1,10 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
+import { ActionFunctionArgs, MetaFunction } from '@remix-run/node';
+import { json, useFetcher, useNavigate, Link } from '@remix-run/react';
 import classNames from 'classnames';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -14,7 +13,7 @@ import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
+import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 const TITLE_MIN_LENGTH = 5;
@@ -48,16 +47,6 @@ const createIssueSchema = z.object({
         .min(DESCRIPTION_MIN_LENGTH, `Description must be at least ${DESCRIPTION_MIN_LENGTH} characters long.`)
         .max(DESCRIPTION_MAX_LENGTH, `Description must be at most ${DESCRIPTION_MAX_LENGTH} characters long.`),
 });
-
-export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
-    return { session };
-}
-
-type LoaderData = {
-    session: SessionData;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
     const session = await requireSessionData(request);
@@ -93,7 +82,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
-    const data = useLoaderData<LoaderData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;
@@ -164,7 +152,6 @@ export default function IssuesNew() {
 
     return (
         <div>
-            <NavBar login={data.session.login} role={data.session.role} />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
             </div>
