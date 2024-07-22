@@ -367,11 +367,11 @@ export default function IssueDetail() {
                                     <li
                                         key={comment.id}
                                         className={classNames('mt-4', {
-                                            'border-y-8 border-green-300 rounded px-2 bg-green-300': comment.official,
+                                            'border-2 border-gray-300 rounded px-2 pb-2': comment.official,
                                         })}
                                     >
                                         {comment.official && (
-                                            <p className='text-lg text-green-800 font-bold'>Student Council Answer</p>
+                                            <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>
                                         )}
                                         <p
                                             className={classNames('text-sm text-gray-600 whitespace-pre-wrap', {
