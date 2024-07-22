@@ -177,7 +177,7 @@ export default function IssuesNew() {
                     </Link>
                 </div>
             </div>
-                <Separator />
+            <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <p className='mt-4 mb-2 md:w-3/5 text-xl'>
                     Open an anonymous issue to discuss what's important to you with the community.
