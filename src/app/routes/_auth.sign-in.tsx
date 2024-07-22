@@ -1,9 +1,10 @@
 import type { LoaderFunction, MetaFunction } from '@remix-run/node';
-import { Link, useLoaderData, useSearchParams } from '@remix-run/react';
+import { Link, redirect, useLoaderData, useSearchParams } from '@remix-run/react';
 import { Warning } from '~/components/alert/Warning';
 import { FTIcon } from '~/components/icon/42';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
+import { getSessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Sign In' }, { name: 'description', content: '42 Vienna Student Council Sign In!' }];
@@ -17,8 +18,14 @@ type LoaderData = {
     apiError: boolean;
 };
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => {
     const url = new URL(request.url);
+    const redirectTo = url.searchParams.get('redirectTo');
+
+    const session = await getSessionData(request);
+    if (session != null) {
+        return redirect(redirectTo ?? '/');
+    }
 
     return {
         oauthFailed: typeof url.searchParams.get('oauthFailed') === 'string',
