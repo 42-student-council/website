@@ -363,7 +363,7 @@ export default function IssueDetail() {
                                 </Button>
                             </fetcher.Form>
                         </div>
-                        <Info title='Note' className='mt-4 md:w-1/2'>
+                        <Info title='Note' className='mt-4 md:w-3/5'>
                             To ensure every student can only vote once, each vote gets stored with the user ID in a
                             database, making votes <strong>not fully anonymous</strong> to the student council.
                         </Info>
