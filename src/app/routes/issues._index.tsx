@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { useLoaderData, Link, useNavigate, useSearchParams } from '@remix-run/react';
+import { useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
     ArrowUpAZ,
@@ -16,12 +16,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
-import { useState, HTMLAttributes } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
 import { UserRole } from '@prisma/client';
-import classNames from 'classnames';
 import {
-    ColumnDef,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -79,6 +77,16 @@ export default function Issues() {
     const { issues, session, archived } = useLoaderData<LoaderData>();
     const [currentTab, setCurrentTab] = useState(archived ? 'archived' : 'online');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.has('archived')) {
+            setCurrentTab('archived');
+        } else {
+            setCurrentTab('online');
+        }
+    }, [location]);
 
     const handleTabChange = (newTab: string) => {
         setCurrentTab(newTab);
