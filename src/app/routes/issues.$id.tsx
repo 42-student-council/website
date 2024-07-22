@@ -3,7 +3,7 @@ import NavBar from '~/components/NavBar';
 import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
 import { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
+import { useLoaderData, Link, useFetcher, Form, useLocation } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
@@ -244,6 +244,8 @@ export default function IssueDetail() {
     const [isFormValid, setIsFormValid] = useState(false);
 
     const commentRef = useRef(null);
+    const location = useLocation();
+    const archived = new URLSearchParams(location.search).has('archived');
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
@@ -292,7 +294,7 @@ export default function IssueDetail() {
                 <div className='md:w-4/5 p-4'>
                     <div className='flex flex-row justify-between'>
                         <H1>Issue #{issue.id}</H1>
-                        <Link to='/issues' className=''>
+                        <Link to={`/issues${archived ? '?archived' : ''}`} className=''>
                             <Button>
                                 <ChevronLeft />
                                 Go Back

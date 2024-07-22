@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
-import { useLoaderData, Link, useNavigate } from '@remix-run/react';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { useLoaderData, Link, useNavigate, useSearchParams } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
     ArrowUpAZ,
@@ -37,6 +37,9 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
+    const url = new URL(request.url);
+    const archived = url.searchParams.has('archived');
+
     const issues = await db.issue.findMany({
         where: {
             archived: session.role === UserRole.ADMIN ? undefined : false,
@@ -56,7 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session } satisfies LoaderData;
+    return { issues, session, archived } satisfies LoaderData;
 }
 
 type Issue = {
@@ -70,18 +73,29 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData };
+type LoaderData = { issues: Issue[]; session: SessionData; archived: boolean };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues, session, archived } = useLoaderData<LoaderData>();
+    const [currentTab, setCurrentTab] = useState(archived ? 'archived' : 'online');
+    const navigate = useNavigate();
+
+    const handleTabChange = (newTab: string) => {
+        setCurrentTab(newTab);
+        if (newTab === 'archived') {
+            navigate('/issues?archived');
+        } else {
+            navigate('/issues');
+        }
+    };
 
     return (
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue='all' className='w-11/12'>
+                <Tabs value={currentTab} onValueChange={handleTabChange} className='w-11/12'>
                     <TabsList>
-                        <TabsTrigger value='all'>Online</TabsTrigger>
+                        <TabsTrigger value='online'>Online</TabsTrigger>
                         <TabsTrigger value='archived'>Archived</TabsTrigger>
                     </TabsList>
                     <div className='flex items-center'>
@@ -94,14 +108,14 @@ export default function Issues() {
                             </Link>
                         </div>
                     </div>
-                    <TabsContent value='all' className='flex justify-center'>
+                    <TabsContent value='online' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
                                 <CardTitle>Issues</CardTitle>
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
+                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} currentTab={currentTab} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -118,7 +132,7 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
+                                <IssuesTable issues={issues.filter((issue) => issue.archived)} currentTab={currentTab} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -134,8 +148,8 @@ export default function Issues() {
     );
 }
 
-function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
-    const columns: ColumnDef<SerializeFrom<Issue>>[] = [
+function IssuesTable({ issues, currentTab }) {
+    const columns = [
         {
             accessorKey: 'title',
             sortingFn: (rowA, rowB) => {
@@ -245,7 +259,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => navigate(`/issues/${row.original.id}`)}
+                                        onClick={() => navigate(`/issues/${row.original.id}${currentTab === 'archived' ? '?archived' : ''}`)}
                                         className='hover:cursor-pointer hover:bg-slate-100'
                                     >
                                         {row.getVisibleCells().map((cell) => (
