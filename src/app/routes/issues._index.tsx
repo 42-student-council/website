@@ -156,8 +156,8 @@ export default function Issues() {
     );
 }
 
-function IssuesTable({ issues, currentTab }) {
-    const columns = [
+function IssuesTable({ issues, currentTab }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]>, currentTab: string }) {
+    const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
             accessorKey: 'title',
             sortingFn: (rowA, rowB) => {
