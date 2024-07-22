@@ -13,7 +13,7 @@ import {
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent } from '~/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { useState, HTMLAttributes } from 'react';
@@ -80,6 +80,10 @@ export default function Issues() {
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
                 <Tabs defaultValue='all' className='w-11/12'>
+                    <TabsList>
+                        <TabsTrigger value='all'>Online</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    </TabsList>
                     <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
                             <Link to='/issues/new'>
@@ -97,7 +101,24 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues} />
+                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
+                            </CardContent>
+                            <CardFooter>
+                                <div className='text-xs text-muted-foreground'>
+                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    {issues.length === 1 ? 'issue' : 'issues'}
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value='archived' className='flex justify-center'>
+                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
+                            <CardHeader>
+                                <CardTitle>Issues</CardTitle>
+                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -225,9 +246,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
                                         onClick={() => navigate(`/issues/${row.original.id}`)}
-                                        className={classNames('hover:cursor-pointer hover:bg-slate-100', {
-                                            'bg-rose-200': row.original.archived,
-                                        })}
+                                        className='hover:cursor-pointer hover:bg-slate-100'
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>

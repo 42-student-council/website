@@ -140,7 +140,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     },
                 });
 
-                break;
+                return json({ archived: true });
             }
             case 'post-comment': {
                 return validateForm(
@@ -177,8 +177,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                 );
             }
             case 'unarchive': {
-                requireAdminSession(session);
-
                 await db.issue.update({
                     where: { id: Number(id) },
                     data: {
@@ -186,7 +184,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     },
                 });
 
-                break;
+                return json({ archived: false });
             }
         }
 
@@ -420,7 +418,7 @@ export default function IssueDetail() {
                                 ref={commentRef}
                             ></textarea>
                             <div className='flex flex-col'>
-                                {session.role === UserRole.ADMIN && (
+                                {session.role === 'ADMIN' && (
                                     <div className='flex items-center space-x-2 my-4'>
                                         <Checkbox name='official_statement' id='official_statement' />
                                         <label
