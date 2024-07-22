@@ -313,10 +313,8 @@ export default function IssueDetail() {
                                         <Button type='submit' className=' bg-rose-500 hover:bg-rose-600'>
                                             {issue.archived ? 'Unarchive' : 'Archive'}
                                         </Button>
-                                        <p className='text-center text-rose-800 font-bold ml-4'>
-                                            {issue.archived
-                                                ? 'Only admins can see this issue.'
-                                                : 'This issue is visible to students.'}
+                                        <p className='text-center text-rose-800 ml-4'>
+                                            Archived issues are visible to students, but cannot be interacted with anymore.
                                         </p>
                                     </div>
                                 </Form>
