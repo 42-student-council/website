@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import NavBar from '~/components/NavBar';
@@ -20,14 +20,20 @@ export const meta: MetaFunction = () => {
     return [{ title: 'Contact' }, { name: 'description', content: 'Admin Page' }];
 };
 
+const MESSAGE_MIN_LENGTH = 10;
+const MESSAGE_MAX_LENGTH = 4096;
+const EMAIL_MAX_LENGTH = 255;
+
 const createIssueSchema = z.object({
     anonymous: z.enum(['yes', 'no']),
     contactWay: z.optional(z.enum(['discord', 'email', 'nothing'])),
-    contactEmail: z.optional(z.string().email().max(255, 'Email must be at most 255 characters long.')),
+    contactEmail: z.optional(
+        z.string().email().max(EMAIL_MAX_LENGTH, `Email must be at most ${EMAIL_MAX_LENGTH} characters long.`),
+    ),
     message: z
         .string()
-        .min(10, 'Message must be at least 10 characters long.')
-        .max(4096, 'Message must be at most 4096 characters long.'),
+        .min(MESSAGE_MIN_LENGTH, `Message must be at least ${MESSAGE_MIN_LENGTH} characters long.`)
+        .max(MESSAGE_MAX_LENGTH, `Message must be at most ${MESSAGE_MAX_LENGTH} characters long.`),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -62,7 +68,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
                 embed.fields.push({
                     name: 'Contact Way',
-                    value: `${data.contactWay === 'discord' ? 'Discord' : data.contactWay === 'email' ? `Email: ${data.contactEmail}` : 'No need to contact the student.'}`,
+                    value:
+                        data.contactWay === 'discord'
+                            ? 'Discord'
+                            : data.contactWay === 'email'
+                              ? `Email: ${data.contactEmail}`
+                              : 'No need to contact the student.',
                 });
             } else {
                 embed.author = {
@@ -115,6 +126,12 @@ export default function Contact() {
     const [contactOption, setContactOption] = useState<string>('');
     const [anonymousOption, setAnonymousOption] = useState<string>('');
     const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [anonymousError, setAnonymousError] = useState<string | null>(null);
+    const [contactError, setContactError] = useState<string | null>(null);
+
+    const messageRef = useRef(null);
+    const contactEmailRef = useRef(null);
 
     useEffect(() => {
         if (contactFetcher.data?.success) {
@@ -142,6 +159,15 @@ export default function Contact() {
     }, []);
 
     useEffect(() => {
+        if (messageRef.current) {
+            messageRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (contactEmailRef.current) {
+            contactEmailRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [message, contactEmail]);
+
+    useEffect(() => {
         localStorage.setItem('contact-message', message);
     }, [message]);
 
@@ -149,11 +175,17 @@ export default function Contact() {
         if (anonymousOption) {
             localStorage.setItem('anonymous-option', anonymousOption);
         }
+        if (anonymousOption) {
+            setAnonymousError(null);
+        }
     }, [anonymousOption]);
 
     useEffect(() => {
         if (contactOption) {
             localStorage.setItem('contact-option', contactOption);
+        }
+        if (contactOption) {
+            setContactError(null);
         }
     }, [contactOption]);
 
@@ -165,7 +197,49 @@ export default function Contact() {
         }
     }, [contactEmail]);
 
-    const isFormValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption !== null);
+    useEffect(() => {
+        let isMessageValid = true;
+        try {
+            createIssueSchema.shape.message.parse(message);
+        } catch (e) {
+            isMessageValid = false;
+        }
+
+        const isContactValid = anonymousOption === 'yes' || (anonymousOption === 'no' && contactOption);
+
+        let isEmailValid = true;
+        if (contactOption === 'email') {
+            try {
+                createIssueSchema.shape.contactEmail.parse(contactEmail);
+            } catch (e) {
+                isEmailValid = false;
+            }
+        }
+
+        setIsFormValid(isMessageValid && isContactValid && isEmailValid);
+    }, [message, anonymousOption, contactOption, contactEmail]);
+
+    const handleSubmit = (e) => {
+        let hasError = false;
+
+        if (!anonymousOption) {
+            setAnonymousError('Please select an option.');
+            hasError = true;
+        } else {
+            setAnonymousError(null);
+        }
+
+        if (anonymousOption === 'no' && !contactOption) {
+            setContactError('Please select an option.');
+            hasError = true;
+        } else {
+            setContactError(null);
+        }
+
+        if (hasError || !isFormValid || contactFetcher.formData) {
+            e.preventDefault();
+        }
+    };
 
     return (
         <div>
@@ -180,7 +254,7 @@ export default function Contact() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
-                <contactFetcher.Form className='md:w-3/5' method='post'>
+                <contactFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <div className='mt-2'>
                         <Label htmlFor='message' className='text-lg'>
                             What would you like to tell us?
@@ -193,10 +267,11 @@ export default function Contact() {
                             })}
                             required
                             autoComplete='off'
-                            minLength={10}
-                            maxLength={4096}
+                            minLength={MESSAGE_MIN_LENGTH}
+                            maxLength={MESSAGE_MAX_LENGTH}
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
+                            ref={messageRef}
                         />
                         <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
@@ -211,7 +286,6 @@ export default function Contact() {
                             name='anonymous'
                             onValueChange={setAnonymousOption}
                             className='pt-1'
-                            required
                         >
                             <div className='inline-flex'>
                                 <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -226,9 +300,10 @@ export default function Contact() {
                                 </Label>
                             </div>
                         </RadioGroup>
+                        {anonymousError && <FormErrorMessage className='mt-2'>{anonymousError}</FormErrorMessage>}
 
                         <fieldset
-                            disabled={anonymousOption === 'yes'}
+                            invalid={anonymousOption === 'yes'}
                             className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             <div className='mt-4'>
@@ -241,7 +316,6 @@ export default function Contact() {
                                     name='contactWay'
                                     onValueChange={setContactOption}
                                     className='pt-1'
-                                    required={anonymousOption === 'no'}
                                 >
                                     <div className='inline-flex'>
                                         <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -262,6 +336,7 @@ export default function Contact() {
                                         </Label>
                                     </div>
                                 </RadioGroup>
+                                {contactError && <FormErrorMessage className='mt-2'>{contactError}</FormErrorMessage>}
 
                                 {contactOption === 'email' && (
                                     <div className='mt-2'>
@@ -273,13 +348,14 @@ export default function Contact() {
                                             name='contactEmail'
                                             required
                                             autoComplete='on'
-                                            maxLength={255}
+                                            maxLength={EMAIL_MAX_LENGTH}
                                             placeholder='Please enter your email'
                                             value={contactEmail}
                                             onChange={(e) => setContactEmail(e.target.value)}
                                             className={classNames({
                                                 'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
                                             })}
+                                            ref={contactEmailRef}
                                         />
                                         <FormErrorMessage className='mt-2'>
                                             {contactFetcher.data?.errors?.contactEmail}
@@ -292,7 +368,7 @@ export default function Contact() {
 
                     <Button
                         type='submit'
-                        disabled={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
+                        invalid={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
                         className='mt-4'
                     >
                         {contactFetcher.formData ? 'Loading...' : 'Send Message'}

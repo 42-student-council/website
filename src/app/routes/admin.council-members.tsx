@@ -3,6 +3,7 @@ import { ActionFunctionArgs, json, MetaFunction } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { Info, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { H3 } from '~/components/ui/H3';
@@ -17,6 +18,20 @@ import { validateForm } from '~/utils/validation';
 export const meta: MetaFunction = () => {
     return [{ title: 'Admin | Council Members' }, { name: 'description', content: 'Admin Page' }];
 };
+
+const LOGIN_MIN_LENGTH = 3;
+const LOGIN_MAX_LENGTH = 20;
+
+const addCouncilMemberSchema = z.object({
+    newLogin: z
+        .string()
+        .min(LOGIN_MIN_LENGTH, `Login must be at least ${LOGIN_MIN_LENGTH} characters long.`)
+        .max(LOGIN_MAX_LENGTH, `Login must be at most ${LOGIN_MAX_LENGTH} characters long.`),
+});
+
+const deleteCouncilMemberSchema = z.object({
+    login: z.string(),
+});
 
 export async function action({ request }: ActionFunctionArgs) {
     await requireAdmin(request);
@@ -130,17 +145,6 @@ export async function action({ request }: ActionFunctionArgs) {
     }
 }
 
-const addCouncilMemberSchema = z.object({
-    newLogin: z
-        .string()
-        .min(3, 'Login must be at least 3 characters long.')
-        .max(20, 'Login must be at most 20 characters long.'),
-});
-
-const deleteCouncilMemberSchema = z.object({
-    login: z.string(),
-});
-
 export async function loader() {
     const data = await db.councilMember.findMany();
 
@@ -182,6 +186,20 @@ export default function AdminCouncilMembers() {
 
     const data = useLoaderData<LoaderData>();
 
+    const [newLogin, setNewLogin] = useState('');
+    const [isButtonInvalid, setIsButtonInvalid] = useState(true);
+
+    useEffect(() => {
+        let isLoginValid = true;
+        try {
+            addCouncilMemberSchema.shape.newLogin.parse(newLogin);
+        } catch (e) {
+            isLoginValid = false;
+        }
+
+        setIsButtonInvalid(!isLoginValid || !!addCouncilMemberFetcher.data?.errors?.newLogin);
+    }, [newLogin, addCouncilMemberFetcher.data]);
+
     return (
         <div className='flex flex-col items-center'>
             <div className='md:size-6/12'>
@@ -189,8 +207,17 @@ export default function AdminCouncilMembers() {
                     <H3 className='mb-4'>Add Council Member</H3>
                     <addCouncilMemberFetcher.Form method='post'>
                         <div className='flex flex-row'>
-                            <Input placeholder='Login' name='newLogin' autoComplete='off' required />
-                            <Button type='submit' name='_action' value='add' className='ml-4'>
+                            <Input
+                                placeholder='Login'
+                                name='newLogin'
+                                autoComplete='off'
+                                required
+                                minLength={LOGIN_MIN_LENGTH}
+                                maxLength={LOGIN_MAX_LENGTH}
+                                value={newLogin}
+                                onChange={(e) => setNewLogin(e.target.value)}
+                            />
+                            <Button type='submit' name='_action' value='add' className='ml-4' invalid={isButtonInvalid}>
                                 Add
                             </Button>
                         </div>

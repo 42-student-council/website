@@ -1,15 +1,34 @@
-import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
 import { useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
-import { PlusCircle } from 'lucide-react';
+import {
+    ArrowUpAZ,
+    PlusCircle,
+    CalendarArrowDown,
+    CalendarArrowUp,
+    ArrowDown01,
+    ArrowUp01,
+    ArrowDownAZ,
+} from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent } from '~/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
-import { useState, useEffect } from 'react';
+import { useState, HTMLAttributes } from 'react';
 import { db } from '~/utils/db.server';
+import { UserRole } from '@prisma/client';
+import classNames from 'classnames';
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable,
+} from '@tanstack/react-table';
+import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
@@ -19,7 +38,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
     const issues = await db.issue.findMany({
+        where: {
+            archived: session.role === UserRole.ADMIN ? undefined : false,
+        },
         select: {
+            archived: true,
             id: true,
             title: true,
             description: true,
@@ -37,6 +60,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 type Issue = {
+    archived: boolean;
     createdAt: Date;
     description: string;
     id: number;
@@ -49,143 +73,201 @@ type Issue = {
 type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
-    const { issues: initialIssues, session } = useLoaderData<LoaderData>();
-    const [issues, setIssues] = useState<Issue[]>(initialIssues);
-    const defaultSortConfig = () => {
-        const savedSortConfig = typeof window !== 'undefined' ? localStorage.getItem('sortConfig') : null;
-        return savedSortConfig ? JSON.parse(savedSortConfig) : { key: 'createdAt', direction: 'desc' };
-    };
-    const [sortConfig, setSortConfig] = useState<{ key: string; direction: string }>(defaultSortConfig);
-
-    const navigate = useNavigate();
-
-    const sortIssues = (key: string, direction: string) => {
-        const sortedIssues = [...issues].sort((a, b) => {
-            if (key === 'votes') {
-                return direction === 'asc' ? a._count.votes - b._count.votes : b._count.votes - a._count.votes;
-            } else {
-                return direction === 'asc'
-                    ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                    : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            }
-        });
-
-        setIssues(sortedIssues);
-    };
-
-    useEffect(() => {
-        sortIssues(sortConfig.key, sortConfig.direction);
-    }, []);
-
-    const handleSort = (key: string) => {
-        const direction = sortConfig.key === key && sortConfig.direction === 'desc' ? 'asc' : 'desc';
-        setSortConfig({ key, direction });
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('sortConfig', JSON.stringify({ key, direction }));
-        }
-        sortIssues(key, direction);
-    };
-
-    const getSortSymbol = (key: string) => {
-        if (sortConfig.key !== key) {
-            return '';
-        }
-        return sortConfig.direction === 'asc' ? '▲' : '▼';
-    };
+    const { issues, session } = useLoaderData<LoaderData>();
 
     return (
         <div>
             <NavBar login={session.login} role={session.role} />
-            <div className='flex flex-col sm:gap-4 sm:py-4'>
-                <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
-                    <Tabs defaultValue='all'>
-                        <div className='flex items-center'>
-                            <div className='ml-auto flex items-center gap-2'>
-                                <Link to='/issues/new'>
-                                    <Button size='md' className='gap-2'>
-                                        <PlusCircle className='h-5 w-5' />
-                                        <span className='whitespace-nowrap'>I also have something to say!</span>
-                                    </Button>
-                                </Link>
-                            </div>
+            <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
+                <Tabs defaultValue='all' className='w-11/12'>
+                    <TabsList>
+                        <TabsTrigger value='all'>Online</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    </TabsList>
+                    <div className='flex items-center'>
+                        <div className='ml-auto flex items-center gap-2'>
+                            <Link to='/issues/new'>
+                                <Button size='md' className='gap-2'>
+                                    <PlusCircle className='h-5 w-5' />
+                                    <span className='whitespace-nowrap'>I also have something to say!</span>
+                                </Button>
+                            </Link>
                         </div>
-                        <TabsContent value='all'>
-                            <Card x-chunk='dashboard-06-chunk-0'>
-                                <CardHeader>
-                                    <CardTitle>Issues</CardTitle>
-                                    <CardDescription>
-                                        This is what students are currently talking about.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Title</TableHead>
-                                                <TableHead className='table-cell'>
-                                                    <button
-                                                        onClick={() => handleSort('votes')}
-                                                        className='cursor-pointer flex items-center gap-1'
-                                                        title='Sort by votes'
-                                                    >
-                                                        Upvotes{' '}
-                                                        <span className='inline-block w-3 text-center'>
-                                                            {getSortSymbol('votes')}
-                                                        </span>
-                                                    </button>
-                                                </TableHead>
-                                                <TableHead className='table-cell'>
-                                                    <button
-                                                        onClick={() => handleSort('createdAt')}
-                                                        className='cursor-pointer flex items-center gap-1'
-                                                        title='Sort by creation date'
-                                                    >
-                                                        Created at{' '}
-                                                        <span className='inline-block w-3 text-center'>
-                                                            {getSortSymbol('createdAt')}
-                                                        </span>
-                                                    </button>
-                                                </TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {issues.map((issue) => (
-                                                <TableRow
-                                                    key={issue.id}
-                                                    onClick={() => navigate(`/issues/${issue.id}`)}
-                                                    className='hover:cursor-pointer hover:bg-slate-100'
-                                                >
-                                                    <TableCell className='font-medium'>
-                                                        <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
-                                                    </TableCell>
-                                                    <TableCell className='table-cell'>{issue._count.votes}</TableCell>
-
-                                                    <TableCell className='table-cell'>
-                                                        {new Date(issue.createdAt).toLocaleDateString([], {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        })}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </CardContent>
-                                <CardFooter>
-                                    <div className='text-xs text-muted-foreground'>
-                                        Showing <span className='font-bold'>{issues.length}</span>{' '}
-                                        {issues.length === 1 ? 'issue' : 'issues'}
-                                    </div>
-                                </CardFooter>
-                            </Card>
-                        </TabsContent>
-                    </Tabs>
-                </main>
+                    </div>
+                    <TabsContent value='all' className='flex justify-center'>
+                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
+                            <CardHeader>
+                                <CardTitle>Issues</CardTitle>
+                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
+                            </CardContent>
+                            <CardFooter>
+                                <div className='text-xs text-muted-foreground'>
+                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    {issues.length === 1 ? 'issue' : 'issues'}
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value='archived' className='flex justify-center'>
+                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
+                            <CardHeader>
+                                <CardTitle>Issues</CardTitle>
+                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
+                            </CardContent>
+                            <CardFooter>
+                                <div className='text-xs text-muted-foreground'>
+                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    {issues.length === 1 ? 'issue' : 'issues'}
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
             </div>
         </div>
+    );
+}
+
+function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
+    const columns: ColumnDef<SerializeFrom<Issue>>[] = [
+        {
+            accessorKey: 'title',
+            sortingFn: (rowA, rowB) => {
+                const titleA: string = rowA.getValue('title');
+                const titleB: string = rowB.getValue('title');
+
+                return titleA.localeCompare(titleB);
+            },
+            header: ({ column }) => {
+                return (
+                    <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                        Title
+                        {column.getIsSorted() !== false &&
+                            (column.getIsSorted() === 'asc' ? (
+                                <ArrowDownAZ className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowUpAZ className='ml-2 h-4 w-4' />
+                            ))}
+                    </Button>
+                );
+            },
+        },
+        {
+            id: 'votes',
+            accessorKey: '_count.votes',
+            header: ({ column }) => {
+                return (
+                    <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                        Votes
+                        {column.getIsSorted() !== false &&
+                            (column.getIsSorted() === 'asc' ? (
+                                <ArrowUp01 className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowDown01 className='ml-2 h-4 w-4' />
+                            ))}
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: 'createdAt',
+            header: ({ column }) => {
+                return (
+                    <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                        Created at
+                        {column.getIsSorted() !== false &&
+                            (column.getIsSorted() === 'asc' ? (
+                                <CalendarArrowUp className='ml-2 h-4 w-4' />
+                            ) : (
+                                <CalendarArrowDown className='ml-2 h-4 w-4' />
+                            ))}
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const formatted = new Date(row.getValue('createdAt')).toLocaleDateString([], {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+
+                return <span>{formatted}</span>;
+            },
+        },
+    ];
+
+    const [sorting, setSorting] = useState<SortingState>([{ id: 'votes', desc: true }]);
+
+    const table = useReactTable({
+        data: issues,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+        },
+    });
+
+    const navigate = useNavigate();
+
+    return (
+        <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
+            <div>
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(header.column.columnDef.header, header.getContext())}
+                                        </TableHead>
+                                    );
+                                })}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => {
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && 'selected'}
+                                        onClick={() => navigate(`/issues/${row.original.id}`)}
+                                        className='hover:cursor-pointer hover:bg-slate-100'
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                );
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className='h-24 text-center'>
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <ScrollBar orientation='horizontal' />
+        </ScrollArea>
     );
 }
 

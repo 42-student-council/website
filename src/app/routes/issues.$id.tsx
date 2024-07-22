@@ -1,15 +1,33 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
-import { requireSessionData, SessionData } from '~/utils/session.server';
+import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
 import { useState, useEffect, useRef } from 'react';
 import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher } from '@remix-run/react';
+import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Fullscreen, Heart } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
+import { H1 } from '~/components/ui/H1';
+import { H2 } from '~/components/ui/H2';
+import { UserRole } from '@prisma/client';
+import { Checkbox } from '~/components/ui/checkbox';
+import { z } from 'zod';
+import { validateForm } from '~/utils/validation';
+import classNames from 'classnames';
+
+const COMMENT_MIN_LENGTH = 3;
+const COMMENT_MAX_LENGTH = 5000;
+
+const createCommentSchema = z.object({
+    comment_text: z
+        .string()
+        .min(COMMENT_MIN_LENGTH, 'Comment is too short')
+        .max(COMMENT_MAX_LENGTH, 'Comment is too long'),
+    official_statement: z.optional(z.enum(['on'])),
+});
 
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
@@ -28,9 +46,11 @@ const rateLimiter = new RateLimiterMemory({
 
 type LoaderData = {
     issue: {
+        archived: boolean;
         comments: {
             createdAt: Date;
             id: number;
+            official: boolean;
             text: string;
         }[];
         createdAt: Date;
@@ -58,8 +78,9 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         }
 
         const issue = await db.issue.findUnique({
-            where: { id: Number(id) },
+            where: { id: Number(id), archived: session.role === UserRole.ADMIN ? undefined : false },
             select: {
+                archived: true,
                 createdAt: true,
                 description: true,
                 id: true,
@@ -70,9 +91,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
                 comments: {
                     select: {
+                        createdAt: true,
                         id: true,
                         text: true,
-                        createdAt: true,
+                        official: true,
                     },
                 },
             },
@@ -99,36 +121,81 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
     try {
         const session = await requireSessionData(request);
+        const { id } = params;
 
         const user = session.login;
         const form = await request.formData();
-        const text = form.get('comment_text');
-        const { id } = params;
 
-        if (text) {
-            return rateLimiter
-                .consume(`${user}-${id}`, 1)
-                .then(async () => {
-                    const comment = await db.comment.create({
-                        data: {
-                            text: text.toString(),
-                            issueId: Number(id),
-                        },
-                    });
+        const action = form.get('_action');
 
-                    return json(comment);
-                })
-                .catch(() => {
-                    return json(
-                        { errors: { message: 'You tried to post too many comments. Please try again later.' } },
-                        { status: 429 },
-                    );
+        switch (action) {
+            case 'archive': {
+                requireAdminSession(session);
+
+                await db.issue.update({
+                    where: { id: Number(id) },
+                    data: {
+                        archived: true,
+                    },
                 });
+
+                return json({ archived: true });
+            }
+            case 'post-comment': {
+                return validateForm(
+                    form,
+                    createCommentSchema,
+                    (errors) => json({ errors }, 400),
+                    async (data) => {
+                        if (data.official_statement === 'on') requireAdminSession(session);
+
+                        const issue = await db.issue.findFirst({ where: { id: Number(id) } });
+                        if (issue?.archived)
+                            return json({ errors: { message: 'Archived issues cannot be commented.' } });
+
+                        return rateLimiter
+                            .consume(`${user}-${id}`, 1)
+                            .then(async () => {
+                                const comment = await db.comment.create({
+                                    data: {
+                                        official: data.official_statement === 'on',
+                                        text: data.comment_text,
+                                        issueId: Number(id),
+                                    },
+                                });
+
+                                return json(comment);
+                            })
+                            .catch(() => {
+                                return json(
+                                    {
+                                        errors: {
+                                            message: 'You tried to post too many comments. Please try again later.',
+                                        },
+                                    },
+                                    { status: 429 },
+                                );
+                            });
+                    },
+                );
+            }
+            case 'unarchive': {
+                await db.issue.update({
+                    where: { id: Number(id) },
+                    data: {
+                        archived: false,
+                    },
+                });
+
+                return json({ archived: false });
+            }
         }
 
         const upvoteId = form.get('id');
-
         if (upvoteId) {
+            const issue = await db.issue.findFirst({ where: { id: Number(id) } });
+            if (issue?.archived) return json({ errors: { message: 'Archived issues cannot be upvoted.' } });
+
             const existingVote = await db.issueVote.findFirst({
                 where: {
                     issueId: Number(id),
@@ -174,6 +241,9 @@ export default function IssueDetail() {
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const commentRef = useRef(null);
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
@@ -188,8 +258,28 @@ export default function IssueDetail() {
     }, []);
 
     useEffect(() => {
+        if (commentRef.current) {
+            commentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [commentText]);
+
+    useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
     }, [commentText]);
+
+    useEffect(() => {
+        let isCommentTextValid = true;
+        if (commentText.length < COMMENT_MIN_LENGTH || commentText.length > COMMENT_MAX_LENGTH) {
+            isCommentTextValid = false;
+        }
+        setIsFormValid(isCommentTextValid);
+    }, [commentText]);
+
+    const handleSubmit = (e) => {
+        if (!isFormValid || fetcher.formData) {
+            e.preventDefault();
+        }
+    };
 
     if (!issue) {
         return <p>Loading...</p>;
@@ -200,51 +290,79 @@ export default function IssueDetail() {
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
-                    <Link to='/issues'>
-                        <Button>
-                            <ChevronLeft />
-                            Go Back
-                        </Button>
-                    </Link>
-                    <div className='flex justify-between items-center'>
-                        <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
-                            Issue #{issue.id}: {issue.title}
-                        </h1>
+                    <div className='flex flex-row justify-between'>
+                        <H1>Issue #{issue.id}</H1>
+                        <Link to='/issues' className=''>
+                            <Button>
+                                <ChevronLeft />
+                                Go Back
+                            </Button>
+                        </Link>
                     </div>
-                    <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4'>
+                    {session.role === 'ADMIN' && (
+                        <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
+                            <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
+                            <div className='flex flex-col justify-between items-center m-4'>
+                                <Form method='POST'>
+                                    <input
+                                        type='hidden'
+                                        name='_action'
+                                        value={issue.archived ? 'unarchive' : 'archive'}
+                                    />
+                                    <div className='flex flex-row items-center'>
+                                        <Button type='submit' className=' bg-rose-500 hover:bg-rose-600'>
+                                            {issue.archived ? 'Unarchive' : 'Archive'}
+                                        </Button>
+                                        <p className='text-center text-rose-800 font-bold ml-4'>
+                                            {issue.archived
+                                                ? 'Only admins can see this issue.'
+                                                : 'This issue is visible to students.'}
+                                        </p>
+                                    </div>
+                                </Form>
+                            </div>
+                        </div>
+                    )}
+                    <div className='mt-4'>
+                        <H2 className='hyphens-auto'>{issue.title}</H2>
+                    </div>
+                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto mt-2'>
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
-                        <fetcher.Form method='post' className='flex'>
-                            <input type='hidden' name='id' value={issue.id} />
+                        <div className='flex flex-row items-center'>
+                            <fetcher.Form method='post' className='flex w-full'>
+                                <input type='hidden' name='id' value={issue.id} />
 
-                            <Button
-                                type='submit'
-                                className={hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : ''}
-                                title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
-                            >
-                                {hasVoted ? (
-                                    <>
-                                        <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            className='h-5 w-5 inline mr-2'
-                                            viewBox='0 0 20 20'
-                                            fill='currentColor'
-                                        >
-                                            <path
-                                                fillRule='evenodd'
-                                                d='M3.172 5.172a4 4 0 015.656 0L10 6.344l1.172-1.172a4 4 0 115.656 5.656L10 17.344 3.172 10.828a4 4 0 010-5.656z'
-                                                clipRule='evenodd'
-                                            />
-                                        </svg>
-                                        Upvoted{' '}
-                                    </>
-                                ) : (
-                                    'Upvote '
-                                )}
-                                ({issue._count.votes})
-                            </Button>
-                        </fetcher.Form>
+                                <Button
+                                    type='submit'
+                                    disabled={issue.archived}
+                                    className={classNames('hover:bg-darkred-500 w-full md:w-96', {
+                                        'bg-rose-500': hasVoted,
+                                        'bg-slate-200': !hasVoted,
+                                    })}
+                                    title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
+                                >
+                                    <Heart
+                                        className={classNames('mr-2', {
+                                            'text-white fill-current': hasVoted,
+                                            'text-black': !hasVoted,
+                                        })}
+                                    />
+                                    <p
+                                        className={classNames('font-bold', {
+                                            'text-white': hasVoted,
+                                            'text-black': !hasVoted,
+                                        })}
+                                    >
+                                        {issue._count.votes}{' '}
+                                        {issue._count.votes == 1
+                                            ? 'Student upvoted this issue'
+                                            : 'Students upvoted this issue'}
+                                    </p>{' '}
+                                </Button>
+                            </fetcher.Form>
+                        </div>
                         <Info title='Note' className='mt-4 md:w-1/2'>
                             To ensure every student can only vote once, each vote gets stored with the user ID in a
                             database, making votes <strong>not fully anonymous</strong> to the student council.
@@ -255,9 +373,27 @@ export default function IssueDetail() {
                         {issue.comments.length > 0 ? (
                             <ul>
                                 {issue.comments.map((comment) => (
-                                    <li key={comment.id} className='mt-4'>
-                                        <p className='text-sm text-gray-600'>{comment.text}</p>
-                                        <p className='text-xs text-gray-400'>
+                                    <li
+                                        key={comment.id}
+                                        className={classNames('mt-4', {
+                                            'border-2 border-gray-300 rounded px-2 pb-2': comment.official,
+                                        })}
+                                    >
+                                        {comment.official && (
+                                            <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>
+                                        )}
+                                        <p
+                                            className={classNames('text-sm text-gray-600 whitespace-pre-wrap', {
+                                                'text-slate-800': comment.official,
+                                            })}
+                                        >
+                                            {comment.text}
+                                        </p>
+                                        <p
+                                            className={classNames('text-xs text-gray-400', {
+                                                'text-slate-600': comment.official,
+                                            })}
+                                        >
                                             On{' '}
                                             {new Date(comment.createdAt).toLocaleString([], {
                                                 year: 'numeric',
@@ -273,20 +409,41 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' action={`/issues/${issue.id}/`} className='mt-4' ref={formRef}>
-                            <textarea
-                                name='comment_text'
-                                rows={3}
-                                className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
-                                placeholder='Add a comment...'
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)} // Step 2
-                            ></textarea>
-                            <Button type='submit' className='mt-2' disabled={!commentText.trim()}>
-                                Comment
-                            </Button>
-                            <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
-                        </fetcher.Form>
+                        {!issue.archived && (
+                            <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                                <input type='hidden' name='_action' value='post-comment' />
+                                <textarea
+                                    name='comment_text'
+                                    required
+                                    rows={3}
+                                    className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
+                                    placeholder='Add a comment...'
+                                    value={commentText}
+                                    onChange={(e) => setCommentText(e.target.value)}
+                                    minLength={COMMENT_MIN_LENGTH}
+                                    maxLength={COMMENT_MAX_LENGTH}
+                                    ref={commentRef}
+                                ></textarea>
+                                <div className='flex flex-col'>
+                                    {session.role === 'ADMIN' && (
+                                        <div className='flex items-center space-x-2 my-4'>
+                                            <Checkbox name='official_statement' id='official_statement' />
+                                            <label
+                                                htmlFor='official_statement'
+                                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                            >
+                                                Post as official statement
+                                            </label>
+                                        </div>
+                                    )}
+
+                                    <Button type='submit' className='mt-2' invalid={!isFormValid}>
+                                        Comment
+                                    </Button>
+                                </div>
+                                <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
+                            </fetcher.Form>
+                        )}
                     </div>
                 </div>
             </div>
