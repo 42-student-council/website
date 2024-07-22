@@ -251,7 +251,7 @@ export default function IssueDetail() {
 
                                 <Button
                                     type='submit'
-                                    className={classNames(' hover:bg-darkred-500 w-full', {
+                                    className={classNames('hover:bg-darkred-500 w-full md:w-96', {
                                         'bg-rose-500': hasVoted,
                                         'bg-slate-200': !hasVoted,
                                     })}
@@ -271,8 +271,8 @@ export default function IssueDetail() {
                                     >
                                         {issue._count.votes}{' '}
                                         {issue._count.votes == 1
-                                            ? 'Student likes this issue'
-                                            : 'Students like this issue'}
+                                            ? 'Student upvoted this issue'
+                                            : 'Students upvoted this issue'}
                                     </p>{' '}
                                 </Button>
                             </fetcher.Form>
