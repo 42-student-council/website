@@ -121,11 +121,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
     try {
         const session = await requireSessionData(request);
+        const { id } = params;
 
         const user = session.login;
         const form = await request.formData();
-        const text = form.get('comment_text');
-        const { id } = params;
 
         const action = form.get('_action');
 
@@ -149,6 +148,10 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     (errors) => json({ errors }, 400),
                     async (data) => {
                         if (data.official_statement === 'on') requireAdminSession(session);
+
+                        const issue = await db.issue.findFirst({ where: { id: Number(id) } });
+                        if (issue?.archived)
+                            return json({ errors: { message: 'Archived issues cannot be commented.' } });
 
                         return rateLimiter
                             .consume(`${user}-${id}`, 1)
@@ -189,8 +192,10 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         }
 
         const upvoteId = form.get('id');
-
         if (upvoteId) {
+            const issue = await db.issue.findFirst({ where: { id: Number(id) } });
+            if (issue?.archived) return json({ errors: { message: 'Archived issues cannot be upvoted.' } });
+
             const existingVote = await db.issueVote.findFirst({
                 where: {
                     issueId: Number(id),
@@ -331,6 +336,7 @@ export default function IssueDetail() {
 
                                 <Button
                                     type='submit'
+                                    disabled={issue.archived}
                                     className={classNames('hover:bg-darkred-500 w-full md:w-96', {
                                         'bg-rose-500': hasVoted,
                                         'bg-slate-200': !hasVoted,
@@ -403,39 +409,41 @@ export default function IssueDetail() {
                         ) : (
                             <p>No comments yet.</p>
                         )}
-                        <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
-                            <input type='hidden' name='_action' value='post-comment' />
-                            <textarea
-                                name='comment_text'
-                                required
-                                rows={3}
-                                className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
-                                placeholder='Add a comment...'
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                minLength={COMMENT_MIN_LENGTH}
-                                maxLength={COMMENT_MAX_LENGTH}
-                                ref={commentRef}
-                            ></textarea>
-                            <div className='flex flex-col'>
-                                {session.role === 'ADMIN' && (
-                                    <div className='flex items-center space-x-2 my-4'>
-                                        <Checkbox name='official_statement' id='official_statement' />
-                                        <label
-                                            htmlFor='official_statement'
-                                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                        >
-                                            Post as official statement
-                                        </label>
-                                    </div>
-                                )}
+                        {!issue.archived && (
+                            <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                                <input type='hidden' name='_action' value='post-comment' />
+                                <textarea
+                                    name='comment_text'
+                                    required
+                                    rows={3}
+                                    className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
+                                    placeholder='Add a comment...'
+                                    value={commentText}
+                                    onChange={(e) => setCommentText(e.target.value)}
+                                    minLength={COMMENT_MIN_LENGTH}
+                                    maxLength={COMMENT_MAX_LENGTH}
+                                    ref={commentRef}
+                                ></textarea>
+                                <div className='flex flex-col'>
+                                    {session.role === 'ADMIN' && (
+                                        <div className='flex items-center space-x-2 my-4'>
+                                            <Checkbox name='official_statement' id='official_statement' />
+                                            <label
+                                                htmlFor='official_statement'
+                                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                            >
+                                                Post as official statement
+                                            </label>
+                                        </div>
+                                    )}
 
-                                <Button type='submit' className='mt-2' invalid={!isFormValid}>
-                                    Comment
-                                </Button>
-                            </div>
-                            <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
-                        </fetcher.Form>
+                                    <Button type='submit' className='mt-2' invalid={!isFormValid}>
+                                        Comment
+                                    </Button>
+                                </div>
+                                <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
+                            </fetcher.Form>
+                        )}
                     </div>
                 </div>
             </div>
