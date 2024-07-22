@@ -101,7 +101,24 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues} />
+                                <IssuesTable issues={issues.filter(issue => !issue.archived)} />
+                            </CardContent>
+                            <CardFooter>
+                                <div className='text-xs text-muted-foreground'>
+                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    {issues.length === 1 ? 'issue' : 'issues'}
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value='archived' className='flex justify-center'>
+                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
+                            <CardHeader>
+                                <CardTitle>Issues</CardTitle>
+                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <IssuesTable issues={issues.filter(issue => issue.archived)} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
