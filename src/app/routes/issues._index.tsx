@@ -156,7 +156,10 @@ export default function Issues() {
     );
 }
 
-function IssuesTable({ issues, currentTab }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]>, currentTab: string }) {
+function IssuesTable({
+    issues,
+    currentTab,
+}: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]>; currentTab: string }) {
     const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
             accessorKey: 'title',
