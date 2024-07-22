@@ -294,7 +294,7 @@ export default function IssueDetail() {
                             </Button>
                         </Link>
                     </div>
-                    {session.role === UserRole.ADMIN && (
+                    {session.role === 'ADMIN' && (
                         <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
                             <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
                             <div className='flex flex-col justify-between items-center m-4'>
