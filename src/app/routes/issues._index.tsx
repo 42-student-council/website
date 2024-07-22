@@ -81,8 +81,8 @@ export default function Issues() {
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
                 <Tabs defaultValue='all' className='w-11/12'>
                     <TabsList>
-                        <TabsTrigger value="all">Online</TabsTrigger>
-                        <TabsTrigger value="archived">Archived</TabsTrigger>
+                        <TabsTrigger value='all'>Online</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
                     </TabsList>
                     <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
@@ -101,7 +101,7 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter(issue => !issue.archived)} />
+                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -118,7 +118,7 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter(issue => issue.archived)} />
+                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -246,9 +246,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
                                         onClick={() => navigate(`/issues/${row.original.id}`)}
-                                        className={classNames('hover:cursor-pointer hover:bg-slate-100', {
-                                            'bg-rose-200': row.original.archived,
-                                        })}
+                                        className='hover:cursor-pointer hover:bg-slate-100'
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>

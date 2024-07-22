@@ -289,7 +289,7 @@ export default function IssueDetail() {
                             Go Back
                         </Button>
                     </Link>
-                    {session.role === UserRole.ADMIN && (
+                    {session.role === 'ADMIN' && (
                         <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
                             <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
                             <div className='flex flex-col justify-between items-center m-4'>
@@ -413,7 +413,7 @@ export default function IssueDetail() {
                                 ref={commentRef}
                             ></textarea>
                             <div className='flex flex-col'>
-                                {session.role === UserRole.ADMIN && (
+                                {session.role === 'ADMIN' && (
                                     <div className='flex items-center space-x-2 my-4'>
                                         <Checkbox name='official_statement' id='official_statement' />
                                         <label
