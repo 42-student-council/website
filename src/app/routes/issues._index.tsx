@@ -19,13 +19,7 @@ import { Warning } from '~/components/alert/Warning';
 import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
 import { UserRole } from '@prisma/client';
-import {
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable,
-} from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 
 export const meta: MetaFunction = () => {
@@ -123,7 +117,10 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} currentTab={currentTab} />
+                                <IssuesTable
+                                    issues={issues.filter((issue) => !issue.archived)}
+                                    currentTab={currentTab}
+                                />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -140,7 +137,10 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => issue.archived)} currentTab={currentTab} />
+                                <IssuesTable
+                                    issues={issues.filter((issue) => issue.archived)}
+                                    currentTab={currentTab}
+                                />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -267,7 +267,11 @@ function IssuesTable({ issues, currentTab }) {
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => navigate(`/issues/${row.original.id}${currentTab === 'archived' ? '?archived' : ''}`)}
+                                        onClick={() =>
+                                            navigate(
+                                                `/issues/${row.original.id}${currentTab === 'archived' ? '?archived' : ''}`,
+                                            )
+                                        }
                                         className='hover:cursor-pointer hover:bg-slate-100'
                                     >
                                         {row.getVisibleCells().map((cell) => (

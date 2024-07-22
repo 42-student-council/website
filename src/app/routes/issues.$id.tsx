@@ -316,7 +316,8 @@ export default function IssueDetail() {
                                             {issue.archived ? 'Unarchive' : 'Archive'}
                                         </Button>
                                         <p className='text-center text-rose-800 ml-4'>
-                                            Archived issues are visible to students, but cannot be interacted with anymore.
+                                            Archived issues are visible to students, but cannot be interacted with
+                                            anymore.
                                         </p>
                                     </div>
                                 </Form>
