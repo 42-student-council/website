@@ -10,6 +10,8 @@ import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
+import { UserRole } from '@prisma/client';
+import classNames from 'classnames';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
@@ -19,7 +21,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
     const issues = await db.issue.findMany({
+        where: {
+            archived: session.role === UserRole.ADMIN ? undefined : false,
+        },
         select: {
+            archived: true,
             id: true,
             title: true,
             description: true,
@@ -37,6 +43,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 type Issue = {
+    archived: boolean;
     createdAt: Date;
     description: string;
     id: number;
@@ -153,7 +160,9 @@ export default function Issues() {
                                                 <TableRow
                                                     key={issue.id}
                                                     onClick={() => navigate(`/issues/${issue.id}`)}
-                                                    className='hover:cursor-pointer hover:bg-slate-100'
+                                                    className={classNames('hover:cursor-pointer hover:bg-slate-100', {
+                                                        'bg-rose-200': issue.archived,
+                                                    })}
                                                 >
                                                     <TableCell className='font-medium'>
                                                         <Link to={`/issues/${issue.id}`}>{issue.title}</Link>
