@@ -16,6 +16,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+import { ChevronLeft } from 'lucide-react';
 
 const rateLimiter = new RateLimiterMemory({
     points: 2,
@@ -124,10 +125,18 @@ export default function IssuesNew() {
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
+            <div className='flex justify-center'>
+                <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
+                    <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
+                    <Link to='/issues'>
+                        <Button className='mt-4'>
+                            <ChevronLeft />
+                            Go Back
+                        </Button>
+                    </Link>
+                </div>
             </div>
-            <Separator />
+                <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <p className='mt-4 mb-2 md:w-3/5 text-xl'>
                     Open an anonymous issue to discuss what's important to you with the community.
