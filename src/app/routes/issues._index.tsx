@@ -5,7 +5,7 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent } from '~/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { useState, useEffect } from 'react';
@@ -106,6 +106,10 @@ export default function Issues() {
             <div className='flex flex-col sm:gap-4 sm:py-4'>
                 <main className='grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8'>
                     <Tabs defaultValue='all'>
+                    <TabsList>
+                        <TabsTrigger value="all">Online</TabsTrigger>
+                        <TabsTrigger value="archived">Archived</TabsTrigger>
+                    </TabsList>
                         <div className='flex items-center'>
                             <div className='ml-auto flex items-center gap-2'>
                                 <Link to='/issues/new'>
