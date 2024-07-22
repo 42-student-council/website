@@ -17,6 +17,17 @@ import { Checkbox } from '~/components/ui/checkbox';
 import { z } from 'zod';
 import { validateForm } from '~/utils/validation';
 import classNames from 'classnames';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '~/components/ui/alert-dialog';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -303,23 +314,45 @@ export default function IssueDetail() {
                         <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
                             <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
                             <div className='flex flex-col justify-between items-center m-4'>
-                                <Form method='POST'>
-                                    <input
-                                        type='hidden'
-                                        name='_action'
-                                        value={issue.archived ? 'unarchive' : 'archive'}
-                                    />
-                                    <div className='flex flex-row items-center'>
-                                        <Button type='submit' className=' bg-rose-500 hover:bg-rose-600'>
-                                            {issue.archived ? 'Unarchive' : 'Archive'}
-                                        </Button>
-                                        <p className='text-center text-rose-800 font-bold ml-4'>
-                                            {issue.archived
-                                                ? 'Only admins can see this issue.'
-                                                : 'This issue is visible to students.'}
-                                        </p>
-                                    </div>
-                                </Form>
+                                <div className='flex items-center'>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button className='bg-rose-500 hover:bg-rose-600'>
+                                                {issue.archived ? 'Unarchive' : 'Archive'}
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    {issue.archived
+                                                        ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
+                                                        : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <Form method='POST'>
+                                                    <input
+                                                        type='hidden'
+                                                        name='_action'
+                                                        value={issue.archived ? 'unarchive' : 'archive'}
+                                                    />
+                                                    <AlertDialogAction asChild>
+                                                        <Button type='submit'>
+                                                            {issue.archived ? 'Unarchive' : 'Archive'}
+                                                        </Button>
+                                                    </AlertDialogAction>
+                                                </Form>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                    <p className='text-center text-rose-800 font-bold ml-4'>
+                                        {issue.archived
+                                            ? 'This issue is closed.'
+                                            : 'This issue is open for discussion.'}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}
