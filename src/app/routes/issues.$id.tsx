@@ -138,7 +138,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     },
                 });
 
-                break;
+                return json({ archived: true });
             }
             case 'post-comment': {
                 return validateForm(
@@ -175,8 +175,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                 );
             }
             case 'unarchive': {
-                requireAdminSession(session);
-
                 await db.issue.update({
                     where: { id: Number(id) },
                     data: {
@@ -184,7 +182,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     },
                 });
 
-                break;
+                return json({ archived: false });
             }
         }
 
