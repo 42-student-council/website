@@ -80,11 +80,11 @@ export default function Issues() {
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
                 <Tabs defaultValue='all' className='w-11/12'>
-                    <TabsList>
-                        <TabsTrigger value='all'>Online</TabsTrigger>
-                        <TabsTrigger value='archived'>Archived</TabsTrigger>
-                    </TabsList>
-                    <div className='flex items-center'>
+                    <div className='flex justify-between items-center mb-2'>
+                        <TabsList>
+                            <TabsTrigger value='all'>Online</TabsTrigger>
+                            <TabsTrigger value='archived'>Archived</TabsTrigger>
+                        </TabsList>
                         <div className='ml-auto flex items-center gap-2'>
                             <Link to='/issues/new'>
                                 <Button size='md' className='gap-2'>
