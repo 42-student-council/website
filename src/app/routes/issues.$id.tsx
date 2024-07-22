@@ -7,9 +7,11 @@ import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Heart } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
+import { H1 } from '~/components/ui/H1';
+import { H2 } from '~/components/ui/H2';
 import { UserRole } from '@prisma/client';
 import { Checkbox } from '~/components/ui/checkbox';
 import { z } from 'zod';
@@ -285,12 +287,15 @@ export default function IssueDetail() {
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-4/5 p-4'>
-                    <Link to='/issues'>
-                        <Button>
-                            <ChevronLeft />
-                            Go Back
-                        </Button>
-                    </Link>
+                    <div className='flex flex-row justify-between'>
+                        <H1>Issue #{issue.id}</H1>
+                        <Link to='/issues' className=''>
+                            <Button>
+                                <ChevronLeft />
+                                Go Back
+                            </Button>
+                        </Link>
+                    </div>
                     {session.role === UserRole.ADMIN && (
                         <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
                             <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
@@ -315,46 +320,46 @@ export default function IssueDetail() {
                             </div>
                         </div>
                     )}
-                    <div className='flex justify-between items-center'>
-                        <h1 className='mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white pt-4 pb-4'>
-                            Issue #{issue.id}: {issue.title}
-                        </h1>
+                    <div className='mt-4'>
+                        <H2 className='hyphens-auto'>{issue.title}</H2>
                     </div>
-                    <p className='text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 pb-4 whitespace-pre-wrap'>
+                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto mt-2'>
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
-                        <fetcher.Form method='post' className='flex'>
-                            <input type='hidden' name='id' value={issue.id} />
+                        <div className='flex flex-row items-center'>
+                            <fetcher.Form method='post' className='flex w-full'>
+                                <input type='hidden' name='id' value={issue.id} />
 
-                            <Button
-                                type='submit'
-                                className={hasVoted ? 'bg-upvoteButtonRed hover:bg-darkred-500' : ''}
-                                title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
-                            >
-                                {hasVoted ? (
-                                    <>
-                                        <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            className='h-5 w-5 inline mr-2'
-                                            viewBox='0 0 20 20'
-                                            fill='currentColor'
-                                        >
-                                            <path
-                                                fillRule='evenodd'
-                                                d='M3.172 5.172a4 4 0 015.656 0L10 6.344l1.172-1.172a4 4 0 115.656 5.656L10 17.344 3.172 10.828a4 4 0 010-5.656z'
-                                                clipRule='evenodd'
-                                            />
-                                        </svg>
-                                        Upvoted{' '}
-                                    </>
-                                ) : (
-                                    'Upvote '
-                                )}
-                                ({issue._count.votes})
-                            </Button>
-                        </fetcher.Form>
-                        <Info title='Note' className='mt-4 w-1/2'>
+                                <Button
+                                    type='submit'
+                                    className={classNames('hover:bg-darkred-500 w-full md:w-96', {
+                                        'bg-rose-500': hasVoted,
+                                        'bg-slate-200': !hasVoted,
+                                    })}
+                                    title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
+                                >
+                                    <Heart
+                                        className={classNames('mr-2', {
+                                            'text-white fill-current': hasVoted,
+                                            'text-black': !hasVoted,
+                                        })}
+                                    />
+                                    <p
+                                        className={classNames('font-bold', {
+                                            'text-white': hasVoted,
+                                            'text-black': !hasVoted,
+                                        })}
+                                    >
+                                        {issue._count.votes}{' '}
+                                        {issue._count.votes == 1
+                                            ? 'Student upvoted this issue'
+                                            : 'Students upvoted this issue'}
+                                    </p>{' '}
+                                </Button>
+                            </fetcher.Form>
+                        </div>
+                        <Info title='Note' className='mt-4'>
                             To ensure every student can only vote once, each vote gets stored with the user ID in a
                             database, making votes <strong>not fully anonymous</strong> to the student council.
                         </Info>
