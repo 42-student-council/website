@@ -7,7 +7,7 @@ import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft, Heart } from 'lucide-react';
+import { ChevronLeft, Fullscreen, Heart } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
