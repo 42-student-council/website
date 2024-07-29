@@ -89,7 +89,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         }
 
         const issue = await db.issue.findUnique({
-            where: { id: Number(id), archived: session.role === UserRole.ADMIN ? undefined : false },
+            where: { id: Number(id) },
             select: {
                 archived: true,
                 createdAt: true,
@@ -398,7 +398,7 @@ export default function IssueDetail() {
                                 </Button>
                             </fetcher.Form>
                         </div>
-                        <Info title='Note' className='mt-4'>
+                        <Info title='Note' className='mt-4 md:w-3/5'>
                             To ensure every student can only vote once, each vote gets stored with the user ID in a
                             database, making votes <strong>not fully anonymous</strong> to the student council.
                         </Info>

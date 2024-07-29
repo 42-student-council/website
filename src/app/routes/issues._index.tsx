@@ -33,9 +33,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const archived = url.searchParams.has('archived');
 
     const issues = await db.issue.findMany({
-        where: {
-            archived: session.role === UserRole.ADMIN ? undefined : false,
-        },
         select: {
             archived: true,
             id: true,
@@ -103,8 +100,8 @@ export default function Issues() {
                     <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
                             <Link to='/issues/new'>
-                                <Button size='sm' className='h-7 gap-1'>
-                                    <PlusCircle className='h-3.5 w-3.5' />
+                                <Button size='md' className='gap-2'>
+                                    <PlusCircle className='h-5 w-5' />
                                     <span className='whitespace-nowrap'>I also have something to say!</span>
                                 </Button>
                             </Link>
