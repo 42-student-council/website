@@ -16,6 +16,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
+import { ChevronLeft } from 'lucide-react';
 
 const TITLE_MIN_LENGTH = 5;
 const TITLE_MAX_LENGTH = 50;
@@ -165,8 +166,16 @@ export default function IssuesNew() {
     return (
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
+            <div className='flex justify-center'>
+                <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
+                    <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
+                    <Link to='/issues'>
+                        <Button className='mt-4'>
+                            <ChevronLeft />
+                            Go Back
+                        </Button>
+                    </Link>
+                </div>
             </div>
             <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
@@ -223,7 +232,7 @@ export default function IssuesNew() {
                         </FormErrorMessage>
                     </div>
 
-                    <Info title='Note' className='mt-4 w-auto'>
+                    <Info title='Note' className='mt-4 md:w-3/5'>
                         To maintain complete anonymity, the author of an issue does not get stored.
                         <br />
                         Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
