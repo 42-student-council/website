@@ -38,9 +38,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
     const issues = await db.issue.findMany({
-        where: {
-            archived: session.role === UserRole.ADMIN ? undefined : false,
-        },
         select: {
             archived: true,
             id: true,

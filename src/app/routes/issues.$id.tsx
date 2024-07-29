@@ -89,7 +89,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
         }
 
         const issue = await db.issue.findUnique({
-            where: { id: Number(id), archived: session.role === UserRole.ADMIN ? undefined : false },
+            where: { id: Number(id) },
             select: {
                 archived: true,
                 createdAt: true,
