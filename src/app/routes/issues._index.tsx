@@ -71,8 +71,8 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
     const { issues, session } = useLoaderData<LoaderData>();
-    const archivedIssues = issues.filter((issue) => issue.archived)
-    const visibleIssues = issues.filter((issue) => !issue.archived)
+    const archivedIssues = issues.filter((issue) => issue.archived);
+    const visibleIssues = issues.filter((issue) => !issue.archived);
 
     return (
         <div>
