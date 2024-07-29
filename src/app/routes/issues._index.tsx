@@ -71,6 +71,8 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
     const { issues, session } = useLoaderData<LoaderData>();
+    const archivedIssues = issues.filter((issue) => issue.archived)
+    const visibleIssues = issues.filter((issue) => !issue.archived)
 
     return (
         <div>
@@ -98,11 +100,11 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
+                                <IssuesTable issues={visibleIssues} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
-                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
                                     {issues.length === 1 ? 'issue' : 'issues'}
                                 </div>
                             </CardFooter>
@@ -115,11 +117,11 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
+                                <IssuesTable issues={archivedIssues} />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
-                                    Showing <span className='font-bold'>{issues.length}</span>{' '}
+                                    Showing <span className='font-bold'>{archivedIssues.length}</span>{' '}
                                     {issues.length === 1 ? 'issue' : 'issues'}
                                 </div>
                             </CardFooter>
