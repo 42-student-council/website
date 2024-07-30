@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { useLoaderData, Link, useNavigate, useLocation } from '@remix-run/react';
+import { useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
     ArrowUpAZ,
@@ -18,7 +18,6 @@ import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
-import { UserRole } from '@prisma/client';
 import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 
@@ -28,9 +27,6 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
-
-    const url = new URL(request.url);
-    const archived = url.searchParams.has('archived');
 
     const issues = await db.issue.findMany({
         select: {
@@ -48,7 +44,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session, archived } satisfies LoaderData;
+    return { issues, session } satisfies LoaderData;
 }
 
 type Issue = {
@@ -62,30 +58,22 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData; archived: boolean };
+type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
-    const { issues, session, archived } = useLoaderData<LoaderData>();
-    const [currentTab, setCurrentTab] = useState(archived ? 'archived' : 'online');
-    const navigate = useNavigate();
-    const location = useLocation();
+    const { issues, session } = useLoaderData<LoaderData>();
+    const [currentTab, setCurrentTab] = useState('online');
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        if (params.has('archived')) {
-            setCurrentTab('archived');
-        } else {
-            setCurrentTab('online');
+        const savedTab = localStorage.getItem('currentTab');
+        if (savedTab) {
+            setCurrentTab(savedTab);
         }
-    }, [location]);
+    }, []);
 
     const handleTabChange = (newTab: string) => {
         setCurrentTab(newTab);
-        if (newTab === 'archived') {
-            navigate('/issues?archived');
-        } else {
-            navigate('/issues');
-        }
+        localStorage.setItem('currentTab', newTab);
     };
 
     return (
@@ -155,8 +143,7 @@ export default function Issues() {
 
 function IssuesTable({
     issues,
-    currentTab,
-}: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]>; currentTab: string }) {
+}: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
     const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
             accessorKey: 'title',
@@ -268,9 +255,7 @@ function IssuesTable({
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
                                         onClick={() =>
-                                            navigate(
-                                                `/issues/${row.original.id}${currentTab === 'archived' ? '?archived' : ''}`,
-                                            )
+                                            navigate(`/issues/${row.original.id}`)
                                         }
                                         className='hover:cursor-pointer hover:bg-slate-100'
                                     >
