@@ -9,6 +9,7 @@ import {
     isRouteErrorResponse,
     useRouteError,
 } from '@remix-run/react';
+import { useEffect } from 'react';
 import stylesheet from '~/tailwind.css?url';
 import { Footer } from './components/Footer';
 import NavBar from './components/NavBar';
@@ -29,6 +30,18 @@ export const links: LinksFunction = () => {
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        const handleUnload = () => {
+            localStorage.removeItem('currentTab');
+        };
+
+        window.addEventListener('beforeunload', handleUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleUnload);
+        };
+    }, []);
+
     return (
         <html lang='en'>
             <head>
@@ -39,7 +52,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </head>
             <body>
                 <div className='min-h-screen'>{children}</div>
-
                 <Footer />
                 <ScrollRestoration />
                 <Scripts />
