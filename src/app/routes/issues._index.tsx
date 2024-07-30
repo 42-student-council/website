@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { useLoaderData, Link, useNavigate } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
@@ -16,18 +16,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
-import { useState, HTMLAttributes } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '~/utils/db.server';
-import { UserRole } from '@prisma/client';
-import classNames from 'classnames';
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    useReactTable,
-} from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 
 export const meta: MetaFunction = () => {
@@ -71,17 +62,30 @@ type LoaderData = { issues: Issue[]; session: SessionData };
 
 export default function Issues() {
     const { issues, session } = useLoaderData<LoaderData>();
+    const [currentTab, setCurrentTab] = useState('online');
+
+    useEffect(() => {
+        const savedTab = localStorage.getItem('currentTab');
+        if (savedTab) {
+            setCurrentTab(savedTab);
+        }
+    }, []);
+
+    const handleTabChange = (newTab: string) => {
+        setCurrentTab(newTab);
+        localStorage.setItem('currentTab', newTab);
+    };
 
     return (
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue='all' className='w-11/12'>
-                    <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='all'>Online</TabsTrigger>
-                            <TabsTrigger value='archived'>Archived</TabsTrigger>
-                        </TabsList>
+                <Tabs value={currentTab} onValueChange={handleTabChange} className='w-11/12'>
+                    <TabsList>
+                        <TabsTrigger value='online'>Online</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    </TabsList>
+                    <div className='flex items-center'>
                         <div className='ml-auto flex items-center gap-2'>
                             <Link to='/issues/new'>
                                 <Button size='md' className='gap-2'>
@@ -91,14 +95,17 @@ export default function Issues() {
                             </Link>
                         </div>
                     </div>
-                    <TabsContent value='all' className='flex justify-center'>
+                    <TabsContent value='online' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
                                 <CardTitle>Issues</CardTitle>
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => !issue.archived)} />
+                                <IssuesTable
+                                    issues={issues.filter((issue) => !issue.archived)}
+                                    currentTab={currentTab}
+                                />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -115,7 +122,10 @@ export default function Issues() {
                                 <CardDescription>This is what students are currently talking about.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IssuesTable issues={issues.filter((issue) => issue.archived)} />
+                                <IssuesTable
+                                    issues={issues.filter((issue) => issue.archived)}
+                                    currentTab={currentTab}
+                                />
                             </CardContent>
                             <CardFooter>
                                 <div className='text-xs text-muted-foreground'>
@@ -131,7 +141,9 @@ export default function Issues() {
     );
 }
 
-function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
+function IssuesTable({
+    issues,
+}: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
     const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
             accessorKey: 'title',
@@ -242,7 +254,9 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => navigate(`/issues/${row.original.id}`)}
+                                        onClick={() =>
+                                            navigate(`/issues/${row.original.id}`)
+                                        }
                                         className='hover:cursor-pointer hover:bg-slate-100'
                                     >
                                         {row.getVisibleCells().map((cell) => (
