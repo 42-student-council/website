@@ -113,8 +113,12 @@ export default function Issues() {
                     <TabsContent value='archived' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
-                                <CardTitle>Issues</CardTitle>
-                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                                <CardTitle>Archived Issues</CardTitle>
+                                <CardDescription>
+                                    <div>
+                                        Issues that have been resolved or have been open for 2 weeks and showed no activity for 3 days.
+                                    </div>
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <IssuesTable issues={archivedIssues} />
