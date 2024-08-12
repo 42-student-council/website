@@ -88,7 +88,9 @@ export default function Issues() {
                             <Link to='/issues/new'>
                                 <Button size='md' className='gap-2'>
                                     <PlusCircle className='h-5 w-5' />
-                                    <span className='hidden sm:inline whitespace-nowrap'>I also have something to say!</span>
+                                    <span className='hidden sm:inline whitespace-nowrap'>
+                                        I also have something to say!
+                                    </span>
                                     <span className='sm:hidden whitespace-nowrap'>New Issue</span>
                                 </Button>
                             </Link>
@@ -117,7 +119,8 @@ export default function Issues() {
                                 <CardTitle>Archived Issues</CardTitle>
                                 <CardDescription>
                                     <div>
-                                        Issues that have been resolved or have been open for 2 weeks and showed no activity for 3 days.
+                                        Issues that have been resolved or have been open for 2 weeks and showed no
+                                        activity for 3 days.
                                     </div>
                                 </CardDescription>
                             </CardHeader>
