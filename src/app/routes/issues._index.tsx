@@ -88,7 +88,10 @@ export default function Issues() {
                             <Link to='/issues/new'>
                                 <Button size='md' className='gap-2'>
                                     <PlusCircle className='h-5 w-5' />
-                                    <span className='whitespace-nowrap'>I also have something to say!</span>
+                                    <span className='hidden sm:inline whitespace-nowrap'>
+                                        I also have something to say!
+                                    </span>
+                                    <span className='sm:hidden whitespace-nowrap'>New Issue</span>
                                 </Button>
                             </Link>
                         </div>
@@ -113,8 +116,13 @@ export default function Issues() {
                     <TabsContent value='archived' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
-                                <CardTitle>Issues</CardTitle>
-                                <CardDescription>This is what students are currently talking about.</CardDescription>
+                                <CardTitle>Archived Issues</CardTitle>
+                                <CardDescription>
+                                    <div>
+                                        Issues that have been resolved or have been open for 2 weeks and showed no
+                                        activity for 3 days.
+                                    </div>
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <IssuesTable issues={archivedIssues} />
