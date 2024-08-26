@@ -215,6 +215,10 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                     </Button>
                 );
             },
+            cell: ({ row }) => {
+                const votes = row.getValue('votes') as number;
+                return <div className="pl-7">{votes}</div>;
+            },
         },
         {
             id: 'date',
