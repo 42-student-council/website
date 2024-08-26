@@ -203,7 +203,12 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             accessorKey: 'createdAt',
             header: ({ column }) => {
                 return (
-                    <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    <Button variant='ghost' onClick={() => {
+                        if (column.getIsSorted() === false) {
+                            column.toggleSorting('desc');
+                        }
+                        else column.toggleSorting(column.getIsSorted() === 'asc' )
+                        } }>
                         Created at
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
