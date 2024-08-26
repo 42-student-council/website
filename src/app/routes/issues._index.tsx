@@ -149,6 +149,11 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 const titleA: string = rowA.getValue('title');
                 const titleB: string = rowB.getValue('title');
 
+                if (!titleA.localeCompare(titleB)) {
+                    const dateA = new Date(rowA.getValue('date')).getTime();
+                    const dateB = new Date(rowB.getValue('date')).getTime();
+                    return dateB - dateA;
+                }
                 return titleA.localeCompare(titleB);
             },
             header: ({ column }) => {
@@ -179,6 +184,17 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
         {
             id: 'votes',
             accessorKey: '_count.votes',
+            sortingFn: (rowA, rowB) => {
+                const votesA: number = rowA.getValue('votes');
+                const votesB: number = rowB.getValue('votes');
+
+                if (votesA === votesB) {
+                    const dateA = new Date(rowA.getValue('date')).getTime();
+                    const dateB = new Date(rowB.getValue('date')).getTime();
+                    return dateA - dateB;
+                }
+                return votesA - votesB;
+            },
             header: ({ column }) => {
                 return (
                     <Button variant='ghost' onClick={() => {
