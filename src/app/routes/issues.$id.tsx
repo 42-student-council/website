@@ -422,6 +422,15 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
+                        <p className={classNames('text-s text-gray-600 pb-2')}>
+                            {new Date(issue.createdAt).toLocaleString([], {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            })}
+                        </p>
                         <div className='flex flex-row items-center'>
                             <fetcher.Form method='post' className='flex w-full'>
                                 <input type='hidden' name='id' value={issue.id} />
@@ -542,7 +551,6 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
                     'text-slate-600': comment.official,
                 })}
             >
-                On{' '}
                 {new Date(comment.createdAt).toLocaleString([], {
                     year: 'numeric',
                     month: 'numeric',
