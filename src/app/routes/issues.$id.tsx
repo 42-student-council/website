@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
 import NavBar from '~/components/NavBar';
 import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
 import { useState, useEffect, useRef } from 'react';
@@ -7,12 +7,11 @@ import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { ChevronLeft, Fullscreen, Heart } from 'lucide-react';
+import { ChevronLeft, Heart } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
-import { UserRole } from '@prisma/client';
 import { Checkbox } from '~/components/ui/checkbox';
 import { z } from 'zod';
 import { validateForm } from '~/utils/validation';
@@ -40,6 +39,11 @@ const createCommentSchema = z.object({
     official_statement: z.optional(z.enum(['on'])),
 });
 
+const voteCommentSchema = z.object({
+    issueId: z.coerce.number().positive(),
+    commentId: z.coerce.number().positive(),
+});
+
 export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
     return [
         { title: `Issue | ${data?.issue.title ?? `#${params.id ?? 'Unknown'}`}` },
@@ -55,21 +59,30 @@ const rateLimiter = new RateLimiterMemory({
     duration: 60,
 });
 
+type Comment = {
+    createdAt: Date;
+    id: number;
+    official: boolean;
+    text: string;
+
+    votes: {
+        userId: string;
+    }[];
+    _count: { votes: number };
+};
+
+type Issue = {
+    archived: boolean;
+    comments: Comment[];
+    createdAt: Date;
+    description: string;
+    id: number;
+    title: string;
+    _count: { votes: number };
+};
+
 type LoaderData = {
-    issue: {
-        archived: boolean;
-        comments: {
-            createdAt: Date;
-            id: number;
-            official: boolean;
-            text: string;
-        }[];
-        createdAt: Date;
-        description: string;
-        id: number;
-        title: string;
-        _count: { votes: number };
-    };
+    issue: Issue;
     session: SessionData;
     hasVoted: boolean;
 };
@@ -99,14 +112,22 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
                 _count: {
                     select: { votes: true },
                 },
-
                 comments: {
                     select: {
                         createdAt: true,
                         id: true,
                         text: true,
                         official: true,
+                        votes: {
+                            select: { userId: true },
+                            where: { userId: session.login },
+                            take: 1,
+                        },
+                        _count: {
+                            select: { votes: true },
+                        },
                     },
+                    orderBy: { createdAt: 'asc' },
                 },
             },
         });
@@ -199,6 +220,44 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                 });
 
                 return json({ archived: false });
+            }
+            case 'commentVote': {
+                return validateForm(
+                    form,
+                    voteCommentSchema,
+                    (errors) => json({ errors }, 400),
+                    async (data) => {
+                        const issue = await db.issue.findFirst({ where: { id: data.issueId } });
+                        if (issue?.archived)
+                            return json({ errors: { message: 'Comments from archived issues cannot be upvoted.' } });
+
+                        const existingVote = await db.commentVote.findFirst({
+                            where: {
+                                commentId: data.commentId,
+                                userId: user,
+                            },
+                        });
+
+                        if (existingVote) {
+                            await db.commentVote.delete({
+                                where: {
+                                    id: existingVote.id,
+                                },
+                            });
+
+                            return json({ message: 'Removed your vote from the comment.' });
+                        }
+
+                        await db.commentVote.create({
+                            data: {
+                                commentId: data.commentId,
+                                userId: user,
+                            },
+                        });
+
+                        return json({ message: 'Upvoted the comment.' });
+                    },
+                );
             }
         }
 
@@ -406,36 +465,8 @@ export default function IssueDetail() {
                         {issue.comments.length > 0 ? (
                             <ul>
                                 {issue.comments.map((comment) => (
-                                    <li
-                                        key={comment.id}
-                                        className={classNames('mt-4', {
-                                            'border-2 border-gray-300 rounded px-2 pb-2': comment.official,
-                                        })}
-                                    >
-                                        {comment.official && (
-                                            <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>
-                                        )}
-                                        <p
-                                            className={classNames('text-sm text-gray-600 whitespace-pre-wrap', {
-                                                'text-slate-800': comment.official,
-                                            })}
-                                        >
-                                            {comment.text}
-                                        </p>
-                                        <p
-                                            className={classNames('text-xs text-gray-400', {
-                                                'text-slate-600': comment.official,
-                                            })}
-                                        >
-                                            On{' '}
-                                            {new Date(comment.createdAt).toLocaleString([], {
-                                                year: 'numeric',
-                                                month: 'numeric',
-                                                day: 'numeric',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </p>
+                                    <li key={comment.id}>
+                                        <IssueComment comment={comment} issue={issue} />
                                     </li>
                                 ))}
                             </ul>
@@ -490,6 +521,58 @@ export default function IssueDetail() {
                     </div>
                 </div>
             )}
+        </div>
+    );
+}
+
+function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; issue: SerializeFrom<Issue> }) {
+    const upvoteFetcher = useFetcher<{ message?: string }>();
+
+    const hasVoted = comment.votes.length !== 0;
+
+    return (
+        <div
+            className={classNames('mt-4 bg-slate-100 p-2 rounded-md', {
+                'border-2 border-gray-300 rounded': comment.official,
+            })}
+        >
+            {comment.official && <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>}
+            <p
+                className={classNames('text-xs text-gray-600 pb-2', {
+                    'text-slate-600': comment.official,
+                })}
+            >
+                On{' '}
+                {new Date(comment.createdAt).toLocaleString([], {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                })}
+            </p>
+            <p
+                className={classNames('text-base text-gray-600 whitespace-pre-wrap', {
+                    'text-slate-800': comment.official,
+                })}
+            >
+                {comment.text}
+            </p>
+            <upvoteFetcher.Form method='post' className='flex w-full'>
+                <input type='hidden' name='_action' value='commentVote' />
+                <input type='hidden' name='issueId' value={issue.id} />
+                <input type='hidden' name='commentId' value={comment.id} />
+
+                <Button type='submit' variant='ghost' className='p-0' disabled={issue.archived}>
+                    <Heart
+                        className={classNames('mr-2', {
+                            'text-rose-500 fill-current': hasVoted,
+                            'text-black': !hasVoted,
+                        })}
+                    />
+                    <p className={'font-bold text-black'}>{comment._count.votes}</p>
+                </Button>
+            </upvoteFetcher.Form>
         </div>
     );
 }
