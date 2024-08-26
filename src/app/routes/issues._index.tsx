@@ -194,6 +194,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             },
         },
         {
+            id: 'date',
             accessorKey: 'createdAt',
             header: ({ column }) => {
                 return (
@@ -209,7 +210,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 );
             },
             cell: ({ row }) => {
-                const formatted = new Date(row.getValue('createdAt')).toLocaleDateString([], {
+                const formatted = new Date(row.getValue('date')).toLocaleDateString([], {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -222,7 +223,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
         },
     ];
 
-    const [sorting, setSorting] = useState<SortingState>([{ id: 'votes', desc: true }]);
+    const [sorting, setSorting] = useState<SortingState>([{ id: 'date', desc: true }]);
 
     const table = useReactTable({
         data: issues,
