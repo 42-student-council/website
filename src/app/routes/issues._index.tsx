@@ -160,12 +160,13 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 return (
                     <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
                         Title
-                        {column.getIsSorted() !== false &&
+                        {column.getIsSorted() !== false ?
                             (column.getIsSorted() === 'asc' ? (
                                 <ArrowDownAZ className='ml-2 h-4 w-4' />
                             ) : (
                                 <ArrowUpAZ className='ml-2 h-4 w-4' />
-                            ))}
+                            )) :
+                            <ArrowDownAZ className='ml-2 h-4 w-4 opacity-0' />}
                     </Button>
                 );
             },
@@ -204,12 +205,13 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         else column.toggleSorting(column.getIsSorted() === 'asc' )
                         } }>
                         Votes
-                        {column.getIsSorted() !== false &&
+                        {column.getIsSorted() !== false ?
                             (column.getIsSorted() === 'asc' ? (
                                 <ArrowUp10 className='ml-2 h-4 w-4' />
                             ) : (
                                 <ArrowDown10 className='ml-2 h-4 w-4' />
-                            ))}
+                            )) :
+                            <ArrowUp10 className='ml-2 h-4 w-4 opacity-0' />}
                     </Button>
                 );
             },
@@ -226,12 +228,13 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         else column.toggleSorting(column.getIsSorted() === 'asc' )
                         } }>
                         Created at
-                        {column.getIsSorted() !== false &&
+                        {column.getIsSorted() !== false ?
                             (column.getIsSorted() === 'asc' ? (
                                 <CalendarArrowUp className='ml-2 h-4 w-4' />
                             ) : (
                                 <CalendarArrowDown className='ml-2 h-4 w-4' />
-                            ))}
+                            )) :
+                            <CalendarArrowUp className='ml-2 h-4 w-4 opacity-0' /> }
                     </Button>
                 );
             },
