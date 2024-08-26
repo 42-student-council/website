@@ -81,7 +81,7 @@ export default function Issues() {
                 <Tabs defaultValue='all' className='w-11/12'>
                     <div className='flex justify-between items-center mb-2'>
                         <TabsList>
-                            <TabsTrigger value='all'>Online</TabsTrigger>
+                            <TabsTrigger value='all'>Open</TabsTrigger>
                             <TabsTrigger value='archived'>Archived</TabsTrigger>
                         </TabsList>
                         <div className='ml-auto flex items-center gap-2'>
