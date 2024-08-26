@@ -6,8 +6,8 @@ import {
     PlusCircle,
     CalendarArrowDown,
     CalendarArrowUp,
-    ArrowDown01,
-    ArrowUp01,
+    ArrowDown10,
+    ArrowUp10,
     ArrowDownAZ,
 } from 'lucide-react';
 import { Button } from '~/components/ui/button';
@@ -206,9 +206,9 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         Votes
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
-                                <ArrowUp01 className='ml-2 h-4 w-4' />
+                                <ArrowUp10 className='ml-2 h-4 w-4' />
                             ) : (
-                                <ArrowDown01 className='ml-2 h-4 w-4' />
+                                <ArrowDown10 className='ml-2 h-4 w-4' />
                             ))}
                     </Button>
                 );
