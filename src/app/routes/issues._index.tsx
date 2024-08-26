@@ -181,7 +181,12 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             accessorKey: '_count.votes',
             header: ({ column }) => {
                 return (
-                    <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+                    <Button variant='ghost' onClick={() => {
+                        if (column.getIsSorted() === false) {
+                            column.toggleSorting('desc');
+                        }
+                        else column.toggleSorting(column.getIsSorted() === 'asc' )
+                        } }>
                         Votes
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
