@@ -164,6 +164,17 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                     </Button>
                 );
             },
+            cell: ({ row }) => {
+                const id = row.original.id;
+                const title = row.getValue<string>('title');
+                return (
+                    <span>
+                        <Link to={`/issues/${id}`} className='hover:underline'>
+                            {title}
+                        </Link>
+                    </span>
+                );
+            },
         },
         {
             id: 'votes',
