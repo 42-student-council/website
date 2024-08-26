@@ -56,13 +56,15 @@ model CommentVote {
 }
 
 model Issue {
-  archived    Boolean     @default(false)
-  comments    Comment[]
-  createdAt   DateTime    @default(now())
-  description String
-  id          Int         @id @default(autoincrement())
-  title       String      @db.VarChar(100)
-  votes       IssueVote[]
+  archived                Boolean     @default(false)
+  comments                Comment[]
+  createdAt               DateTime    @default(now())
+  description             String
+  studentDiscordMessageId BigInt?
+  councilDiscordMessageId BigInt?
+  id                      Int         @id @default(autoincrement())
+  title                   String      @db.VarChar(100)
+  votes                   IssueVote[]
 }
 
 model IssueVote {

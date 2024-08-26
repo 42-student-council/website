@@ -57,7 +57,6 @@ export async function action({ request }: ActionFunctionArgs) {
                 title: 'New Contact Request',
                 author: undefined as { name: string; url?: string; icon_url?: string } | undefined,
             };
-            console.log(session);
 
             if (data.anonymous === 'no') {
                 embed.author = {
