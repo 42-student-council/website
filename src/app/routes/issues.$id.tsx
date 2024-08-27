@@ -360,7 +360,7 @@ export default function IssueDetail() {
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
-                <div className='md:w-4/5 p-4'>
+                <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>
                         <H1>Issue #{issue.id}</H1>
                         <Link to='/issues' className=''>
