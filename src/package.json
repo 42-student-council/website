@@ -30,6 +30,7 @@
         "@remix-run/react": "^2.9.2",
         "@remix-run/serve": "^2.9.2",
         "@tanstack/react-table": "^8.19.3",
+        "bottleneck": "^2.19.5",
         "class-variance-authority": "^0.7.0",
         "classnames": "^2.5.1",
         "clsx": "^2.1.1",
