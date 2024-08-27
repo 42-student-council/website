@@ -78,10 +78,10 @@ export default function Issues() {
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue='all' className='w-11/12'>
+                <Tabs defaultValue='open' className='w-11/12'>
                     <div className='flex justify-between items-center mb-2'>
                         <TabsList>
-                            <TabsTrigger value='all'>Open</TabsTrigger>
+                            <TabsTrigger value='open'>Open</TabsTrigger>
                             <TabsTrigger value='archived'>Archived</TabsTrigger>
                         </TabsList>
                         <div className='ml-auto flex items-center gap-2'>
@@ -96,7 +96,7 @@ export default function Issues() {
                             </Link>
                         </div>
                     </div>
-                    <TabsContent value='all' className='flex justify-center'>
+                    <TabsContent value='open' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
                                 <CardTitle>Issues</CardTitle>
