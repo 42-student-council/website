@@ -29,6 +29,7 @@ import {
 } from '~/components/ui/alert-dialog';
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { config } from '~/utils/config.server';
+import { formatDate } from '~/utils/date';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -387,7 +388,7 @@ export default function IssueDetail() {
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
-                <div className='md:w-4/5 p-4'>
+                <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>
                         <H1>Issue #{issue.id}</H1>
                         <Link to='/issues' className=''>
@@ -450,6 +451,9 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
+                        <p className={classNames('text-s text-gray-600 pb-2')}>
+                            {formatDate(new Date(issue.createdAt))}
+                        </p>
                         <div className='flex flex-row items-center'>
                             <fetcher.Form method='post' className='flex w-full'>
                                 <input type='hidden' name='id' value={issue.id} />
@@ -570,14 +574,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
                     'text-slate-600': comment.official,
                 })}
             >
-                On{' '}
-                {new Date(comment.createdAt).toLocaleString([], {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                })}
+                {formatDate(new Date(comment.createdAt))}
             </p>
             <p
                 className={classNames('text-base text-gray-600 whitespace-pre-wrap', {

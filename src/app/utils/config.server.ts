@@ -5,6 +5,11 @@ export const config = {
         webhookToken: requireEnv('DISCORD_WEBHOOK_TOKEN'),
         councilServerIssueWebhookUrl: requireEnv('COUNCIL_SERVER_ISSUE_WEBHOOK_URL'),
     },
+    api: {
+        clientId: requireEnv('CLIENT_ID'),
+        clientSecret: requireEnv('CLIENT_SECRET'),
+        rateLimit: parseInt(requireEnv('RATE_LIMIT')),
+    },
     // superAdmin: requireEnv('SUPER_ADMIN'),
 };
 

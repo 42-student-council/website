@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { fetch42 } from './ftapi.server';
 
 const SCOPE = 'public';
 
@@ -55,7 +56,7 @@ export async function getTokens(code: string): Promise<Tokens> {
         redirect_uri: `${process.env.BASE_URL}/oauth/callback`,
     });
 
-    const response = await fetch('https://api.intra.42.fr/oauth/token', {
+    const response = await fetch42('https://api.intra.42.fr/oauth/token', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -79,7 +80,7 @@ export async function getAccessToken(): Promise<string> {
         return accessToken;
     }
 
-    const res = await fetch(`https://api.intra.42.fr/oauth/token`, {
+    const res = await fetch42(`https://api.intra.42.fr/oauth/token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

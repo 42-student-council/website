@@ -41,6 +41,7 @@ services:
             HOST: ${HOST}
             CLIENT_ID: ${CLIENT_ID}
             CLIENT_SECRET: ${CLIENT_SECRET}
+            RATE_LIMIT: ${RATE_LIMIT}
             BASE_URL: ${BASE_URL}
             SESSION_SECRET: ${SESSION_SECRET}
             DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
@@ -66,6 +67,7 @@ services:
             PORT: 5173
             CLIENT_ID: ${CLIENT_ID}
             CLIENT_SECRET: ${CLIENT_SECRET}
+            RATE_LIMIT: ${RATE_LIMIT}
             BASE_URL: ${BASE_URL}
             SESSION_SECRET: ${SESSION_SECRET}
             DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
