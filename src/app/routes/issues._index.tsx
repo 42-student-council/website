@@ -16,12 +16,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
-import { useState, HTMLAttributes } from 'react';
+import { useState, HTMLAttributes, useEffect } from 'react';
 import { db } from '~/utils/db.server';
-import { UserRole } from '@prisma/client';
 import classNames from 'classnames';
 import {
     ColumnDef,
+    ColumnSort,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -269,7 +269,20 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
         },
     ];
 
-    const [sorting, setSorting] = useState<SortingState>([{ id: 'date', desc: true }]);
+    const [sorting, setSorting] = useState<ColumnSort[]>([]);
+
+    useEffect(() => {
+        if (window === undefined) return;
+
+        const savedSorting = localStorage.getItem('tableSorting');
+        if (savedSorting) setSorting(JSON.parse(savedSorting));
+    }, []);
+
+    useEffect(() => {
+        if (window === undefined) return;
+
+        if (sorting.length > 0) localStorage.setItem('tableSorting', JSON.stringify(sorting));
+    }, [sorting]);
 
     const table = useReactTable({
         data: issues,
