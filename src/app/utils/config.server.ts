@@ -3,6 +3,11 @@ export const config = {
         webhookId: requireEnv('DISCORD_WEBHOOK_ID'),
         webhookToken: requireEnv('DISCORD_WEBHOOK_TOKEN'),
     },
+    api: {
+        clientId: requireEnv('CLIENT_ID'),
+        clientSecret: requireEnv('CLIENT_SECRET'),
+        rateLimit: parseInt(requireEnv('RATE_LIMIT')),
+    },
     // superAdmin: requireEnv('SUPER_ADMIN'),
 };
 
