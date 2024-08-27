@@ -30,6 +30,9 @@ import {
 } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
 import { formatDate } from '~/utils/date';
+import { H3 } from '~/components/ui/H3';
+import { H2 } from '~/components/ui/H2';
+import { H1 } from '~/components/ui/H1';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
@@ -96,10 +99,11 @@ export default function Issues() {
     return (
         <div>
             <NavBar login={session.login} role={session.role} />
-            <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue={filter} className='w-11/12' onValueChange={(value) => setFilter(value)}>
+            <div className='flex flex-col items-center mt-4 mx-4'>
+                <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
+                    <H1 className='mb-4'>Issues</H1>
                     <div className='flex justify-between items-center mb-2'>
-                        <TabsList defaultValue={'archived'}>
+                        <TabsList>
                             <TabsTrigger value='open'>Open</TabsTrigger>
                             <TabsTrigger value='archived'>Archived</TabsTrigger>
                         </TabsList>
@@ -115,44 +119,24 @@ export default function Issues() {
                             </Link>
                         </div>
                     </div>
-                    <TabsContent value='open' className='flex justify-center'>
-                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
-                            <CardHeader>
-                                <CardTitle>Issues</CardTitle>
-                                <CardDescription>This is what students are currently talking about.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <IssuesTable issues={visibleIssues} />
-                            </CardContent>
-                            <CardFooter>
-                                <div className='text-xs text-muted-foreground'>
-                                    Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
-                                    {issues.length === 1 ? 'issue' : 'issues'}
-                                </div>
-                            </CardFooter>
-                        </Card>
+                    <TabsContent value='open' className='flex flex-col justify-center'>
+                        <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
+                        <IssuesTable issues={visibleIssues} />
+                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                            Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
+                            {visibleIssues.length === 1 ? 'issue' : 'issues'}
+                        </div>
                     </TabsContent>
-                    <TabsContent value='archived' className='flex justify-center'>
-                        <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
-                            <CardHeader>
-                                <CardTitle>Archived Issues</CardTitle>
-                                <CardDescription>
-                                    <div>
-                                        Issues that have been resolved or have been open for 2 weeks and showed no
-                                        activity for 3 days.
-                                    </div>
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <IssuesTable issues={archivedIssues} />
-                            </CardContent>
-                            <CardFooter>
-                                <div className='text-xs text-muted-foreground'>
-                                    Showing <span className='font-bold'>{archivedIssues.length}</span>{' '}
-                                    {issues.length === 1 ? 'issue' : 'issues'}
-                                </div>
-                            </CardFooter>
-                        </Card>
+                    <TabsContent value='archived' className='flex flex-col justify-center'>
+                        <p className='text-muted-foreground pb-2'>
+                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 3
+                            days.
+                        </p>
+                        <IssuesTable issues={archivedIssues} />
+                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                            Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
+                            {archivedIssues.length === 1 ? 'issue' : 'issues'}
+                        </div>
                     </TabsContent>
                 </Tabs>
             </div>
