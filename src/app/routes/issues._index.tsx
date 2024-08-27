@@ -224,7 +224,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         variant='ghost'
                         onClick={() => {
                             if (column.getIsSorted() === false) {
-                                column.toggleSorting('desc');
+                                column.toggleSorting(true);
                             } else column.toggleSorting(column.getIsSorted() === 'asc');
                         }}
                         className={classNames('flex flex-row', {
@@ -255,7 +255,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         variant='ghost'
                         onClick={() => {
                             if (column.getIsSorted() === false) {
-                                column.toggleSorting('desc');
+                                column.toggleSorting(true);
                             } else column.toggleSorting(column.getIsSorted() === 'asc');
                         }}
                         className={classNames('flex flex-row', {
