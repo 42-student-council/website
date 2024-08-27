@@ -48,6 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
             _count: {
                 select: {
                     votes: true,
+                    comments: true,
                 },
             },
         },
@@ -65,6 +66,7 @@ type Issue = {
     title: string;
     _count: {
         votes: number;
+        comments: number;
     };
 };
 
@@ -244,6 +246,48 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             cell: ({ row }) => {
                 const votes = row.getValue('votes') as number;
                 return <div className='pl-7'>{votes}</div>;
+            },
+        },
+        {
+            id: 'comments',
+            accessorKey: '_count.comments',
+            sortingFn: (rowA, rowB) => {
+                const commentsA: number = rowA.getValue('comments');
+                const commentsB: number = rowB.getValue('comments');
+
+                if (commentsA === commentsB) {
+                    const dateA = new Date(rowA.getValue('date')).getTime();
+                    const dateB = new Date(rowB.getValue('date')).getTime();
+                    return dateA - dateB;
+                }
+                return commentsA - commentsB;
+            },
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant='ghost'
+                        onClick={() => {
+                            if (column.getIsSorted() === false) {
+                                column.toggleSorting(true);
+                            } else column.toggleSorting(column.getIsSorted() === 'asc');
+                        }}
+                        className={classNames('flex flex-row', {
+                            'mr-6': column.getIsSorted() === false,
+                        })}
+                    >
+                        Comments
+                        {column.getIsSorted() !== false &&
+                            (column.getIsSorted() === 'asc' ? (
+                                <ArrowUp10 className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowDown10 className='ml-2 h-4 w-4' />
+                            ))}
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const comments = row.getValue('comments') as number;
+                return <div className='pl-7'>{comments}</div>;
             },
         },
         {
