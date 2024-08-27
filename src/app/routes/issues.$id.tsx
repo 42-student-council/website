@@ -27,6 +27,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
+import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
 
 const COMMENT_MIN_LENGTH = 3;
@@ -196,6 +198,32 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                         issueId: Number(id),
                                     },
                                 });
+
+                                try {
+                                    await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
+                                        thread_id: issue?.councilDiscordMessageId?.toString() ?? undefined,
+                                        embeds: [
+                                            {
+                                                color: 0x22c55e,
+                                                title: 'New comment',
+                                                description: data.comment_text,
+                                            },
+                                        ],
+                                        wait: true,
+                                    });
+                                } catch (error) {
+                                    console.error(error);
+
+                                    return json(
+                                        {
+                                            errors: {
+                                                discordError:
+                                                    'An internal server error occurred while sending the message. Please try again.',
+                                            },
+                                        },
+                                        500,
+                                    );
+                                }
 
                                 return json(comment);
                             })

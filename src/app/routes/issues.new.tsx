@@ -17,11 +17,13 @@ import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 import { ChevronLeft } from 'lucide-react';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
+import { config } from '~/utils/config.server';
 
 const TITLE_MIN_LENGTH = 5;
 const TITLE_MAX_LENGTH = 50;
 const DESCRIPTION_MIN_LENGTH = 10;
-const DESCRIPTION_MAX_LENGTH = 5000;
+const DESCRIPTION_MAX_LENGTH = 4096;
 
 const rateLimiter = new RateLimiterMemory({
     points: 2,
@@ -80,6 +82,40 @@ export async function action({ request }: ActionFunctionArgs) {
                             createdAt: new Date().toISOString(),
                         },
                     });
+
+                    try {
+                        const councilMessage = await sendDiscordWebhookWithUrl(
+                            config.discord.councilServerIssueWebhookUrl,
+                            {
+                                thread_name: `${data.title} - #${issue.id}`,
+                                content: `[Link](${config.baseUrl}/issues/${issue.id})`,
+                                embeds: [
+                                    {
+                                        color: 0x22c55e,
+                                        description: data.description,
+                                    },
+                                ],
+                                wait: true,
+                            },
+                        );
+
+                        await db.issue.update({
+                            where: { id: issue.id },
+                            data: { councilDiscordMessageId: BigInt(councilMessage.id) },
+                        });
+                    } catch (error) {
+                        console.error(error);
+
+                        return json(
+                            {
+                                errors: {
+                                    discordError:
+                                        'An internal server error occurred while sending the message. Please try again.',
+                                },
+                            },
+                            500,
+                        );
+                    }
 
                     return json({ id: issue.id });
                 })
