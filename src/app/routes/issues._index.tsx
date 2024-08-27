@@ -95,7 +95,7 @@ export default function Issues() {
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue={filter} className='w-3/5' onValueChange={(value) => setFilter(value)}>
+                <Tabs defaultValue={filter} className='w-11/12' onValueChange={(value) => setFilter(value)}>
                     <div className='flex justify-between items-center mb-2'>
                         <TabsList defaultValue={'archived'}>
                             <TabsTrigger value='open'>Open</TabsTrigger>
