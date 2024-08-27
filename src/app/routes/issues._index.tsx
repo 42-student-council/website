@@ -147,6 +147,48 @@ export default function Issues() {
 function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
     const columns: ColumnDef<SerializeFrom<Issue>>[] = [
         {
+            id: 'votes',
+            accessorKey: '_count.votes',
+            sortingFn: (rowA, rowB) => {
+                const votesA: number = rowA.getValue('votes');
+                const votesB: number = rowB.getValue('votes');
+
+                if (votesA === votesB) {
+                    const dateA = new Date(rowA.getValue('date')).getTime();
+                    const dateB = new Date(rowB.getValue('date')).getTime();
+                    return dateA - dateB;
+                }
+                return votesA - votesB;
+            },
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant='ghost'
+                        onClick={() => {
+                            if (column.getIsSorted() === false) {
+                                column.toggleSorting(true);
+                            } else column.toggleSorting(column.getIsSorted() === 'asc');
+                        }}
+                        className={classNames('flex flex-row', {
+                            'mr-6': column.getIsSorted() === false,
+                        })}
+                    >
+                        Votes
+                        {column.getIsSorted() !== false &&
+                            (column.getIsSorted() === 'asc' ? (
+                                <ArrowUp10 className='ml-2 h-4 w-4' />
+                            ) : (
+                                <ArrowDown10 className='ml-2 h-4 w-4' />
+                            ))}
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const votes = row.getValue('votes') as number;
+                return <div className='pl-7'>{votes}</div>;
+            },
+        },
+        {
             accessorKey: 'title',
             sortingFn: (rowA, rowB) => {
                 const titleA: string = rowA.getValue('title');
@@ -188,48 +230,6 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         </Link>
                     </span>
                 );
-            },
-        },
-        {
-            id: 'votes',
-            accessorKey: '_count.votes',
-            sortingFn: (rowA, rowB) => {
-                const votesA: number = rowA.getValue('votes');
-                const votesB: number = rowB.getValue('votes');
-
-                if (votesA === votesB) {
-                    const dateA = new Date(rowA.getValue('date')).getTime();
-                    const dateB = new Date(rowB.getValue('date')).getTime();
-                    return dateA - dateB;
-                }
-                return votesA - votesB;
-            },
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => {
-                            if (column.getIsSorted() === false) {
-                                column.toggleSorting(true);
-                            } else column.toggleSorting(column.getIsSorted() === 'asc');
-                        }}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Votes
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <ArrowUp10 className='ml-2 h-4 w-4' />
-                            ) : (
-                                <ArrowDown10 className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const votes = row.getValue('votes') as number;
-                return <div className='pl-7'>{votes}</div>;
             },
         },
         {
