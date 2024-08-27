@@ -29,6 +29,7 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
+import { formatDate } from '~/utils/date';
 import { H3 } from '~/components/ui/H3';
 import { H2 } from '~/components/ui/H2';
 import { H1 } from '~/components/ui/H1';
@@ -207,7 +208,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         variant='ghost'
                         onClick={() => {
                             if (column.getIsSorted() === false) {
-                                column.toggleSorting('desc');
+                                column.toggleSorting(true);
                             } else column.toggleSorting(column.getIsSorted() === 'asc');
                         }}
                         className={classNames('flex flex-row', {
@@ -238,7 +239,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                         variant='ghost'
                         onClick={() => {
                             if (column.getIsSorted() === false) {
-                                column.toggleSorting('desc');
+                                column.toggleSorting(true);
                             } else column.toggleSorting(column.getIsSorted() === 'asc');
                         }}
                         className={classNames('flex flex-row', {
@@ -256,15 +257,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 );
             },
             cell: ({ row }) => {
-                const formatted = new Date(row.getValue('date')).toLocaleDateString([], {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
-
-                return <span>{formatted}</span>;
+                return <span>{formatDate(new Date(row.getValue('date')))}</span>;
             },
         },
     ];
