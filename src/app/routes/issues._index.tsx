@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
-import { useLoaderData, Link, useNavigate } from '@remix-run/react';
+import { useLoaderData, Link, useNavigate, useSearchParams } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import {
     ArrowUpAZ,
@@ -74,14 +74,30 @@ export default function Issues() {
     const archivedIssues = issues.filter((issue) => issue.archived);
     const visibleIssues = issues.filter((issue) => !issue.archived);
 
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const initialIssueFilter = () => {
+        return searchParams.get('filter') ?? 'open';
+    };
+
+    const [filter, setFilter] = useState(initialIssueFilter);
+
+    useEffect(() => {
+        if (filter === 'archived') {
+            setSearchParams({ filter: 'archived' });
+        } else {
+            setSearchParams({});
+        }
+    }, [filter, setSearchParams]);
+
     return (
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-2 md:mx-4 '>
-                <Tabs defaultValue='all' className='w-11/12'>
+                <Tabs defaultValue={filter} className='w-11/12' onValueChange={(value) => setFilter(value)}>
                     <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='all'>Open</TabsTrigger>
+                        <TabsList defaultValue={'archived'}>
+                            <TabsTrigger value='open'>Open</TabsTrigger>
                             <TabsTrigger value='archived'>Archived</TabsTrigger>
                         </TabsList>
                         <div className='ml-auto flex items-center gap-2'>
@@ -96,7 +112,7 @@ export default function Issues() {
                             </Link>
                         </div>
                     </div>
-                    <TabsContent value='all' className='flex justify-center'>
+                    <TabsContent value='open' className='flex justify-center'>
                         <Card x-chunk='dashboard-06-chunk-0' className='w-full'>
                             <CardHeader>
                                 <CardTitle>Issues</CardTitle>
