@@ -271,7 +271,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             },
             cell: ({ row }) => {
                 const comments = row.getValue('comments') as number;
-                return <div className='pl-7'>{comments}</div>;
+                return <div className='pl-12'>{comments}</div>;
             },
         },
         {
