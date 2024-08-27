@@ -29,6 +29,7 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
+import { formatDate } from '~/utils/date';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
@@ -209,15 +210,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 );
             },
             cell: ({ row }) => {
-                const formatted = new Date(row.getValue('createdAt')).toLocaleDateString([], {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
-
-                return <span>{formatted}</span>;
+                return <span>{formatDate(new Date(row.getValue('createdAt')))}</span>;
             },
         },
     ];
