@@ -11,7 +11,6 @@ import { ChevronLeft, Heart } from 'lucide-react';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
-import { H2 } from '~/components/ui/H2';
 import { Checkbox } from '~/components/ui/checkbox';
 import { z } from 'zod';
 import { validateForm } from '~/utils/validation';
@@ -30,6 +29,7 @@ import {
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
+import { Separator } from '~/components/ui/separator';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -388,18 +388,9 @@ export default function IssueDetail() {
         <div>
             <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
-                <div className='md:w-3/5 p-4'>
-                    <div className='flex flex-row justify-between'>
-                        <H1>Issue #{issue.id}</H1>
-                        <Link to='/issues' className=''>
-                            <Button>
-                                <ChevronLeft />
-                                Go Back
-                            </Button>
-                        </Link>
-                    </div>
+                <div className='w-full xl:w-3/5 2xl:w-2/5 p-4'>
                     {session.role === 'ADMIN' && (
-                        <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
+                        <div className='w-full mb-4 bg-rose-200 rounded flex flex-col'>
                             <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
                             <div className='flex flex-col justify-between items-center m-4'>
                                 <div className='flex items-center'>
@@ -444,16 +435,31 @@ export default function IssueDetail() {
                             </div>
                         </div>
                     )}
-                    <div className='mt-4'>
-                        <H2 className='hyphens-auto'>{issue.title}</H2>
+
+                    <div className='flex flex-col-reverse md:flex-row justify-between '>
+                        <H1 className='mt-4 md:mt-0 md:text-left text-5xl font-bold text-slate-800 break-words w-full md:w-3/5'>
+                            {issue.title} <span className='text-slate-400'>#{issue.id}</span>
+                        </H1>
+                        <Link to='/issues' className='w-full md:w-fit'>
+                            <Button className='w-full md:w-fit bg-slate-800 text-primary-foreground hover:bg-slate-800/90'>
+                                <ChevronLeft />
+                                Go Back
+                            </Button>
+                        </Link>
                     </div>
-                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto mt-2'>
-                        {issue.description}
-                    </p>
+
+                    <div className='mt-4 rounded-md border border-slate-300 mb-4'>
+                        <div className='p-2 rounded-t-md bg-slate-100'>
+                            <p className='text-sm text-slate-800'>{formatDate(new Date(issue.createdAt))}</p>
+                        </div>
+                        <Separator />
+                        <div className='m-2'>
+                            <p className='text-base text-slate-800 whitespace-pre-wrap hyphens-auto break-words'>
+                                {issue.description}
+                            </p>
+                        </div>
+                    </div>
                     <div className='flex flex-col b-4'>
-                        <p className={classNames('text-s text-gray-600 pb-2')}>
-                            {formatDate(new Date(issue.createdAt))}
-                        </p>
                         <div className='flex flex-row items-center'>
                             <fetcher.Form method='post' className='flex w-full'>
                                 <input type='hidden' name='id' value={issue.id} />
@@ -493,52 +499,69 @@ export default function IssueDetail() {
                         </Info>
                     </div>
                     <div className='mt-8'>
-                        <h2 className='text-2xl font-bold'>Comments</h2>
-                        {issue.comments.length > 0 ? (
-                            <ul>
-                                {issue.comments.map((comment) => (
-                                    <li key={comment.id}>
-                                        <IssueComment comment={comment} issue={issue} />
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No comments yet.</p>
-                        )}
+                        <h2 className='text-2xl font-bold'>
+                            {issue.comments.length === 0 ? 'No comments yet' : 'Comments'}
+                        </h2>
+                        <ul>
+                            {issue.comments.map((comment) => (
+                                <li key={comment.id}>
+                                    <IssueComment comment={comment} issue={issue} />
+                                </li>
+                            ))}
+                        </ul>
                         {!issue.archived && (
-                            <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
-                                <input type='hidden' name='_action' value='post-comment' />
-                                <textarea
-                                    name='comment_text'
-                                    required
-                                    rows={3}
-                                    className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
-                                    placeholder='Add a comment...'
-                                    value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
-                                    minLength={COMMENT_MIN_LENGTH}
-                                    maxLength={COMMENT_MAX_LENGTH}
-                                    ref={commentRef}
-                                ></textarea>
-                                <div className='flex flex-col'>
-                                    {session.role === 'ADMIN' && (
-                                        <div className='flex items-center space-x-2 my-4'>
-                                            <Checkbox name='official_statement' id='official_statement' />
-                                            <label
-                                                htmlFor='official_statement'
-                                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                            >
-                                                Post as official statement
-                                            </label>
-                                        </div>
-                                    )}
-
-                                    <Button type='submit' className='mt-2' invalid={!isFormValid}>
-                                        Comment
-                                    </Button>
+                            <div className='mt-4'>
+                                <Separator />
+                                <div className='mt-4'>
+                                    <h3 className='text-lg font-bold'>Add a comment</h3>
                                 </div>
-                                <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
-                            </fetcher.Form>
+                                <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                                    <input type='hidden' name='_action' value='post-comment' />
+                                    <textarea
+                                        name='comment_text'
+                                        required
+                                        rows={3}
+                                        className='w-full px-3 py-2 text-sm text-gray-700 border border-slate-300 rounded-md focus:outline-none'
+                                        placeholder='Add a comment...'
+                                        value={commentText}
+                                        onChange={(e) => setCommentText(e.target.value)}
+                                        minLength={COMMENT_MIN_LENGTH}
+                                        maxLength={COMMENT_MAX_LENGTH}
+                                        ref={commentRef}
+                                    ></textarea>
+                                    <div className='flex flex-row justify-end items-center'>
+                                        {session.role === 'ADMIN' && (
+                                            <div className='flex items-center space-x-2 my-4 mr-4 border border-slate-300 rounded-md p-3'>
+                                                <Checkbox
+                                                    name='official_statement'
+                                                    id='official_statement'
+                                                    className='border-slate-800'
+                                                />
+                                                <label
+                                                    htmlFor='official_statement'
+                                                    className='text-sm text-slate-800 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                                >
+                                                    Post as official statement
+                                                </label>
+                                            </div>
+                                        )}
+
+                                        <Button
+                                            type='submit'
+                                            className={classNames({
+                                                'bg-blue-500 text-primary-foreground hover:bg-blue-500/90': isFormValid,
+                                                'bg-blue-200 text-primary-foreground hover:bg-blue-200/80':
+                                                    !isFormValid,
+                                            })}
+                                        >
+                                            Comment
+                                        </Button>
+                                    </div>
+                                    <FormErrorMessage className='mt-2'>
+                                        {fetcher.data?.errors?.message}
+                                    </FormErrorMessage>
+                                </fetcher.Form>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -564,40 +587,41 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
 
     return (
         <div
-            className={classNames('mt-4 bg-slate-100 p-2 rounded-md', {
-                'border-2 border-gray-300 rounded': comment.official,
+            className={classNames('mt-4 rounded-md border', {
+                'border-slate-300': !comment.official,
+                'border-blue-300': comment.official,
             })}
         >
-            {comment.official && <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>}
-            <p
-                className={classNames('text-xs text-gray-600 pb-2', {
-                    'text-slate-600': comment.official,
+            <div
+                className={classNames('p-2 rounded-t-md', {
+                    'bg-slate-100': !comment.official,
+                    'bg-blue-200': comment.official,
                 })}
             >
-                {formatDate(new Date(comment.createdAt))}
-            </p>
-            <p
-                className={classNames('text-base text-gray-600 whitespace-pre-wrap', {
-                    'text-slate-800': comment.official,
-                })}
-            >
-                {comment.text}
-            </p>
-            <upvoteFetcher.Form method='post' className='flex w-full'>
-                <input type='hidden' name='_action' value='commentVote' />
-                <input type='hidden' name='issueId' value={issue.id} />
-                <input type='hidden' name='commentId' value={comment.id} />
+                <p className='text-sm text-slate-800'>
+                    <span className='font-bold'>{comment.official ? 'Student Council' : ''}</span>{' '}
+                    {formatDate(new Date(comment.createdAt))}
+                </p>
+            </div>
+            <Separator />
+            <div className='mx-2 mt-2'>
+                <p className='text-base text-slate-800 whitespace-pre-wrap hyphens-auto break-words'>{comment.text}</p>
+                <upvoteFetcher.Form method='post' className='flex w-full'>
+                    <input type='hidden' name='_action' value='commentVote' />
+                    <input type='hidden' name='issueId' value={issue.id} />
+                    <input type='hidden' name='commentId' value={comment.id} />
 
-                <Button type='submit' variant='ghost' className='p-0' disabled={issue.archived}>
-                    <Heart
-                        className={classNames('mr-2', {
-                            'text-rose-500 fill-current': hasVoted,
-                            'text-black': !hasVoted,
-                        })}
-                    />
-                    <p className={'font-bold text-black'}>{comment._count.votes}</p>
-                </Button>
-            </upvoteFetcher.Form>
+                    <Button type='submit' variant='ghost' className='p-0' disabled={issue.archived}>
+                        <Heart
+                            className={classNames('mr-2', {
+                                'text-rose-500 fill-current': hasVoted,
+                                'text-black': !hasVoted,
+                            })}
+                        />
+                        <p className={'font-bold text-black'}>{comment._count.votes}</p>
+                    </Button>
+                </upvoteFetcher.Form>
+            </div>
         </div>
     );
 }
