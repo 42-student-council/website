@@ -115,7 +115,7 @@ export default function Issues() {
                             <Link to='/issues/new' className='w-full'>
                                 <Button size='md' className='gap-2 w-full'>
                                     <PlusCircle className='h-5 w-5' />
-                                    <span className='sm:inline whitespace-nowrap'>Open an Issue</span>
+                                    <span className='sm:inline whitespace-nowrap'>I also have something to say!</span>
                                 </Button>
                             </Link>
                         </div>
