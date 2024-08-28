@@ -102,19 +102,20 @@ export default function Issues() {
             <div className='flex flex-col items-center mt-4 mx-4'>
                 <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
                     <H1 className='mb-4'>Issues</H1>
-                    <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='open'>Open</TabsTrigger>
-                            <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    <div className='flex flex-col-reverse md:flex-row justify-between items-center mb-2'>
+                        <TabsList className='flex w-full md:w-auto'>
+                            <TabsTrigger value='open' className='flex-1'>
+                                Open
+                            </TabsTrigger>
+                            <TabsTrigger value='archived' className='flex-1'>
+                                Archived
+                            </TabsTrigger>
                         </TabsList>
-                        <div className='ml-auto flex items-center gap-2'>
-                            <Link to='/issues/new'>
-                                <Button size='md' className='gap-2'>
+                        <div className='ml-auto flex items-center gap-2 mb-2 w-full md:w-auto'>
+                            <Link to='/issues/new' className='w-full'>
+                                <Button size='md' className='gap-2 w-full'>
                                     <PlusCircle className='h-5 w-5' />
-                                    <span className='hidden sm:inline whitespace-nowrap'>
-                                        I also have something to say!
-                                    </span>
-                                    <span className='sm:hidden whitespace-nowrap'>New Issue</span>
+                                    <span className='sm:inline whitespace-nowrap'>Open an Issue</span>
                                 </Button>
                             </Link>
                         </div>
