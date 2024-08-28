@@ -246,9 +246,8 @@ export default function Contact() {
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <H1 className='my-4 md:w-3/5'>Contact the Student Council</H1>
             </div>
-            <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='mt-4 md:w-3/5 text-xl'>
+                <p className='md:w-3/5 text-xl'>
                     Do you have an issue or suggestion you would like to tell us in private? Use this contact form.
                 </p>
             </div>
