@@ -83,39 +83,25 @@ export async function action({ request }: ActionFunctionArgs) {
                         },
                     });
 
-                    try {
-                        const councilMessage = await sendDiscordWebhookWithUrl(
-                            config.discord.councilServerIssueWebhookUrl,
+                    await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
+                        thread_name: `${data.title} - #${issue.id}`,
+                        content: `[Link](${config.baseUrl}/issues/${issue.id})`,
+                        embeds: [
                             {
-                                thread_name: `${data.title} - #${issue.id}`,
-                                content: `[Link](${config.baseUrl}/issues/${issue.id})`,
-                                embeds: [
-                                    {
-                                        color: 0x22c55e,
-                                        description: data.description,
-                                    },
-                                ],
-                                wait: true,
+                                color: 0x22c55e,
+                                description: data.description,
                             },
-                        );
-
-                        await db.issue.update({
-                            where: { id: issue.id },
-                            data: { councilDiscordMessageId: BigInt(councilMessage.id) },
-                        });
-                    } catch (error) {
-                        console.error(error);
-
-                        return json(
-                            {
-                                errors: {
-                                    discordError:
-                                        'An internal server error occurred while sending the message. Please try again.',
-                                },
-                            },
-                            500,
-                        );
-                    }
+                        ],
+                        wait: true,
+                    })
+                        .then(
+                            async (res) =>
+                                await db.issue.update({
+                                    where: { id: issue.id },
+                                    data: { councilDiscordMessageId: BigInt(res.id) },
+                                }),
+                        )
+                        .catch(console.error);
 
                     return json({ id: issue.id });
                 })
