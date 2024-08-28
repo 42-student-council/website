@@ -213,9 +213,8 @@ export default function IssuesNew() {
                     </Link>
                 </div>
             </div>
-            <Separator />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='mt-4 mb-2 md:w-3/5 text-xl'>
+                <p className='mb-2 md:w-3/5 text-xl'>
                     Open an anonymous issue to discuss what's important to you with the community.
                     <br />
                     If you would like to share your issue with the student council only, please go to the{' '}
