@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { Outlet, useLocation } from '@remix-run/react';
+import { Outlet, useLocation, Link } from '@remix-run/react';
 import { ChevronRight } from 'lucide-react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage } from '~/components/ui/breadcrumb';
 import { requireAdmin } from '~/utils/session.server';
@@ -17,6 +17,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Admin() {
     return (
         <div>
+            <h1>Admin Page</h1>
+            <nav>
+                <ul>
+                    <li>
+                        <Link to="/admin/council-members">Manage Council Members</Link>
+                    </li>
+                    <li>
+                        <Link to="/admin/election">Manage Election</Link>
+                    </li>
+                </ul>
+            </nav>
             <AdminCrumb />
             <Outlet />
         </div>

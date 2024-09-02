@@ -7,6 +7,8 @@ done
 
 npx prisma migrate deploy
 
+npx prisma migrate dev --name add_election_tables
+
 echo NODE_ENV=$NODE_ENV
 
 if [ "$NODE_ENV" = "production" ]; then

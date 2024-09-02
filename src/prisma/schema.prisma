@@ -84,3 +84,22 @@ model CouncilMember {
   email             String @unique
   profilePictureUrl String
 }
+
+model Applicant {
+    id    Int    @id @default(autoincrement())
+    name  String
+    votes Vote[]
+}
+
+model Vote {
+    id          Int        @id @default(autoincrement())
+    userId      String
+    applicantId Int
+    applicant   Applicant  @relation(fields: [applicantId], references: [id])
+}
+
+model Election {
+    id        Int      @id @default(autoincrement())
+    startTime DateTime
+    endTime   DateTime
+}
