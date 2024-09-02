@@ -129,8 +129,8 @@ export default function Issues() {
                     </TabsContent>
                     <TabsContent value='archived' className='flex flex-col justify-center'>
                         <p className='text-muted-foreground pb-2'>
-                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 3
-                            days.
+                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 1
+                            week.
                         </p>
                         <IssuesTable issues={archivedIssues} />
                         <div className='text-xs text-muted-foreground pt-2 pl-2'>
