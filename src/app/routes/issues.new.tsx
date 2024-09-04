@@ -130,7 +130,9 @@ export default function IssuesNew() {
     const descriptionRef = useRef(null);
 
     const [titleLength, setTitleLength] = useState(0);
+    const [descriptionLength, setDescriptionLength] = useState(0);
     const [showTitleWarning, setShowTitleWarning] = useState(false);
+    const [showDescriptionWarning, setShowDescriptionWarning] = useState(false);
 
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
@@ -147,7 +149,10 @@ export default function IssuesNew() {
             setTitle(savedTitle);
             setTitleLength(savedTitle.length);
         }
-        if (savedDescription) setDescription(savedDescription);
+        if (savedDescription) {
+            setDescription(savedDescription);
+            setDescriptionLength(savedDescription.length);
+        }
     }, []);
 
     useEffect(() => {
@@ -200,6 +205,24 @@ export default function IssuesNew() {
 
         if (title.length >= TITLE_MAX_LENGTH && isPrintableKey) {
             setShowTitleWarning(true);
+        }
+    };
+
+    const handleDescriptionChange = (e) => {
+        const newDescription = e.target.value;
+        setDescription(newDescription);
+        setDescriptionLength(newDescription.length);
+
+        if (newDescription.length <= DESCRIPTION_MAX_LENGTH) {
+            setShowDescriptionWarning(false);
+        }
+    };
+
+    const handleDescriptionKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (description.length >= DESCRIPTION_MAX_LENGTH && isPrintableKey) {
+            setShowDescriptionWarning(true);
         }
     };
 
@@ -270,21 +293,32 @@ export default function IssuesNew() {
                         <Label htmlFor='description' className='text-lg'>
                             Issue Description
                         </Label>
-                        <Textarea
-                            placeholder="Please describe your issue or suggestion here...
+                        <div className="relative">
+                            <Textarea
+                                placeholder="Please describe your issue or suggestion here...
 (Currently we don't support markdown for public issues, but we will in the future.)"
-                            name='description'
-                            className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
-                            })}
-                            required
-                            autoComplete='off'
-                            minLength={DESCRIPTION_MIN_LENGTH}
-                            maxLength={DESCRIPTION_MAX_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            defaultValue={description}
-                            ref={descriptionRef}
-                        />
+                                name='description'
+                                className={classNames('h-48', {
+                                    'border-red-600': !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
+                                })}
+                                required
+                                autoComplete='off'
+                                minLength={DESCRIPTION_MIN_LENGTH}
+                                maxLength={DESCRIPTION_MAX_LENGTH}
+                                onChange={handleDescriptionChange}
+                                onKeyDown={handleDescriptionKeyPress}
+                                value={description}
+                                ref={descriptionRef}
+                            />
+                            <span className={`absolute right-6 bottom-2 text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                                {descriptionLength}/{DESCRIPTION_MAX_LENGTH}
+                            </span>
+                        </div>
+                        {showDescriptionWarning && (
+                            <p className="text-red-600 text-sm mt-1">
+                                Maximum description length reached.
+                            </p>
+                        )}
                         <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
                         </FormErrorMessage>
