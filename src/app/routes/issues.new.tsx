@@ -270,11 +270,15 @@ export default function IssuesNew() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-            <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                <Label htmlFor='title' className='text-lg'>
-                    Issue Title
-                </Label>
-                <div className="relative">
+                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
+                    <div className="flex justify-between items-center">
+                        <Label htmlFor='title' className='text-lg'>
+                            Issue Title
+                        </Label>
+                        <span className={`text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                            {titleLength}/{TITLE_MAX_LENGTH}
+                        </span>
+                    </div>
                     <Input
                         type='text'
                         name='title'
@@ -290,45 +294,41 @@ export default function IssuesNew() {
                         value={title}
                         ref={titleRef}
                     />
-                    <span className={`absolute right-2 top-2 text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
-                        {titleLength}/{TITLE_MAX_LENGTH}
-                    </span>
-                </div>
-                {showTitleWarning && (
-                    <p className="text-red-600 text-sm mt-1">
-                        Maximum title length reached.
-                    </p>
-                )}
-                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+                    {showTitleWarning && (
+                        <p className="text-red-600 text-sm mt-1">
+                            Maximum title length reached.
+                        </p>
+                    )}
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
-                        <Label htmlFor='description' className='text-lg'>
-                            Issue Description
-                        </Label>
-                        <div className="relative">
-                            <Textarea
-                                placeholder="Please describe your issue or suggestion here...
-(Currently we don't support markdown for public issues, but we will in the future.)"
-                                name='description'
-                                className={classNames('h-48', {
-                                    'border-red-600': !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
-                                })}
-                                required
-                                autoComplete='off'
-                                minLength={DESCRIPTION_MIN_LENGTH}
-                                maxLength={DESCRIPTION_MAX_LENGTH}
-                                onChange={(e) => {
-                                    handleDescriptionChange(e);
-                                    adjustTextareaHeight(e.target);
-                                }}
-                                onKeyDown={handleDescriptionKeyPress}
-                                value={description}
-                                ref={descriptionRef}
-                            />
-                            <span className={`absolute right-6 bottom-2 text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor='description' className='text-lg'>
+                                Issue Description
+                            </Label>
+                            <span className={`text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
                                 {descriptionLength}/{DESCRIPTION_MAX_LENGTH}
                             </span>
                         </div>
+                        <Textarea
+                            placeholder="Please describe your issue or suggestion here...
+(Currently we don't support markdown for public issues, but we will in the future.)"
+                            name='description'
+                            className={classNames('h-48', {
+                                'border-red-600': !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
+                            })}
+                            required
+                            autoComplete='off'
+                            minLength={DESCRIPTION_MIN_LENGTH}
+                            maxLength={DESCRIPTION_MAX_LENGTH}
+                            onChange={(e) => {
+                                handleDescriptionChange(e);
+                                adjustTextareaHeight(e.target);
+                            }}
+                            onKeyDown={handleDescriptionKeyPress}
+                            value={description}
+                            ref={descriptionRef}
+                        />
                         {showDescriptionWarning && (
                             <p className="text-red-600 text-sm mt-1">
                                 Maximum description length reached.
