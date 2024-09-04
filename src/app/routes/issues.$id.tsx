@@ -34,7 +34,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { Label } from '~/components/ui/label';
 
 const COMMENT_MIN_LENGTH = 3;
-const COMMENT_MAX_LENGTH = 5000;
+const COMMENT_MAX_LENGTH = 4096;
 
 const createCommentSchema = z.object({
     comment_text: z
