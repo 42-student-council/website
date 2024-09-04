@@ -129,6 +129,9 @@ export default function IssuesNew() {
     const titleRef = useRef(null);
     const descriptionRef = useRef(null);
 
+    const [titleLength, setTitleLength] = useState(0);
+    const [showTitleWarning, setShowTitleWarning] = useState(false);
+
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
             localStorage.removeItem('create-issue-title');
@@ -179,6 +182,17 @@ export default function IssuesNew() {
         setIsFormValid(isTitleValid && isDescriptionValid);
     }, [title, description]);
 
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        if (newTitle.length <= TITLE_MAX_LENGTH) {
+            setTitle(newTitle);
+            setTitleLength(newTitle.length);
+            setShowTitleWarning(newTitle.length === TITLE_MAX_LENGTH);
+        } else {
+            setShowTitleWarning(true);
+        }
+    };
+
     const handleSubmit = (e) => {
         if (!isFormValid || createIssueFetcher.formData) {
             e.preventDefault();
@@ -211,10 +225,11 @@ export default function IssuesNew() {
                 </p>
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <Label htmlFor='title' className='text-lg'>
-                        Issue Title
-                    </Label>
+            <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
+                <Label htmlFor='title' className='text-lg'>
+                    Issue Title
+                </Label>
+                <div className="relative">
                     <Input
                         type='text'
                         name='title'
@@ -222,12 +237,23 @@ export default function IssuesNew() {
                         autoComplete='off'
                         minLength={TITLE_MIN_LENGTH}
                         maxLength={TITLE_MAX_LENGTH}
-                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={title}
+                        className={classNames({
+                            'border-red-600': !!createIssueFetcher.data?.errors?.title || showTitleWarning
+                        })}
+                        onChange={handleTitleChange}
+                        value={title}
                         ref={titleRef}
                     />
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+                    <span className={`absolute right-2 top-2 text-sm ${showTitleWarning ? 'text-red-600' : 'text-gray-500'}`}>
+                        {titleLength}/{TITLE_MAX_LENGTH}
+                    </span>
+                </div>
+                {showTitleWarning && (
+                    <p className="text-red-600 text-sm mt-1">
+                        Maximum title length reached.
+                    </p>
+                )}
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
                         <Label htmlFor='description' className='text-lg'>
