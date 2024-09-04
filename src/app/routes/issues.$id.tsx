@@ -349,10 +349,17 @@ export default function IssueDetail() {
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
-            formRef.current?.reset();
+            // Reset comment text and length after successful submission
             setCommentText('');
+            setCommentLength(0);
+            setShowCommentWarning(false);
+            localStorage.removeItem(`issue-${issue.id}-comment-text`);
+
+            if (commentRef.current) {
+                adjustTextareaHeight(commentRef.current, true); // Reset height to default
+            }
         }
-    }, [fetcher.state, fetcher.data]);
+    }, [fetcher.state, fetcher.data, issue.id]);
 
     useEffect(() => {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
@@ -399,10 +406,14 @@ export default function IssueDetail() {
         }
     };
 
-    const adjustTextareaHeight = (textarea) => {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
-        textarea.style.minHeight = '96px'; // Default height (3 rows)
+    const adjustTextareaHeight = (textarea, reset = false) => {
+        if (reset) {
+            textarea.style.height = '96px'; // Default height (3 rows)
+        } else {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+            textarea.style.minHeight = '96px'; // Default height (3 rows)
+        }
     };
 
     const handleSubmit = (e) => {
