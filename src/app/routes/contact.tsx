@@ -291,11 +291,13 @@ export default function Contact() {
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
                 <contactFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <div className='mt-2'>
-                        <div className="flex justify-between items-center mb-1">
+                        <div className='flex justify-between items-center mb-1'>
                             <Label htmlFor='message' className='text-lg'>
                                 What would you like to tell us?
                             </Label>
-                            <span className={`text-sm ${messageLength === MESSAGE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                            <span
+                                className={`text-sm ${messageLength === MESSAGE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                            >
                                 {messageLength}/{MESSAGE_MAX_LENGTH}
                             </span>
                         </div>
@@ -315,9 +317,7 @@ export default function Contact() {
                             ref={messageRef}
                         />
                         {showMessageWarning && (
-                            <p className="text-red-600 text-sm mt-1">
-                                Maximum message length reached.
-                            </p>
+                            <p className='text-red-600 text-sm mt-1'>Maximum message length reached.</p>
                         )}
                         <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>

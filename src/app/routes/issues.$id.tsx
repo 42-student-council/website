@@ -549,20 +549,25 @@ export default function IssueDetail() {
                         {!issue.archived && (
                             <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                                 <input type='hidden' name='_action' value='post-comment' />
-                                <div className="flex justify-between items-center mb-1">
+                                <div className='flex justify-between items-center mb-1'>
                                     <Label htmlFor='comment_text' className='text-lg'>
                                         Add a comment
                                     </Label>
-                                    <span className={`text-sm ${commentLength === COMMENT_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                                    <span
+                                        className={`text-sm ${commentLength === COMMENT_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                                    >
                                         {commentLength}/{COMMENT_MAX_LENGTH}
                                     </span>
                                 </div>
                                 <Textarea
                                     name='comment_text'
                                     required
-                                    className={classNames('w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none', {
-                                        'border-red-600': showCommentWarning,
-                                    })}
+                                    className={classNames(
+                                        'w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none',
+                                        {
+                                            'border-red-600': showCommentWarning,
+                                        },
+                                    )}
                                     style={{ minHeight: '96px' }}
                                     placeholder='Add a comment...'
                                     value={commentText}
@@ -574,9 +579,7 @@ export default function IssueDetail() {
                                     ref={commentRef}
                                 />
                                 {showCommentWarning && (
-                                    <p className="text-red-600 text-sm mt-1">
-                                        Maximum comment length reached.
-                                    </p>
+                                    <p className='text-red-600 text-sm mt-1'>Maximum comment length reached.</p>
                                 )}
                                 <div className='flex flex-col'>
                                     {session.role === 'ADMIN' && (

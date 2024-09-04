@@ -269,11 +269,13 @@ export default function IssuesNew() {
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
                 <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <div className="flex justify-between items-center mb-1">
+                    <div className='flex justify-between items-center mb-1'>
                         <Label htmlFor='title' className='text-lg'>
                             Issue Title
                         </Label>
-                        <span className={`text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                        <span
+                            className={`text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                        >
                             {titleLength}/{TITLE_MAX_LENGTH}
                         </span>
                     </div>
@@ -285,26 +287,24 @@ export default function IssuesNew() {
                         minLength={TITLE_MIN_LENGTH}
                         maxLength={TITLE_MAX_LENGTH}
                         className={classNames({
-                            'border-red-600': !!createIssueFetcher.data?.errors?.title || showTitleWarning
+                            'border-red-600': !!createIssueFetcher.data?.errors?.title || showTitleWarning,
                         })}
                         onChange={handleTitleChange}
                         onKeyDown={handleTitleKeyPress}
                         value={title}
                         ref={titleRef}
                     />
-                    {showTitleWarning && (
-                        <p className="text-red-600 text-sm mt-1">
-                            Maximum title length reached.
-                        </p>
-                    )}
+                    {showTitleWarning && <p className='text-red-600 text-sm mt-1'>Maximum title length reached.</p>}
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
-                        <div className="flex justify-between items-center mb-1">
+                        <div className='flex justify-between items-center mb-1'>
                             <Label htmlFor='description' className='text-lg'>
                                 Issue Description
                             </Label>
-                            <span className={`text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                            <span
+                                className={`text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                            >
                                 {descriptionLength}/{DESCRIPTION_MAX_LENGTH}
                             </span>
                         </div>
@@ -313,7 +313,8 @@ export default function IssuesNew() {
 (Currently we don't support markdown for public issues, but we will in the future.)"
                             name='description'
                             className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
+                                'border-red-600':
+                                    !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
                             })}
                             required
                             autoComplete='off'
@@ -328,9 +329,7 @@ export default function IssuesNew() {
                             ref={descriptionRef}
                         />
                         {showDescriptionWarning && (
-                            <p className="text-red-600 text-sm mt-1">
-                                Maximum description length reached.
-                            </p>
+                            <p className='text-red-600 text-sm mt-1'>Maximum description length reached.</p>
                         )}
                         <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
