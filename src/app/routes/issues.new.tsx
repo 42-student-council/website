@@ -271,7 +271,7 @@ export default function IssuesNew() {
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
                 <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mb-1">
                         <Label htmlFor='title' className='text-lg'>
                             Issue Title
                         </Label>
@@ -302,7 +302,7 @@ export default function IssuesNew() {
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-1">
                             <Label htmlFor='description' className='text-lg'>
                                 Issue Description
                             </Label>
