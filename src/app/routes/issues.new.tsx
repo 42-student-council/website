@@ -226,6 +226,18 @@ export default function IssuesNew() {
         }
     };
 
+    const adjustTextareaHeight = (textarea) => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.minHeight = '192px'; // Default height (48 * 4)
+    };
+
+    useEffect(() => {
+        if (descriptionRef.current) {
+            adjustTextareaHeight(descriptionRef.current);
+        }
+    }, [description]);
+
     const handleSubmit = (e) => {
         if (!isFormValid || createIssueFetcher.formData) {
             e.preventDefault();
@@ -305,7 +317,10 @@ export default function IssuesNew() {
                                 autoComplete='off'
                                 minLength={DESCRIPTION_MIN_LENGTH}
                                 maxLength={DESCRIPTION_MAX_LENGTH}
-                                onChange={handleDescriptionChange}
+                                onChange={(e) => {
+                                    handleDescriptionChange(e);
+                                    adjustTextareaHeight(e.target);
+                                }}
                                 onKeyDown={handleDescriptionKeyPress}
                                 value={description}
                                 ref={descriptionRef}
