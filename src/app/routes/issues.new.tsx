@@ -170,6 +170,10 @@ export default function IssuesNew() {
 
     useEffect(() => {
         localStorage.setItem('create-issue-description', description);
+
+        if (descriptionRef.current) {
+            adjustTextareaHeight(descriptionRef.current);
+        }
     }, [description]);
 
     useEffect(() => {
@@ -189,6 +193,12 @@ export default function IssuesNew() {
 
         setIsFormValid(isTitleValid && isDescriptionValid);
     }, [title, description]);
+
+    const adjustTextareaHeight = (textarea) => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.minHeight = '192px'; // Default height (48 * 4)
+    };
 
     const handleTitleChange = (e) => {
         const newTitle = e.target.value;
@@ -225,18 +235,6 @@ export default function IssuesNew() {
             setShowDescriptionWarning(true);
         }
     };
-
-    const adjustTextareaHeight = (textarea) => {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${textarea.scrollHeight}px`;
-        textarea.style.minHeight = '192px'; // Default height (48 * 4)
-    };
-
-    useEffect(() => {
-        if (descriptionRef.current) {
-            adjustTextareaHeight(descriptionRef.current);
-        }
-    }, [description]);
 
     const handleSubmit = (e) => {
         if (!isFormValid || createIssueFetcher.formData) {
