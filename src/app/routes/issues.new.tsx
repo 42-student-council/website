@@ -184,12 +184,11 @@ export default function IssuesNew() {
 
     const handleTitleChange = (e) => {
         const newTitle = e.target.value;
+        setTitle(newTitle);
+        setTitleLength(newTitle.length);
+
         if (newTitle.length <= TITLE_MAX_LENGTH) {
-            setTitle(newTitle);
-            setTitleLength(newTitle.length);
             setShowTitleWarning(false);
-        } else {
-            setShowTitleWarning(true);
         }
     };
 
@@ -198,8 +197,6 @@ export default function IssuesNew() {
 
         if (title.length >= TITLE_MAX_LENGTH && isPrintableKey) {
             setShowTitleWarning(true);
-        } else {
-            setShowTitleWarning(false);
         }
     };
 
