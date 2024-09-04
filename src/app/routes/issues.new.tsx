@@ -187,9 +187,19 @@ export default function IssuesNew() {
         if (newTitle.length <= TITLE_MAX_LENGTH) {
             setTitle(newTitle);
             setTitleLength(newTitle.length);
-            setShowTitleWarning(newTitle.length === TITLE_MAX_LENGTH);
+            setShowTitleWarning(false);
         } else {
             setShowTitleWarning(true);
+        }
+    };
+
+    const handleTitleKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (title.length >= TITLE_MAX_LENGTH && isPrintableKey) {
+            setShowTitleWarning(true);
+        } else {
+            setShowTitleWarning(false);
         }
     };
 
@@ -241,10 +251,11 @@ export default function IssuesNew() {
                             'border-red-600': !!createIssueFetcher.data?.errors?.title || showTitleWarning
                         })}
                         onChange={handleTitleChange}
+                        onKeyDown={handleTitleKeyPress}
                         value={title}
                         ref={titleRef}
                     />
-                    <span className={`absolute right-2 top-2 text-sm ${showTitleWarning ? 'text-red-600' : 'text-gray-500'}`}>
+                    <span className={`absolute right-2 top-2 text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
                         {titleLength}/{TITLE_MAX_LENGTH}
                     </span>
                 </div>
