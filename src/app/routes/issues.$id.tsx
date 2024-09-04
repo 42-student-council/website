@@ -348,29 +348,10 @@ export default function IssueDetail() {
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
-            // Reset comment text and length after successful submission
-            setCommentText('');
-            setCommentLength(0);
-            setShowCommentWarning(false);
-            localStorage.removeItem(`issue-${issue.id}-comment-text`);
-
-            if (commentRef.current) {
-                adjustTextareaHeight(commentRef.current, true); // Reset height to default
-            }
-        }
-    }, [fetcher.state, fetcher.data, issue.id]);
-
-    useEffect(() => {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
         if (savedCommentText) {
             setCommentText(savedCommentText);
             setCommentLength(savedCommentText.length);
-        }
-
-        // Ensure correct initial height
-        if (commentRef.current) {
-            adjustTextareaHeight(commentRef.current);
         }
     }, [issue.id]);
 
@@ -392,6 +373,29 @@ export default function IssueDetail() {
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
 
+    useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
+            // Reset comment text and length after successful submission
+            setCommentText('');
+            setCommentLength(0);
+            setShowCommentWarning(false);
+            localStorage.removeItem(`issue-${issue.id}-comment-text`);
+
+            if (commentRef.current) {
+                adjustTextareaHeight(commentRef.current, true); // Reset height to default
+            }
+        }
+    }, [fetcher.state, fetcher.data, issue.id]);
+
+    const adjustTextareaHeight = (textarea, reset = false) => {
+        if (reset) {
+            textarea.style.height = '96px'; // Default height (3 rows)
+        } else {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${Math.max(textarea.scrollHeight, 96)}px`;
+        }
+    };
+
     const handleCommentChange = (e) => {
         const newComment = e.target.value;
         setCommentText(newComment);
@@ -408,15 +412,6 @@ export default function IssueDetail() {
 
         if (commentText.length >= COMMENT_MAX_LENGTH && isPrintableKey) {
             setShowCommentWarning(true);
-        }
-    };
-
-    const adjustTextareaHeight = (textarea, reset = false) => {
-        if (reset) {
-            textarea.style.height = '96px'; // Default height (3 rows)
-        } else {
-            textarea.style.height = 'auto';
-            textarea.style.height = `${Math.max(textarea.scrollHeight, 96)}px`;
         }
     };
 
@@ -573,6 +568,7 @@ export default function IssueDetail() {
                                     value={commentText}
                                     onChange={handleCommentChange}
                                     onKeyDown={handleCommentKeyPress}
+                                    onInput={(e) => adjustTextareaHeight(e.target)}
                                     minLength={COMMENT_MIN_LENGTH}
                                     maxLength={COMMENT_MAX_LENGTH}
                                     ref={commentRef}
