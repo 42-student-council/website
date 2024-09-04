@@ -30,6 +30,8 @@ import {
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
+import { Textarea } from '~/components/ui/textarea';
+import { Label } from '~/components/ui/label';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -340,9 +342,10 @@ export default function IssueDetail() {
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
-    const [isFormValid, setIsFormValid] = useState(false);
-
+    const [commentLength, setCommentLength] = useState(0);
+    const [showCommentWarning, setShowCommentWarning] = useState(false);
     const commentRef = useRef(null);
+    const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
@@ -377,6 +380,24 @@ export default function IssueDetail() {
     const handleSubmit = (e) => {
         if (!isFormValid || fetcher.formData) {
             e.preventDefault();
+        }
+    };
+
+    const handleCommentChange = (e) => {
+        const newComment = e.target.value;
+        setCommentText(newComment);
+        setCommentLength(newComment.length);
+
+        if (newComment.length <= COMMENT_MAX_LENGTH) {
+            setShowCommentWarning(false);
+        }
+    };
+
+    const handleCommentKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (commentText.length >= COMMENT_MAX_LENGTH && isPrintableKey) {
+            setShowCommentWarning(true);
         }
     };
 
@@ -508,18 +529,34 @@ export default function IssueDetail() {
                         {!issue.archived && (
                             <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                                 <input type='hidden' name='_action' value='post-comment' />
-                                <textarea
+                                <div className="flex justify-between items-center mb-1">
+                                    <Label htmlFor='comment_text' className='text-lg'>
+                                        Add a comment
+                                    </Label>
+                                    <span className={`text-sm ${commentLength === COMMENT_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}>
+                                        {commentLength}/{COMMENT_MAX_LENGTH}
+                                    </span>
+                                </div>
+                                <Textarea
                                     name='comment_text'
                                     required
                                     rows={3}
-                                    className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
+                                    className={classNames('w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none', {
+                                        'border-red-600': showCommentWarning,
+                                    })}
                                     placeholder='Add a comment...'
                                     value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
+                                    onChange={handleCommentChange}
+                                    onKeyDown={handleCommentKeyPress}
                                     minLength={COMMENT_MIN_LENGTH}
                                     maxLength={COMMENT_MAX_LENGTH}
                                     ref={commentRef}
-                                ></textarea>
+                                />
+                                {showCommentWarning && (
+                                    <p className="text-red-600 text-sm mt-1">
+                                        Maximum comment length reached.
+                                    </p>
+                                )}
                                 <div className='flex flex-col'>
                                     {session.role === 'ADMIN' && (
                                         <div className='flex items-center space-x-2 my-4'>
