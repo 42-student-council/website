@@ -356,8 +356,11 @@ export default function IssueDetail() {
 
     useEffect(() => {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
-        if (savedCommentText) setCommentText(savedCommentText);
-    }, []);
+        if (savedCommentText) {
+            setCommentText(savedCommentText);
+            setCommentLength(savedCommentText.length);
+        }
+    }, [issue.id]);
 
     useEffect(() => {
         if (commentRef.current) {
@@ -367,7 +370,7 @@ export default function IssueDetail() {
 
     useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
-    }, [commentText]);
+    }, [commentText, issue.id]);
 
     useEffect(() => {
         let isCommentTextValid = true;
@@ -377,12 +380,6 @@ export default function IssueDetail() {
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
 
-    const handleSubmit = (e) => {
-        if (!isFormValid || fetcher.formData) {
-            e.preventDefault();
-        }
-    };
-
     const handleCommentChange = (e) => {
         const newComment = e.target.value;
         setCommentText(newComment);
@@ -391,6 +388,7 @@ export default function IssueDetail() {
         if (newComment.length <= COMMENT_MAX_LENGTH) {
             setShowCommentWarning(false);
         }
+        adjustTextareaHeight(e.target);
     };
 
     const handleCommentKeyPress = (e) => {
@@ -398,6 +396,18 @@ export default function IssueDetail() {
 
         if (commentText.length >= COMMENT_MAX_LENGTH && isPrintableKey) {
             setShowCommentWarning(true);
+        }
+    };
+
+    const adjustTextareaHeight = (textarea) => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.minHeight = '96px'; // Default height (3 rows)
+    };
+
+    const handleSubmit = (e) => {
+        if (!isFormValid || fetcher.formData) {
+            e.preventDefault();
         }
     };
 
@@ -540,7 +550,6 @@ export default function IssueDetail() {
                                 <Textarea
                                     name='comment_text'
                                     required
-                                    rows={3}
                                     className={classNames('w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none', {
                                         'border-red-600': showCommentWarning,
                                     })}
