@@ -367,6 +367,11 @@ export default function IssueDetail() {
             setCommentText(savedCommentText);
             setCommentLength(savedCommentText.length);
         }
+
+        // Ensure correct initial height
+        if (commentRef.current) {
+            adjustTextareaHeight(commentRef.current);
+        }
     }, [issue.id]);
 
     useEffect(() => {
@@ -411,8 +416,7 @@ export default function IssueDetail() {
             textarea.style.height = '96px'; // Default height (3 rows)
         } else {
             textarea.style.height = 'auto';
-            textarea.style.height = `${textarea.scrollHeight}px`;
-            textarea.style.minHeight = '96px'; // Default height (3 rows)
+            textarea.style.height = `${Math.max(textarea.scrollHeight, 96)}px`;
         }
     };
 
@@ -564,6 +568,7 @@ export default function IssueDetail() {
                                     className={classNames('w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none', {
                                         'border-red-600': showCommentWarning,
                                     })}
+                                    style={{ minHeight: '96px' }}
                                     placeholder='Add a comment...'
                                     value={commentText}
                                     onChange={handleCommentChange}
