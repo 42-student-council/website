@@ -143,7 +143,10 @@ export default function IssuesNew() {
     useEffect(() => {
         const savedTitle = localStorage.getItem('create-issue-title');
         const savedDescription = localStorage.getItem('create-issue-description');
-        if (savedTitle) setTitle(savedTitle);
+        if (savedTitle) {
+            setTitle(savedTitle);
+            setTitleLength(savedTitle.length);
+        }
         if (savedDescription) setDescription(savedDescription);
     }, []);
 
