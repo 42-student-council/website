@@ -103,6 +103,25 @@ export async function action({ request }: ActionFunctionArgs) {
                         )
                         .catch(console.error);
 
+                    await sendDiscordWebhookWithUrl(config.discord.studentServerIssueWebhookUrl, {
+                        thread_name: `${data.title} - #${issue.id}`,
+                        embeds: [
+                            {
+                                color: 0x22c55e,
+                                description: `A new [Issue](${config.baseUrl}/issues/${issue.id}) has been opened on the website.`,
+                            },
+                        ],
+                        wait: true,
+                    })
+                        .then(
+                            async (res) =>
+                                await db.issue.update({
+                                    where: { id: issue.id },
+                                    data: { studentDiscordMessageId: BigInt(res.id) },
+                                }),
+                        )
+                        .catch(console.error);
+
                     return json({ id: issue.id });
                 })
                 .catch(() => {

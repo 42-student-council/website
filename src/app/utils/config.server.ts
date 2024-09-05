@@ -4,6 +4,7 @@ export const config = {
         webhookId: requireEnv('DISCORD_WEBHOOK_ID'),
         webhookToken: requireEnv('DISCORD_WEBHOOK_TOKEN'),
         councilServerIssueWebhookUrl: requireEnv('COUNCIL_SERVER_ISSUE_WEBHOOK_URL'),
+        studentServerIssueWebhookUrl: requireEnv('STUDENT_SERVER_ISSUE_WEBHOOK_URL'),
     },
     api: {
         clientId: requireEnv('CLIENT_ID'),
