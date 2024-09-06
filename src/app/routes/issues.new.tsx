@@ -316,12 +316,6 @@ export default function IssuesNew() {
                                 'border-red-600':
                                     !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
                             })}
-                            style={{
-                                overflow: 'hidden', // For Chrome and Safari
-                                msOverflowStyle: 'none', // For Internet Explorer and old Edge
-                                scrollbarWidth: 'none', // For Firefox
-                                resize: 'none',
-                            }}
                             required
                             autoComplete='off'
                             minLength={DESCRIPTION_MIN_LENGTH}
