@@ -568,7 +568,13 @@ export default function IssueDetail() {
                                             'border-red-600': showCommentWarning,
                                         },
                                     )}
-                                    style={{ minHeight: '96px' }}
+                                    style={{
+                                        minHeight: '96px',
+                                        overflow: 'hidden', // For Chrome and Safari
+                                        msOverflowStyle: 'none', // For Internet Explorer and old Edge
+                                        scrollbarWidth: 'none', // For Firefox
+                                        resize: 'none',
+                                    }}
                                     placeholder='Add a comment...'
                                     value={commentText}
                                     onChange={handleCommentChange}

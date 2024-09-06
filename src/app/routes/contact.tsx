@@ -307,6 +307,12 @@ export default function Contact() {
                             className={classNames('min-h-[192px]', {
                                 'border-red-600': !!contactFetcher.data?.errors?.message || showMessageWarning,
                             })}
+                            style={{
+                                overflow: 'hidden', // For Chrome and Safari
+                                msOverflowStyle: 'none', // For Internet Explorer and old Edge
+                                scrollbarWidth: 'none', // For Firefox
+                                resize: 'none',
+                            }}
                             required
                             autoComplete='off'
                             minLength={MESSAGE_MIN_LENGTH}
