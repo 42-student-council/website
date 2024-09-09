@@ -167,14 +167,32 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
             case 'archive': {
                 requireAdminSession(session);
 
-                await db.issue.update({
+                const issue = await db.issue.update({
                     where: { id: Number(id) },
                     data: {
                         archived: true,
                     },
                 });
 
+                await updateDiscordThreadTags(issue.id, issue.councilDiscordMessageId, true);
+                await updateDiscordThreadTags(issue.id, issue.studentDiscordMessageId, true);
+
                 return json({ archived: true });
+            }
+            case 'unarchive': {
+                requireAdminSession(session);
+
+                const issue = await db.issue.update({
+                    where: { id: Number(id) },
+                    data: {
+                        archived: false,
+                    },
+                });
+
+                await updateDiscordThreadTags(issue.id, issue.councilDiscordMessageId, false);
+                await updateDiscordThreadTags(issue.id, issue.studentDiscordMessageId, false);
+
+                return json({ archived: false });
             }
             case 'post-comment': {
                 return validateForm(
@@ -237,16 +255,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                             });
                     },
                 );
-            }
-            case 'unarchive': {
-                await db.issue.update({
-                    where: { id: Number(id) },
-                    data: {
-                        archived: false,
-                    },
-                });
-
-                return json({ archived: false });
             }
             case 'commentVote': {
                 return validateForm(
@@ -331,6 +339,24 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
         }
     }
 };
+
+async function updateDiscordThreadTags(issueId: number, discordMessageId: bigint | null, isArchived: boolean) {
+    if (!discordMessageId) return;
+
+    const tags = isArchived ? ['archived'] : ['open'];
+
+    await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
+        thread_id: discordMessageId.toString(),
+        applied_tags: tags,
+        wait: true,
+    }).catch(console.error);
+
+    await sendDiscordWebhookWithUrl(config.discord.studentServerIssueWebhookUrl, {
+        thread_id: discordMessageId.toString(),
+        applied_tags: tags,
+        wait: true,
+    }).catch(console.error);
+}
 
 export default function IssueDetail() {
     const { issue, session, hasVoted } = useLoaderData<LoaderData>();

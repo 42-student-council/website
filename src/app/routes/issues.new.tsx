@@ -11,7 +11,6 @@ import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
@@ -92,6 +91,7 @@ export async function action({ request }: ActionFunctionArgs) {
                                 description: data.description,
                             },
                         ],
+                        applied_tags: ['open'],
                         wait: true,
                     })
                         .then(
@@ -106,6 +106,7 @@ export async function action({ request }: ActionFunctionArgs) {
                     await sendDiscordWebhookWithUrl(config.discord.studentServerIssueWebhookUrl, {
                         thread_name: `${data.title}`,
                         content: `[A new Issue has been opened on the Student Council Website.](${config.baseUrl}/issues/${issue.id})`,
+                        applied_tags: ['open'],
                         wait: true,
                     })
                         .then(
