@@ -199,12 +199,16 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     },
                                 });
 
+                                const isOfficial = data.official_statement === 'on';
+                                const embedColor = isOfficial ? 0x9303d4 : 0x22c55e;
+                                const embedTitle = isOfficial ? 'New Student Council Comment' : 'New Comment';
+
                                 await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
                                     thread_id: issue?.councilDiscordMessageId?.toString() ?? undefined,
                                     embeds: [
                                         {
-                                            color: 0x22c55e,
-                                            title: 'New comment',
+                                            color: embedColor,
+                                            title: embedTitle,
                                             description: data.comment_text,
                                         },
                                     ],
@@ -215,8 +219,8 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     thread_id: issue?.studentDiscordMessageId?.toString() ?? undefined,
                                     embeds: [
                                         {
-                                            color: 0x22c55e,
-                                            title: 'New comment',
+                                            color: embedColor,
+                                            title: embedTitle,
                                             description: `[A new comment to this issue has been posted.](${config.baseUrl}/issues/${issue?.id})`,
                                         },
                                     ],
