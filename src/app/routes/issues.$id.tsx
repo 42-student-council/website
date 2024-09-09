@@ -445,9 +445,9 @@ export default function IssueDetail() {
                         </div>
                     )}
                     <div className='mt-4'>
-                        <H2 className='hyphens-auto'>{issue.title}</H2>
+                        <H2 className='hyphens-auto break-words'>{issue.title}</H2>
                     </div>
-                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto mt-2'>
+                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
@@ -577,7 +577,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
                 {formatDate(new Date(comment.createdAt))}
             </p>
             <p
-                className={classNames('text-base text-gray-600 whitespace-pre-wrap', {
+                className={classNames('text-base text-gray-600 whitespace-pre-wrap break-words', {
                     'text-slate-800': comment.official,
                 })}
             >
