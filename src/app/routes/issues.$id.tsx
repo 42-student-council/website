@@ -217,7 +217,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                         {
                                             color: 0x22c55e,
                                             title: 'New comment',
-                                            description: `A new comment has been added to [Issue](${config.baseUrl}/issues/${issue.id}).`,
+                                            description: `A new comment has been posted on [Issue #${issue.id}](${config.baseUrl}/issues/${issue.id}).`,
                                         },
                                     ],
                                     wait: true,

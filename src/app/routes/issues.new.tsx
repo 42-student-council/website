@@ -108,7 +108,8 @@ export async function action({ request }: ActionFunctionArgs) {
                         embeds: [
                             {
                                 color: 0x22c55e,
-                                description: `A new [Issue](${config.baseUrl}/issues/${issue.id}) has been opened on the website.`,
+                                title: 'New Issue',
+                                description: `[A new Issue has been opened on the Student Council Website.](${config.baseUrl}/issues/${issue.id})`,
                             },
                         ],
                         wait: true,
