@@ -199,31 +199,29 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     },
                                 });
 
-                                try {
-                                    await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
-                                        thread_id: issue?.councilDiscordMessageId?.toString() ?? undefined,
-                                        embeds: [
-                                            {
-                                                color: 0x22c55e,
-                                                title: 'New comment',
-                                                description: data.comment_text,
-                                            },
-                                        ],
-                                        wait: true,
-                                    });
-                                } catch (error) {
-                                    console.error(error);
-
-                                    return json(
+                                await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
+                                    thread_id: issue?.councilDiscordMessageId?.toString() ?? undefined,
+                                    embeds: [
                                         {
-                                            errors: {
-                                                discordError:
-                                                    'An internal server error occurred while sending the message. Please try again.',
-                                            },
+                                            color: 0x22c55e,
+                                            title: 'New comment',
+                                            description: data.comment_text,
                                         },
-                                        500,
-                                    );
-                                }
+                                    ],
+                                    wait: true,
+                                }).catch(console.error);
+
+                                await sendDiscordWebhookWithUrl(config.discord.studentServerIssueWebhookUrl, {
+                                    thread_id: issue?.studentDiscordMessageId?.toString() ?? undefined,
+                                    embeds: [
+                                        {
+                                            color: 0x22c55e,
+                                            title: 'New comment',
+                                            description: `[A new comment to this issue has been posted.](${config.baseUrl}/issues/${issue?.id})`,
+                                        },
+                                    ],
+                                    wait: true,
+                                }).catch(console.error);
 
                                 return json(comment);
                             })
