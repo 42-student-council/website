@@ -5,7 +5,7 @@ import { GitHub } from './icon/GitHub';
 export function Footer() {
     return (
         <footer
-            className='bg-white rounded-lg shadow m-4 dark:bg-gray-800 sticky'
+            className='bg-white rounded-lg shadow m-4 dark:bg-gray-800 sticky w-full md:w-3/5 mx-auto'
             style={{
                 height: 'fit-content',
                 top: '100vh',

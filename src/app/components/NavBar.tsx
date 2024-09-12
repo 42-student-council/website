@@ -79,7 +79,7 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
-        <div className='hidden md:flex flex-row justify-between w-full items-center'>
+        <div className='hidden md:flex flex-row justify-between w-full items-center w-full md:w-3/5 mx-auto'>
             <div className='mr-4 gap-2 flex'>
                 {navItems.map((item, index) => (
                     <NavLink
