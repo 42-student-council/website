@@ -182,7 +182,8 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     createCommentSchema,
                     (errors) => json({ errors }, 400),
                     async (data) => {
-                        if (data.official_statement === 'on') requireAdminSession(session);
+                        const isOfficial = data.official_statement === 'on';
+                        if (isOfficial) requireAdminSession(session);
 
                         const issue = await db.issue.findFirst({ where: { id: Number(id) } });
                         if (issue?.archived)
@@ -199,12 +200,15 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     },
                                 });
 
+                                const embedColor = isOfficial ? 0x9303d4 : 0x22c55e;
+                                const embedTitle = isOfficial ? 'New Student Council Comment' : 'New Comment';
+
                                 await sendDiscordWebhookWithUrl(config.discord.councilServerIssueWebhookUrl, {
                                     thread_id: issue?.councilDiscordMessageId?.toString() ?? undefined,
                                     embeds: [
                                         {
-                                            color: 0x22c55e,
-                                            title: 'New comment',
+                                            color: embedColor,
+                                            title: embedTitle,
                                             description: data.comment_text,
                                         },
                                     ],
@@ -215,9 +219,9 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     thread_id: issue?.studentDiscordMessageId?.toString() ?? undefined,
                                     embeds: [
                                         {
-                                            color: 0x22c55e,
-                                            title: 'New comment',
-                                            description: `[A new comment to this issue has been posted.](${config.baseUrl}/issues/${issue?.id})`,
+                                            color: embedColor,
+                                            title: embedTitle,
+                                            description: `[A new comment has been posted to this issue.](${config.baseUrl}/issues/${issue?.id})`,
                                         },
                                     ],
                                     wait: true,
