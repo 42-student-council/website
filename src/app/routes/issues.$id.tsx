@@ -182,7 +182,8 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                     createCommentSchema,
                     (errors) => json({ errors }, 400),
                     async (data) => {
-                        if (data.official_statement === 'on') requireAdminSession(session);
+                        const isOfficial = data.official_statement === 'on';
+                        if (isOfficial) requireAdminSession(session);
 
                         const issue = await db.issue.findFirst({ where: { id: Number(id) } });
                         if (issue?.archived)
@@ -199,7 +200,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                     },
                                 });
 
-                                const isOfficial = data.official_statement === 'on';
                                 const embedColor = isOfficial ? 0x9303d4 : 0x22c55e;
                                 const embedTitle = isOfficial ? 'New Student Council Comment' : 'New Comment';
 
