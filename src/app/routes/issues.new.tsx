@@ -105,7 +105,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
                     await sendDiscordWebhookWithUrl(config.discord.studentServerIssueWebhookUrl, {
                         thread_name: `${data.title} - #${issue.id}`,
-                        content: `[A new issue has been opened on the Student Council Website](${config.baseUrl}/issues/${issue.id})`,
+                        content: `[A new issue has been opened on the Student Council Website](<${config.baseUrl}/issues/${issue.id}>)`,
                         wait: true,
                     })
                         .then(
