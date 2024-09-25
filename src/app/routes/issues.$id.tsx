@@ -337,10 +337,11 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, session, hasVoted } = useLoaderData<LoaderData>();
+    const { issue, session: { createdAt, ...restSession }, hasVoted } = useLoaderData<LoaderData>();
+    const session = { ...restSession, createdAt: new Date(createdAt) };
     const fetcher = useFetcher<{ errors?: { message?: string } }>();
     const [popupMessage, setPopupMessage] = useState(null);
-    const formRef = useRef(null);
+    const formRef = useRef<HTMLFormElement>(null);
     const [commentText, setCommentText] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -360,7 +361,7 @@ export default function IssueDetail() {
 
     useEffect(() => {
         if (commentRef.current) {
-            commentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
         }
     }, [commentText]);
 
@@ -376,7 +377,7 @@ export default function IssueDetail() {
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: { preventDefault: () => void; }) => {
         if (!isFormValid || fetcher.formData) {
             e.preventDefault();
         }
@@ -565,7 +566,7 @@ function CommentForm({
 
     useEffect(() => {
         if (commentRef.current) {
-            commentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
         }
     }, [commentText]);
 
