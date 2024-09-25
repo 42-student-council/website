@@ -337,7 +337,11 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, session: { createdAt, ...restSession }, hasVoted } = useLoaderData<LoaderData>();
+    const {
+        issue,
+        session: { createdAt, ...restSession },
+        hasVoted,
+    } = useLoaderData<LoaderData>();
     const session = { ...restSession, createdAt: new Date(createdAt) };
     const fetcher = useFetcher<{ errors?: { message?: string } }>();
     const [popupMessage, setPopupMessage] = useState(null);
@@ -377,7 +381,7 @@ export default function IssueDetail() {
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
 
-    const handleSubmit = (e: { preventDefault: () => void; }) => {
+    const handleSubmit = (e: { preventDefault: () => void }) => {
         if (!isFormValid || fetcher.formData) {
             e.preventDefault();
         }
