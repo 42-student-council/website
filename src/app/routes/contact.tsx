@@ -10,7 +10,6 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { sendDiscordWebhook } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
@@ -122,6 +121,8 @@ export default function Contact() {
     }>();
 
     const [message, setMessage] = useState('');
+    const [messageLength, setMessageLength] = useState(0);
+    const [showMessageWarning, setShowMessageWarning] = useState(false);
     const [contactOption, setContactOption] = useState<string>('');
     const [anonymousOption, setAnonymousOption] = useState<string>('');
     const [contactEmail, setContactEmail] = useState<string>(`${data.login}@student.42vienna.com`);
@@ -135,17 +136,26 @@ export default function Contact() {
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
+            setMessageLength(0);
+            setShowMessageWarning(false);
             setContactOption('');
             setAnonymousOption('');
             localStorage.removeItem('contact-message');
             localStorage.removeItem('anonymous-option');
             localStorage.removeItem('contact-option');
+
+            if (messageRef.current) {
+                adjustTextareaHeight(messageRef.current);
+            }
         }
     }, [contactFetcher.data?.success]);
 
     useEffect(() => {
         const savedMessage = localStorage.getItem('contact-message');
-        if (savedMessage) setMessage(savedMessage);
+        if (savedMessage) {
+            setMessage(savedMessage);
+            setMessageLength(savedMessage.length);
+        }
 
         const savedAnonymousOption = localStorage.getItem('anonymous-option');
         if (savedAnonymousOption) setAnonymousOption(savedAnonymousOption);
@@ -168,7 +178,34 @@ export default function Contact() {
 
     useEffect(() => {
         localStorage.setItem('contact-message', message);
+
+        if (messageRef.current) {
+            adjustTextareaHeight(messageRef.current);
+        }
     }, [message]);
+
+    const adjustTextareaHeight = (textarea) => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${Math.max(textarea.scrollHeight, 192)}px`; // Minimum height of 192px (48 * 4)
+    };
+
+    const handleMessageChange = (e) => {
+        const newMessage = e.target.value;
+        setMessage(newMessage);
+        setMessageLength(newMessage.length);
+
+        if (newMessage.length <= MESSAGE_MAX_LENGTH) {
+            setShowMessageWarning(false);
+        }
+    };
+
+    const handleMessageKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (message.length >= MESSAGE_MAX_LENGTH && isPrintableKey) {
+            setShowMessageWarning(true);
+        }
+    };
 
     useEffect(() => {
         if (anonymousOption) {
@@ -254,23 +291,34 @@ export default function Contact() {
             <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
                 <contactFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <div className='mt-2'>
-                        <Label htmlFor='message' className='text-lg'>
-                            What would you like to tell us?
-                        </Label>
+                        <div className='flex justify-between items-center mb-1'>
+                            <Label htmlFor='message' className='text-lg'>
+                                What would you like to tell us?
+                            </Label>
+                            <span
+                                className={`text-sm ${messageLength === MESSAGE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                            >
+                                {messageLength}/{MESSAGE_MAX_LENGTH}
+                            </span>
+                        </div>
                         <Textarea
                             placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
                             name='message'
-                            className={classNames('h-48', {
-                                'border-red-600': !!contactFetcher.data?.errors?.message,
+                            className={classNames('min-h-[192px]', {
+                                'border-red-600': !!contactFetcher.data?.errors?.message || showMessageWarning,
                             })}
                             required
                             autoComplete='off'
                             minLength={MESSAGE_MIN_LENGTH}
                             maxLength={MESSAGE_MAX_LENGTH}
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={handleMessageChange}
+                            onKeyDown={handleMessageKeyPress}
                             value={message}
                             ref={messageRef}
                         />
+                        {showMessageWarning && (
+                            <p className='text-red-600 text-sm mt-1'>Maximum message length reached.</p>
+                        )}
                         <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                     </div>
 

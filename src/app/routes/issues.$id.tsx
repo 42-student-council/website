@@ -30,9 +30,11 @@ import {
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
+import { Textarea } from '~/components/ui/textarea';
+import { Label } from '~/components/ui/label';
 
 const COMMENT_MIN_LENGTH = 3;
-const COMMENT_MAX_LENGTH = 5000;
+const COMMENT_MAX_LENGTH = 4096;
 
 const createCommentSchema = z.object({
     comment_text: z
@@ -342,21 +344,18 @@ export default function IssueDetail() {
     const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
-    const [isFormValid, setIsFormValid] = useState(false);
-
+    const [commentLength, setCommentLength] = useState(0);
+    const [showCommentWarning, setShowCommentWarning] = useState(false);
     const commentRef = useRef(null);
-
-    useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
-            formRef.current?.reset();
-            setCommentText('');
-        }
-    }, [fetcher.state, fetcher.data]);
+    const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
-        if (savedCommentText) setCommentText(savedCommentText);
-    }, []);
+        if (savedCommentText) {
+            setCommentText(savedCommentText);
+            setCommentLength(savedCommentText.length);
+        }
+    }, [issue.id]);
 
     useEffect(() => {
         if (commentRef.current) {
@@ -366,7 +365,7 @@ export default function IssueDetail() {
 
     useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
-    }, [commentText]);
+    }, [commentText, issue.id]);
 
     useEffect(() => {
         let isCommentTextValid = true;
@@ -375,6 +374,48 @@ export default function IssueDetail() {
         }
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
+
+    useEffect(() => {
+        if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
+            // Reset comment text and length after successful submission
+            setCommentText('');
+            setCommentLength(0);
+            setShowCommentWarning(false);
+            localStorage.removeItem(`issue-${issue.id}-comment-text`);
+
+            if (commentRef.current) {
+                adjustTextareaHeight(commentRef.current, true); // Reset height to default
+            }
+        }
+    }, [fetcher.state, fetcher.data, issue.id]);
+
+    const adjustTextareaHeight = (textarea, reset = false) => {
+        if (reset) {
+            textarea.style.height = '96px'; // Default height (3 rows)
+        } else {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${Math.max(textarea.scrollHeight, 96)}px`;
+        }
+    };
+
+    const handleCommentChange = (e) => {
+        const newComment = e.target.value;
+        setCommentText(newComment);
+        setCommentLength(newComment.length);
+
+        if (newComment.length <= COMMENT_MAX_LENGTH) {
+            setShowCommentWarning(false);
+        }
+        adjustTextareaHeight(e.target);
+    };
+
+    const handleCommentKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (commentText.length >= COMMENT_MAX_LENGTH && isPrintableKey) {
+            setShowCommentWarning(true);
+        }
+    };
 
     const handleSubmit = (e) => {
         if (!isFormValid || fetcher.formData) {
@@ -510,18 +551,38 @@ export default function IssueDetail() {
                         {!issue.archived && (
                             <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                                 <input type='hidden' name='_action' value='post-comment' />
-                                <textarea
+                                <div className='flex justify-between items-center mb-1'>
+                                    <Label htmlFor='comment_text' className='text-lg'>
+                                        Add a comment
+                                    </Label>
+                                    <span
+                                        className={`text-sm ${commentLength === COMMENT_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                                    >
+                                        {commentLength}/{COMMENT_MAX_LENGTH}
+                                    </span>
+                                </div>
+                                <Textarea
                                     name='comment_text'
                                     required
-                                    rows={3}
-                                    className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
+                                    className={classNames(
+                                        'w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none',
+                                        {
+                                            'border-red-600': showCommentWarning,
+                                        },
+                                    )}
+                                    style={{ minHeight: '96px' }}
                                     placeholder='Add a comment...'
                                     value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
+                                    onChange={handleCommentChange}
+                                    onKeyDown={handleCommentKeyPress}
+                                    onInput={(e) => adjustTextareaHeight(e.target)}
                                     minLength={COMMENT_MIN_LENGTH}
                                     maxLength={COMMENT_MAX_LENGTH}
                                     ref={commentRef}
-                                ></textarea>
+                                />
+                                {showCommentWarning && (
+                                    <p className='text-red-600 text-sm mt-1'>Maximum comment length reached.</p>
+                                )}
                                 <div className='flex flex-col'>
                                     {session.role === 'ADMIN' && (
                                         <div className='flex items-center space-x-2 my-4'>

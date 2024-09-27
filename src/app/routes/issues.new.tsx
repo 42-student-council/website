@@ -143,6 +143,11 @@ export default function IssuesNew() {
     const titleRef = useRef(null);
     const descriptionRef = useRef(null);
 
+    const [titleLength, setTitleLength] = useState(0);
+    const [descriptionLength, setDescriptionLength] = useState(0);
+    const [showTitleWarning, setShowTitleWarning] = useState(false);
+    const [showDescriptionWarning, setShowDescriptionWarning] = useState(false);
+
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
             localStorage.removeItem('create-issue-title');
@@ -154,8 +159,14 @@ export default function IssuesNew() {
     useEffect(() => {
         const savedTitle = localStorage.getItem('create-issue-title');
         const savedDescription = localStorage.getItem('create-issue-description');
-        if (savedTitle) setTitle(savedTitle);
-        if (savedDescription) setDescription(savedDescription);
+        if (savedTitle) {
+            setTitle(savedTitle);
+            setTitleLength(savedTitle.length);
+        }
+        if (savedDescription) {
+            setDescription(savedDescription);
+            setDescriptionLength(savedDescription.length);
+        }
     }, []);
 
     useEffect(() => {
@@ -173,6 +184,10 @@ export default function IssuesNew() {
 
     useEffect(() => {
         localStorage.setItem('create-issue-description', description);
+
+        if (descriptionRef.current) {
+            adjustTextareaHeight(descriptionRef.current);
+        }
     }, [description]);
 
     useEffect(() => {
@@ -192,6 +207,48 @@ export default function IssuesNew() {
 
         setIsFormValid(isTitleValid && isDescriptionValid);
     }, [title, description]);
+
+    const adjustTextareaHeight = (textarea) => {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+        textarea.style.minHeight = '192px'; // Default height (48 * 4)
+    };
+
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        setTitleLength(newTitle.length);
+
+        if (newTitle.length <= TITLE_MAX_LENGTH) {
+            setShowTitleWarning(false);
+        }
+    };
+
+    const handleTitleKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (title.length >= TITLE_MAX_LENGTH && isPrintableKey) {
+            setShowTitleWarning(true);
+        }
+    };
+
+    const handleDescriptionChange = (e) => {
+        const newDescription = e.target.value;
+        setDescription(newDescription);
+        setDescriptionLength(newDescription.length);
+
+        if (newDescription.length <= DESCRIPTION_MAX_LENGTH) {
+            setShowDescriptionWarning(false);
+        }
+    };
+
+    const handleDescriptionKeyPress = (e) => {
+        const isPrintableKey = e.key.length === 1;
+
+        if (description.length >= DESCRIPTION_MAX_LENGTH && isPrintableKey) {
+            setShowDescriptionWarning(true);
+        }
+    };
 
     const handleSubmit = (e) => {
         if (!isFormValid || createIssueFetcher.formData) {
@@ -226,9 +283,16 @@ export default function IssuesNew() {
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
                 <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <Label htmlFor='title' className='text-lg'>
-                        Issue Title
-                    </Label>
+                    <div className='flex justify-between items-center mb-1'>
+                        <Label htmlFor='title' className='text-lg'>
+                            Issue Title
+                        </Label>
+                        <span
+                            className={`text-sm ${titleLength === TITLE_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                        >
+                            {titleLength}/{TITLE_MAX_LENGTH}
+                        </span>
+                    </div>
                     <Input
                         type='text'
                         name='title'
@@ -236,32 +300,51 @@ export default function IssuesNew() {
                         autoComplete='off'
                         minLength={TITLE_MIN_LENGTH}
                         maxLength={TITLE_MAX_LENGTH}
-                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={title}
+                        className={classNames({
+                            'border-red-600': !!createIssueFetcher.data?.errors?.title || showTitleWarning,
+                        })}
+                        onChange={handleTitleChange}
+                        onKeyDown={handleTitleKeyPress}
+                        value={title}
                         ref={titleRef}
                     />
+                    {showTitleWarning && <p className='text-red-600 text-sm mt-1'>Maximum title length reached.</p>}
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
                     <div className='mt-4'>
-                        <Label htmlFor='description' className='text-lg'>
-                            Issue Description
-                        </Label>
+                        <div className='flex justify-between items-center mb-1'>
+                            <Label htmlFor='description' className='text-lg'>
+                                Issue Description
+                            </Label>
+                            <span
+                                className={`text-sm ${descriptionLength === DESCRIPTION_MAX_LENGTH ? 'text-red-600' : 'text-gray-500'}`}
+                            >
+                                {descriptionLength}/{DESCRIPTION_MAX_LENGTH}
+                            </span>
+                        </div>
                         <Textarea
                             placeholder="Please describe your issue or suggestion here...
 (Currently we don't support markdown for public issues, but we will in the future.)"
                             name='description'
                             className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
+                                'border-red-600':
+                                    !!createIssueFetcher.data?.errors?.description || showDescriptionWarning,
                             })}
                             required
                             autoComplete='off'
                             minLength={DESCRIPTION_MIN_LENGTH}
                             maxLength={DESCRIPTION_MAX_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            defaultValue={description}
+                            onChange={(e) => {
+                                handleDescriptionChange(e);
+                                adjustTextareaHeight(e.target);
+                            }}
+                            onKeyDown={handleDescriptionKeyPress}
+                            value={description}
                             ref={descriptionRef}
                         />
+                        {showDescriptionWarning && (
+                            <p className='text-red-600 text-sm mt-1'>Maximum description length reached.</p>
+                        )}
                         <FormErrorMessage className='mt-2'>
                             {createIssueFetcher.data?.errors?.description}
                         </FormErrorMessage>
