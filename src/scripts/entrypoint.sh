@@ -14,4 +14,3 @@ if [ "$NODE_ENV" = "production" ]; then
 else
   npm run dev -- --host 0.0.0.0
 fi
-
