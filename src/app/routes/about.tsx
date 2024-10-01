@@ -1,10 +1,11 @@
 import { Prisma } from '@prisma/client';
-import { LoaderFunctionArgs, MetaFunction, Session } from '@remix-run/node';
+import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
+import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 
@@ -20,7 +21,6 @@ function shuffle(array: any[]) {
     }
 }
 
-// TODO: Get dynamically from backend
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
 
@@ -65,7 +65,7 @@ export default function About() {
                         <Link to={`https://profile.intra.42.fr/users/${member.login}`} target='_blank'>
                             <Avatar className='rounded-xl size-60'>
                                 <AvatarImage src={member.profilePictureUrl} className='object-cover' />
-                                <AvatarFallback>{member.firstName.slice(0, 2)}</AvatarFallback>
+                                <AvatarFallback className='rounded-xl'>{member.firstName.slice(0, 2)}</AvatarFallback>
                             </Avatar>
                         </Link>
 
@@ -73,22 +73,11 @@ export default function About() {
                             {member.firstName} {member.lastName}
                         </H3>
 
-                        {/* <div className='mt-4'>
-                           <p className='text-lg'>
-                                Email:
-                                <Button variant='link' className='pb-0 text-base'>
-                                    <a href={`mailto:${member.email}`}>{member.email}</a>
-                                </Button>
-                            </p>
-                            <p className='text-lg'>
-                                Intra:
-                                <Button variant='link' className='pt-0 text-base'>
-                                    <Link to={`https://profile.intra.42.fr/users/${member.login}`} target='_blank'>
-                                        {member.login}
-                                    </Link>
-                                </Button>
-                            </p>
-                        </div> */}
+                        <Button variant='link' className='pt-0 text-base'>
+                            <Link to={`https://profile.intra.42.fr/users/${member.login}`} target='_blank'>
+                                {member.login}
+                            </Link>
+                        </Button>
                     </div>
                 ))}
             </div>
