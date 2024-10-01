@@ -465,7 +465,7 @@ export default function IssueDetail() {
                                     disabled={issue.archived}
                                     className={classNames('hover:bg-darkred-500 w-full md:w-96', {
                                         'bg-rose-500': hasVoted,
-                                        'bg-secondary-foreground': !hasVoted,
+                                        'bg-secondary dark:bg-secondary-foreground': !hasVoted,
                                     })}
                                     title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
                                 >
