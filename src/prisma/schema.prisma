@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -15,6 +16,7 @@ datasource db {
 
 model User {
   commentVotes      CommentVote[]
+  pollOptionVotes   PollOptionVote[]
   id                String        @id
   issueVotes        IssueVote[]
   profilePictureUrl String?
@@ -83,4 +85,33 @@ model CouncilMember {
   lastName          String
   email             String @unique
   profilePictureUrl String
+}
+
+model PollOption {
+  archived  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  id        Int           @id @default(autoincrement())
+  poll      Poll          @relation(fields: [pollId], references: [id])
+  pollId    Int
+  text      String
+  votes     PollOptionVote[]
+}
+
+model PollOptionVote {
+  pollOption   PollOption @relation(fields: [pollOptionId], references: [id])
+  pollOptionId Int
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@unique([pollOptionId, userId])
+}
+
+model Poll {
+  archived                Boolean     @default(false)
+  options                 PollOption[]
+  createdAt               DateTime    @default(now())
+  description             String
+  id                      Int         @id @default(autoincrement())
+  title                   String      @db.VarChar(100)
 }
