@@ -104,7 +104,6 @@ export function ErrorBoundary() {
                         'Unknown Error'
                     )}
                 </div>
-                <Footer />
                 <Scripts />
             </body>
         </html>
