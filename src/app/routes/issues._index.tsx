@@ -19,7 +19,6 @@ import {
     PlusCircle,
 } from 'lucide-react';
 import { HTMLAttributes, useEffect, useState } from 'react';
-import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -93,50 +92,42 @@ export default function Issues() {
     }, [filter, setSearchParams]);
 
     return (
-        <div>
-            <NavBar login={session.login} role={session.role} />
-            <div className='flex flex-col items-center mt-4 mx-4'>
-                <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
-                    <H1 className='mb-4'>Issues</H1>
-                    <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='open'>Open</TabsTrigger>
-                            <TabsTrigger value='archived'>Archived</TabsTrigger>
-                        </TabsList>
-                        <div className='ml-auto flex items-center gap-2'>
-                            <Link to='/issues/new'>
-                                <Button size='md' className='gap-2'>
-                                    <PlusCircle className='h-5 w-5' />
-                                    <span className='hidden sm:inline whitespace-nowrap'>
-                                        I also have something to say!
-                                    </span>
-                                    <span className='sm:hidden whitespace-nowrap'>New Issue</span>
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                    <TabsContent value='open' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
-                        <IssuesTable issues={visibleIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
-                            {visibleIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value='archived' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>
-                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 1
-                            week.
-                        </p>
-                        <IssuesTable issues={archivedIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
-                            {archivedIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                </Tabs>
+        <Tabs defaultValue={filter} onValueChange={(value) => setFilter(value)}>
+            <H1 className='mb-4'>Issues</H1>
+            <div className='flex justify-between items-center mb-2'>
+                <TabsList>
+                    <TabsTrigger value='open'>Open</TabsTrigger>
+                    <TabsTrigger value='archived'>Archived</TabsTrigger>
+                </TabsList>
+                <div className='flex gap-2 items-center ml-auto'>
+                    <Link to='/issues/new'>
+                        <Button size='md' className='gap-2'>
+                            <PlusCircle className='w-5 h-5' />
+                            <span className='hidden whitespace-nowrap sm:inline'>I also have something to say!</span>
+                            <span className='whitespace-nowrap sm:hidden'>New Issue</span>
+                        </Button>
+                    </Link>
+                </div>
             </div>
-        </div>
+            <TabsContent value='open' className='flex flex-col justify-center'>
+                <p className='pb-2 text-muted-foreground'>This is what students are currently talking about.</p>
+                <IssuesTable issues={visibleIssues} />
+                <div className='pt-2 pl-2 text-xs text-muted-foreground'>
+                    Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
+                    {visibleIssues.length === 1 ? 'issue' : 'issues'}
+                </div>
+            </TabsContent>
+            <TabsContent value='archived' className='flex flex-col justify-center'>
+                <p className='pb-2 text-muted-foreground'>
+                    Issues that have been resolved or have been open for 2 weeks and showed no activity for 1 week.
+                </p>
+                <IssuesTable issues={archivedIssues} />
+                <div className='pt-2 pl-2 text-xs text-muted-foreground'>
+                    Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
+                    {archivedIssues.length === 1 ? 'issue' : 'issues'}
+                </div>
+            </TabsContent>
+        </Tabs>
     );
 }
 
@@ -331,52 +322,50 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
     const navigate = useNavigate();
 
     return (
-        <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
-            <div>
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => {
+        <ScrollArea className='w-full whitespace-nowrap rounded-md border'>
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => navigate(`/issues/${row.original.id}`)}
-                                        className='hover:cursor-pointer'
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
                                 );
-                            })
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                            })}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => {
+                            return (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && 'selected'}
+                                    onClick={() => navigate(`/issues/${row.original.id}`)}
+                                    className='hover:cursor-pointer'
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className='h-24 text-center'>
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
             <ScrollBar orientation='horizontal' />
         </ScrollArea>
     );
@@ -384,20 +373,17 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 
 export function ErrorBoundary() {
     return (
-        <div>
-            <NavBar login='zekao?' role='USER' />
-            <div className='mt-4 mx-4'>
-                <Warning title='Error'>
-                    Something went wrong whilst fetching the issues. Please try again later.
-                    <p className='mt-4'>
-                        If this issue persists, please open an issue on our{' '}
-                        <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
-                            GitHub Repo
-                        </Link>
-                        .
-                    </p>
-                </Warning>
-            </div>
+        <div className='mt-4 mx-4'>
+            <Warning title='Error'>
+                Something went wrong whilst fetching the issues. Please try again later.
+                <p className='mt-4'>
+                    If this issue persists, please open an issue on our{' '}
+                    <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
+                        GitHub Repo
+                    </Link>
+                    .
+                </p>
+            </Warning>
         </div>
     );
 }
