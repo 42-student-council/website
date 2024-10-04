@@ -32,7 +32,7 @@ function AdminCrumb() {
             if (!item.length) return acc;
 
             const href = `/${pathname.slice(1, index + 1).join('/')}`;
-            const label = item.charAt(0).toUpperCase() + item.slice(1);
+            const label = item.charAt(0).toUpperCase() + item.slice(1).replaceAll('-', ' ');
 
             acc.push({ label, href });
             return acc;
@@ -47,7 +47,7 @@ function AdminCrumb() {
             <BreadcrumbList>
                 {breadcrumbs.map((crumb, index) => (
                     <div key={crumb.href}>
-                        <BreadcrumbItem>
+                        <BreadcrumbItem className='capitalize'>
                             {index === breadcrumbs.length - 1 ? (
                                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                             ) : (
