@@ -1,8 +1,6 @@
-import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
-import NavBar from '~/components/NavBar';
+import type { MetaFunction } from '@remix-run/node';
+import { Link } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [
@@ -11,22 +9,9 @@ export const meta: MetaFunction = () => {
     ];
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-    return { session };
-}
-
-type LoaderData = {
-    session: SessionData;
-};
-
 export default function Index() {
-    const data = useLoaderData<LoaderData>();
-
     return (
         <div className='flex flex-col h-[calc(100vh-115px)]'>
-            <NavBar login={data.session.login} role={data.session.role} />
-
             <div className='flex flex-col items-center justify-center flex-1'>
                 <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold text-center'>
                     <p>STUDENT</p>

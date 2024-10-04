@@ -6,7 +6,6 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
@@ -388,7 +387,6 @@ export default function IssueDetail() {
 
     return (
         <div>
-            <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>

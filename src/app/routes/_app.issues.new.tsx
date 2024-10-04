@@ -1,24 +1,22 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
+import { json, Link, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
+import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
-import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
-import { validateForm } from '~/utils/validation';
-import { ChevronLeft } from 'lucide-react';
-import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { config } from '~/utils/config.server';
+import { db } from '~/utils/db.server';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
+import { requireSessionData } from '~/utils/session.server';
+import { validateForm } from '~/utils/validation';
 
 const TITLE_MIN_LENGTH = 5;
 const TITLE_MAX_LENGTH = 50;
@@ -57,10 +55,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     return { session };
 }
-
-type LoaderData = {
-    session: SessionData;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
     const session = await requireSessionData(request);
@@ -130,7 +124,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
-    const data = useLoaderData<LoaderData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;
@@ -201,7 +194,6 @@ export default function IssuesNew() {
 
     return (
         <div>
-            <NavBar login={data.session.login} role={data.session.role} />
             <div className='flex justify-center'>
                 <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
                     <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>

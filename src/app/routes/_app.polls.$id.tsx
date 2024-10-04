@@ -1,13 +1,9 @@
 import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
 import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { ChevronLeft, Heart } from 'lucide-react';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Heart } from 'lucide-react';
+import { useState } from 'react';
 import { z } from 'zod';
-import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
-import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
 import {
@@ -22,12 +18,8 @@ import {
     AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
-import { Textarea } from '~/components/ui/textarea';
-import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
-import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
@@ -222,7 +214,6 @@ export default function IssueDetail() {
 
     return (
         <div>
-            <NavBar login={session.login} role={session.role} />
             <div className='md:flex md:justify-center'>
                 <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>

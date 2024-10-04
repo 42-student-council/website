@@ -1,13 +1,11 @@
 import { Prisma } from '@prisma/client';
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
-import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'About' }, { name: 'description', content: 'Who is the student council?' }];
@@ -22,18 +20,15 @@ function shuffle(array: any[]) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
     const members = await db.councilMember.findMany();
 
     shuffle(members);
 
-    return { councilMembers: members, session } satisfies LoaderData;
+    return { councilMembers: members } satisfies LoaderData;
 }
 
 type LoaderData = {
     councilMembers: Prisma.CouncilMemberGetPayload<{}>[];
-    session: SessionData;
 };
 
 export default function About() {
@@ -41,7 +36,6 @@ export default function About() {
 
     return (
         <div>
-            <NavBar login={data.session.login} role={data.session.role} />
             <div className='mb-8 mt-8 md:mt-16 flex flex-col items-center'>
                 <div className='flex flex-col md:flex-row md:items-center justify-center'>
                     <div className='mx-4'>

@@ -1,16 +1,14 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { sendDiscordWebhook } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
@@ -242,7 +240,6 @@ export default function Contact() {
 
     return (
         <div>
-            <NavBar login={data.login} role={data.role} />
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <H1 className='my-4 md:w-3/5'>Contact the Student Council</H1>
             </div>

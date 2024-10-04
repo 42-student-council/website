@@ -28,15 +28,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
     const issues = await db.issue.findMany({
         select: {
             archived: true,
@@ -54,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session } satisfies LoaderData;
+    return { issues } satisfies LoaderData;
 }
 
 type Issue = {
@@ -69,10 +66,10 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData };
+type LoaderData = { issues: Issue[] };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues } = useLoaderData<LoaderData>();
     const archivedIssues = issues.filter((issue) => issue.archived);
     const visibleIssues = issues.filter((issue) => !issue.archived);
 
@@ -94,7 +91,6 @@ export default function Issues() {
 
     return (
         <div>
-            <NavBar login={session.login} role={session.role} />
             <div className='flex flex-col items-center mt-4 mx-4'>
                 <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
                     <H1 className='mb-4'>Issues</H1>
