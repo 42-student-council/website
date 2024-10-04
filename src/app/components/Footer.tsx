@@ -11,8 +11,8 @@ export function Footer() {
                 top: '100vh',
             }}
         >
-            <div className='w-full px-6 py-2 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-x-7 gap-y-3'>
-                <div className='text-sm sm:text-center p-2'>
+            <div className='flex flex-col gap-y-3 gap-x-7 justify-center items-center px-6 py-2 mx-auto max-w-screen-xl sm:flex-row sm:justify-between'>
+                <div className='p-2 text-sm sm:text-center'>
                     Made with <Heart className='text-rose-500 fill-current' /> by the{' '}
                     <Link to='/about' target='_blank' className='hover:underline'>
                         Student Council

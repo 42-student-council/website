@@ -78,7 +78,7 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
-        <div className='hidden md:flex flex-row justify-between w-full items-center gap-2 px-2'>
+        <div className='hidden flex-row gap-2 justify-between items-center px-6 mx-auto w-full max-w-screen-xl md:flex'>
             <div className='gap-2 flex'>
                 {navItems.map((item) => (
                     <NavLink
@@ -156,7 +156,7 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
 export default function NavBar({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
         <header className='w-full border-b'>
-            <div className='flex h-14 items-center px-4'>
+            <div className='flex items-center px-2 h-14 md:px-0'>
                 <MainNav login={login} role={role} />
                 <MobileNav login={login} role={role} />
             </div>
