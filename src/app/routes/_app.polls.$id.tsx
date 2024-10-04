@@ -2,7 +2,7 @@ import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-ru
 import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { Heart } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { z } from 'zod';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
@@ -213,7 +213,7 @@ export default function IssueDetail() {
     }
 
     return (
-        <div>
+        <Fragment>
             <div className='md:flex md:justify-center'>
                 <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>
@@ -300,7 +300,7 @@ export default function IssueDetail() {
                     </div>
                 </div>
             )}
-        </div>
+        </Fragment>
     );
 }
 

@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { H1 } from '~/components/ui/H1';
@@ -239,7 +239,7 @@ export default function Contact() {
     };
 
     return (
-        <div>
+        <Fragment>
             <div className='md:flex md:justify-center mx-4 md:mx-0'>
                 <H1 className='my-4 md:w-3/5'>Contact the Student Council</H1>
             </div>
@@ -378,6 +378,6 @@ export default function Contact() {
                     )}
                 </contactFetcher.Form>
             </div>
-        </div>
+        </Fragment>
     );
 }

@@ -3,7 +3,7 @@ import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft, Heart } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
@@ -386,7 +386,7 @@ export default function IssueDetail() {
     }
 
     return (
-        <div>
+        <Fragment>
             <div className='md:flex md:justify-center'>
                 <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>
@@ -547,7 +547,7 @@ export default function IssueDetail() {
                     </div>
                 </div>
             )}
-        </div>
+        </Fragment>
     );
 }
 

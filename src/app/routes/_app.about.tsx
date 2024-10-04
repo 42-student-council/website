@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
+import { Fragment } from 'react';
 import { H1 } from '~/components/ui/H1';
 import { H3 } from '~/components/ui/H3';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -35,7 +36,7 @@ export default function About() {
     const data = useLoaderData<LoaderData>();
 
     return (
-        <div>
+        <Fragment>
             <div className='mb-8 mt-8 md:mt-16 flex flex-col items-center'>
                 <div className='flex flex-col md:flex-row md:items-center justify-center'>
                     <div className='mx-4'>
@@ -75,6 +76,6 @@ export default function About() {
                     </div>
                 ))}
             </div>
-        </div>
+        </Fragment>
     );
 }

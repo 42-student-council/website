@@ -1,6 +1,7 @@
 import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Outlet, useLocation } from '@remix-run/react';
 import { ChevronRight } from 'lucide-react';
+import { Fragment } from 'react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage } from '~/components/ui/breadcrumb';
 import { requireAdmin } from '~/utils/session.server';
 
@@ -16,10 +17,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Admin() {
     return (
-        <div>
+        <Fragment>
             <AdminCrumb />
             <Outlet />
-        </div>
+        </Fragment>
     );
 }
 

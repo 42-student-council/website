@@ -18,7 +18,7 @@ import {
     CalendarArrowUp,
     PlusCircle,
 } from 'lucide-react';
-import { HTMLAttributes, useEffect, useState } from 'react';
+import { Fragment, HTMLAttributes, useEffect, useState } from 'react';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
@@ -90,7 +90,7 @@ export default function Issues() {
     }, [filter, setSearchParams]);
 
     return (
-        <div>
+        <Fragment>
             <div className='flex flex-col items-center mt-4 mx-4'>
                 <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
                     <H1 className='mb-4'>Issues</H1>
@@ -132,7 +132,7 @@ export default function Issues() {
                     </TabsContent>
                 </Tabs>
             </div>
-        </div>
+        </Fragment>
     );
 }
 
@@ -380,7 +380,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 
 export function ErrorBoundary() {
     return (
-        <div>
+        <Fragment>
             <NavBar login='zekao?' role='USER' />
             <div className='mt-4 mx-4'>
                 <Warning title='Error'>
@@ -394,6 +394,6 @@ export function ErrorBoundary() {
                     </p>
                 </Warning>
             </div>
-        </div>
+        </Fragment>
     );
 }

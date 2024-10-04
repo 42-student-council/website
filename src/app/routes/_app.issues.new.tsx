@@ -3,7 +3,7 @@ import { json, Link, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
@@ -193,7 +193,7 @@ export default function IssuesNew() {
     };
 
     return (
-        <div>
+        <Fragment>
             <div className='flex justify-center'>
                 <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
                     <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
@@ -271,6 +271,6 @@ export default function IssuesNew() {
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
                 </createIssueFetcher.Form>
             </div>
-        </div>
+        </Fragment>
     );
 }
