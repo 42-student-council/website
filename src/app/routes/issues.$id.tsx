@@ -393,12 +393,7 @@ export default function IssueDetail() {
                 <div className='md:w-3/5 p-4'>
                     <div className='flex flex-row justify-between'>
                         <H1>Issue #{issue.id}</H1>
-                        <Link to='/issues' className=''>
-                            <Button>
-                                <ChevronLeft />
-                                Go Back
-                            </Button>
-                        </Link>
+                        <BackButton issue={issue} />
                     </div>
                     {session.role === 'ADMIN' && (
                         <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
@@ -555,6 +550,20 @@ export default function IssueDetail() {
                 </div>
             )}
         </div>
+    );
+}
+
+function BackButton(issue: SerializeFrom<Issue>) {
+    let label = `${issue.archived ? 'archived' : 'open'} issues`;
+    label = label.charAt(0).toLocaleUpperCase() + label.slice(1);
+
+    return (
+        <Link to={`/issues${issue.archived ? '?filter=archived' : ''}`}>
+            <Button>
+                <ChevronLeft />
+                {label}
+            </Button>
+        </Link>
     );
 }
 
