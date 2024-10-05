@@ -35,8 +35,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const { getTheme } = (await themeSessionResolver(request)) ?? Theme.LIGHT;
-
+    const { getTheme } = await themeSessionResolver(request);
     return {
         theme: getTheme(),
     } satisfies LoaderData;
@@ -50,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     const data = useRootLoaderData();
 
     return (
-        <ThemeProvider specifiedTheme={data?.theme ?? Theme.LIGHT} themeAction='/theme/set'>
+        <ThemeProvider specifiedTheme={data?.theme ?? null} themeAction='/theme/set'>
             <InnerLayout ssrTheme={Boolean(data?.theme)}>{children}</InnerLayout>
         </ThemeProvider>
     );
