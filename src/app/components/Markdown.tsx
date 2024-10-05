@@ -1,83 +1,79 @@
 import ReactMarkdown, { Options } from 'react-markdown';
-import { H1 } from './ui/H1';
-import { H2 } from './ui/H2';
-import { H3 } from './ui/H3';
-import { H4 } from './ui/H4';
-import classNames from 'classnames';
-import { Blockquote } from './ui/Blockquote';
+import remarkBreaks from 'remark-breaks';
+import remarkGfm from 'remark-gfm';
 
-// a, br, em, hr, img, li, ol, p, pre, strong, and ul. With remark-gfm, you can also use del, input, table, tbody, td, th, thead, and tr
+import type { Plugin } from 'unified';
+import { SKIP, visit } from 'unist-util-visit';
 
-export function Markdown(props: Options) {
+// https://github.com/zestedesavoir/zmarkdown/issues/416#issuecomment-2301830633
+const limitedMarkdownPlugin: Plugin = () => {
+    return (tree, file) => {
+        const contents = file.toString();
+
+        visit(tree, (node, index, parent) => {
+            if (
+                index == null ||
+                [
+                    'paragraph',
+                    'text',
+                    'inlineCode',
+                    'strong',
+                    'emphasis',
+                    'link',
+                    'list',
+                    'listItem',
+                    'blockquote',
+                ].includes(node.type) ||
+                !node.position
+            ) {
+                return true;
+            }
+
+            let value = contents.slice(node.position.start.offset, node.position.end.offset);
+
+            if (node.type === 'heading') {
+                value = `\n${value}`;
+            }
+
+            parent.children[index] = {
+                type: 'text',
+                value,
+            } as any;
+
+            return [SKIP, index] as const;
+        });
+    };
+};
+
+export default function Markdown(props: Options & { extraClassName: string }) {
     return (
         <ReactMarkdown
-            // allowedElements={['a', 'bloackquote', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']}
+            className={'text-base leading-8 text-balance hyphens-auto break-words ' + props.extraClassName || ''}
+            // allowedElements={['p', 'strong', 'em', 'del', 'a', 'ul', 'ol', 'li', 'code', 'blockquote']}
             components={{
+                a(props) {
+                    const { node, ...rest } = props;
+                    return <a className='underline' {...rest} />;
+                },
+                ul(props) {
+                    const { node, ...rest } = props;
+                    return <ul className='my-4 ml-5 list-disc' {...rest} />;
+                },
+                ol(props) {
+                    const { node, ...rest } = props;
+                    return <ul className='my-4 ml-5 list-decimal' {...rest} />;
+                },
+                li(props) {
+                    const { node, ...rest } = props;
+                    return <li className='mt-2' {...rest} />;
+                },
                 blockquote(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <Blockquote {...rest}>{children}</Blockquote>;
-                },
-
-                code(props) {
-                    const { children, className, node, ...rest } = props;
-                    const match = /language-(\w+)/.exec(className || '');
-
-                    return match ? (
-                        <code {...rest} className={className}>
-                            {children}
-                        </code>
-                    ) : (
-                        <code {...rest} className={classNames('bg-slate-200 rounded', className)}>
-                            {children}
-                        </code>
-                    );
-                    // return match ? (
-                    //   <SyntaxHighlighter
-                    // 	{...rest}
-                    // 	PreTag="div"
-                    // 	children={String(children).replace(/\n$/, '')}
-                    // 	language={match[1]}
-                    // 	style={dark}
-                    //   />
-                    // ) : (
-                    //   <code {...rest} className={className}>
-                    // 	{children}
-                    //   </code>
-                    // )
-                },
-
-                h1(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H1 {...rest}>{children}</H1>;
-                },
-                h2(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H2 {...rest}>{children}</H2>;
-                },
-                h3(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H3 {...rest}>{children}</H3>;
-                },
-                h4(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H4 {...rest}>{children}</H4>;
-                },
-                h5(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H4 {...rest}>{children}</H4>;
-                },
-                h6(props) {
-                    const { node, children, ...rest } = props;
-
-                    return <H4 {...rest}>{children}</H4>;
+                    const { node, ...rest } = props;
+                    return <blockquote className='border-l-4 pl-2 text-muted-foreground' {...rest} />;
                 },
             }}
+            remarkPlugins={[remarkGfm, remarkBreaks, limitedMarkdownPlugin]}
+            unwrapDisallowed
             {...props}
         />
     );
