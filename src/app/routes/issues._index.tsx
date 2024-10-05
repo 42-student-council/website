@@ -85,7 +85,8 @@ export default function Issues() {
     const [filter, setFilter] = useState(initialIssueFilter);
 
     useEffect(() => {
-        if (filter === 'archived') {
+        if (filter === initialIssueFilter()) {
+        } else if (filter === 'archived') {
             setSearchParams({ filter: 'archived' });
         } else {
             setSearchParams({});
