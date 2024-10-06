@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
 import NavBar from '~/components/NavBar';
 import { Button } from '~/components/ui/button';
-import { Link, useLoaderData } from '@remix-run/react';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
@@ -24,7 +24,7 @@ export default function Index() {
     const data = useLoaderData<LoaderData>();
 
     return (
-        <div className='flex flex-col min-h-screen'>
+        <div className='flex flex-col h-[calc(100vh-115px)]'>
             <NavBar login={data.session.login} role={data.session.role} />
 
             <div className='flex flex-col items-center justify-center flex-1'>
@@ -32,9 +32,7 @@ export default function Index() {
                     <p>STUDENT</p>
                     <p>COUNCIL</p>
                 </div>
-                <p className='text-2xl text-center text-slate-600 mb-4'>
-                    Official Website of the 42 Vienna Student Council
-                </p>
+                <p className='text-2xl text-center mb-4'>Official Website of the 42 Vienna Student Council</p>
                 <Link to='/issues'>
                     <Button size='lg'>What's up?</Button>
                 </Link>

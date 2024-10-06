@@ -1,21 +1,15 @@
-import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
-import NavBar from '~/components/NavBar';
-import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
-import { useState, useEffect, useRef } from 'react';
-import { json } from '@remix-run/node';
-import { useLoaderData, Link, useFetcher, Form } from '@remix-run/react';
-import { Button } from '~/components/ui/button';
-import { db } from '~/utils/db.server';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
+import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
+import classNames from 'classnames';
 import { ChevronLeft, Heart } from 'lucide-react';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
+import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
-import { Checkbox } from '~/components/ui/checkbox';
-import { z } from 'zod';
-import { validateForm } from '~/utils/validation';
-import classNames from 'classnames';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,9 +21,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
-import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
+import { Button } from '~/components/ui/button';
+import { Checkbox } from '~/components/ui/checkbox';
+import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
+import { db } from '~/utils/db.server';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
+import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
+import { validateForm } from '~/utils/validation';
 
 const COMMENT_MIN_LENGTH = 3;
 const COMMENT_MAX_LENGTH = 5000;
@@ -221,7 +221,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
                                         {
                                             color: embedColor,
                                             title: embedTitle,
-                                            description: `[A new comment has been posted to this issue](<${config.baseUrl}/issues/${issue?.id}>)`,
+                                            description: `[A new comment has been posted to this issue](<${config.baseUrl}/issues/${issue?.id}#${comment.id}>)`,
                                         },
                                     ],
                                     wait: true,
@@ -381,7 +381,7 @@ export default function IssueDetail() {
         setIsFormValid(isCommentTextValid);
     }, [commentText]);
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         if (!isFormValid || fetcher.formData) {
             e.preventDefault();
         }
@@ -458,7 +458,7 @@ export default function IssueDetail() {
                         {issue.description}
                     </p>
                     <div className='flex flex-col b-4'>
-                        <p className={classNames('text-s text-gray-600 pb-2')}>
+                        <p className={classNames('text-s text-muted-foreground pb-2')}>
                             {formatDate(new Date(issue.createdAt))}
                         </p>
                         <div className='flex flex-row items-center'>
@@ -474,7 +474,7 @@ export default function IssueDetail() {
                         {issue.comments.length > 0 ? (
                             <ul>
                                 {issue.comments.map((comment) => (
-                                    <li key={comment.id}>
+                                    <li key={comment.id} id={comment.id.toString()}>
                                         <IssueComment comment={comment} issue={issue} />
                                     </li>
                                 ))}
@@ -523,7 +523,7 @@ function IssueUpvoteButton({ issue, hasVoted }: { issue: SerializeFrom<Issue>; h
                 disabled={issue.archived}
                 className={classNames('hover:bg-darkred-500 w-full md:w-96', {
                     'bg-rose-500': hasVoted,
-                    'bg-slate-200': !hasVoted,
+                    'bg-secondary dark:bg-secondary-foreground': !hasVoted,
                 })}
                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
             >
@@ -577,18 +577,17 @@ function CommentForm({
     return (
         <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
             <input type='hidden' name='_action' value='post-comment' />
-            <textarea
+            <Textarea
                 name='comment_text'
                 required
                 rows={3}
-                className='w-full px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none'
                 placeholder='Add a comment...'
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 minLength={COMMENT_MIN_LENGTH}
                 maxLength={COMMENT_MAX_LENGTH}
                 ref={commentRef}
-            ></textarea>
+            />
             <div className='flex flex-col'>
                 {session.role === 'ADMIN' && (
                     <div className='flex items-center space-x-2 my-4'>
@@ -618,21 +617,22 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
 
     return (
         <div
-            className={classNames('mt-4 bg-slate-100 p-2 rounded-md', {
-                'border-2 border-gray-300 rounded': comment.official,
+            className={classNames('mt-4 bg-card p-2 rounded-md border', {
+                'border-primary': comment.official,
             })}
         >
-            {comment.official && <p className='text-lg text-gray-400 font-bold'>Student Council Answer</p>}
-            <p
-                className={classNames('text-xs text-gray-600 pb-2', {
-                    'text-slate-600': comment.official,
+            {comment.official && <p className='text-lg font-bold'>Student Council Answer</p>}
+            <Link
+                to={`#${comment.id}`}
+                className={classNames('text-xs text-muted-foreground pb-2 hover:underline', {
+                    '': comment.official,
                 })}
             >
                 {formatDate(new Date(comment.createdAt))}
-            </p>
+            </Link>
             <p
-                className={classNames('text-base text-gray-600 whitespace-pre-wrap break-words', {
-                    'text-slate-800': comment.official,
+                className={classNames('text-base whitespace-pre-wrap break-words', {
+                    '': comment.official,
                 })}
             >
                 {comment.text}
@@ -642,14 +642,14 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
                 <input type='hidden' name='issueId' value={issue.id} />
                 <input type='hidden' name='commentId' value={comment.id} />
 
-                <Button type='submit' variant='ghost' className='p-0' disabled={issue.archived}>
+                <Button type='submit' variant='ghost' className='flex gap-2 p-2' disabled={issue.archived}>
                     <Heart
-                        className={classNames('mr-2', {
+                        className={classNames('', {
                             'text-rose-500 fill-current': hasVoted,
-                            'text-black': !hasVoted,
+                            'text-muted-foreground': !hasVoted,
                         })}
                     />
-                    <p className={'font-bold text-black'}>{comment._count.votes}</p>
+                    <p className={'font-bold'}>{comment._count.votes}</p>
                 </Button>
             </upvoteFetcher.Form>
         </div>

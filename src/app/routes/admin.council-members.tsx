@@ -247,7 +247,7 @@ export default function AdminCouncilMembers() {
                             firstName={member.firstName}
                             lastName={member.lastName}
                             className={classNames('p-2 rounded', {
-                                'bg-gray-100': i % 2 === 0,
+                                'bg-secondary': i % 2 === 0,
                             })}
                         />
                     ))}

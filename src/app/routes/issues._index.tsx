@@ -1,38 +1,34 @@
 import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
-import { useLoaderData, Link, useNavigate, useSearchParams } from '@remix-run/react';
-import { requireSessionData, SessionData } from '~/utils/session.server';
-import {
-    ArrowUpAZ,
-    PlusCircle,
-    CalendarArrowDown,
-    CalendarArrowUp,
-    ArrowDown10,
-    ArrowUp10,
-    ArrowDownAZ,
-} from 'lucide-react';
-import { Button } from '~/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import NavBar from '~/components/NavBar';
-import { Warning } from '~/components/alert/Warning';
-import { useState, HTMLAttributes, useEffect } from 'react';
-import { db } from '~/utils/db.server';
-import classNames from 'classnames';
+import { Link, useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
 import {
     ColumnDef,
     ColumnSort,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
-    SortingState,
     useReactTable,
 } from '@tanstack/react-table';
-import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
-import { formatDate } from '~/utils/date';
-import { H3 } from '~/components/ui/H3';
-import { H2 } from '~/components/ui/H2';
+import classNames from 'classnames';
+import {
+    ArrowDown10,
+    ArrowDownAZ,
+    ArrowUp10,
+    ArrowUpAZ,
+    CalendarArrowDown,
+    CalendarArrowUp,
+    PlusCircle,
+} from 'lucide-react';
+import { HTMLAttributes, useEffect, useState } from 'react';
+import NavBar from '~/components/NavBar';
+import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
+import { Button } from '~/components/ui/button';
+import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { formatDate } from '~/utils/date';
+import { db } from '~/utils/db.server';
+import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
@@ -361,7 +357,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                                         key={row.id}
                                         data-state={row.getIsSelected() && 'selected'}
                                         onClick={() => navigate(`/issues/${row.original.id}`)}
-                                        className='hover:cursor-pointer hover:bg-slate-100'
+                                        className='hover:cursor-pointer'
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>
