@@ -37,26 +37,22 @@ export default function About() {
 
     return (
         <Fragment>
-            <div className='mb-8 mt-8 md:mt-16 flex flex-col items-center'>
-                <div className='flex flex-col md:flex-row md:items-center justify-center'>
-                    <div className='mx-4'>
-                        <div className='mb-4'>
-                            <H1 className='mb-8 text-center'>What is the Student Council?</H1>
-                            <p className='text-xl text-center'>
-                                We are students who have been elected by you and your peers.
-                                <br />
-                                We represent the student body in the school's decision making process.
-                                <br />
-                                This platform allows you to anonymously share thoughts, ideas, and concerns with the
-                                community.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div className='flex flex-col md:items-center justify-center'>
+                <H1 className='mb-8 text-center'>What is the Student Council?</H1>
+                <p className='text-xl text-center'>
+                    We are students who have been elected by you and your peers.
+                    <br />
+                    We represent the student body in the school's decision making process.
+                    <br />
+                    This platform allows you to anonymously share thoughts, ideas, and concerns with the community.
+                </p>
             </div>
-            <div className='flex flex-col md:flex-row md:flex-wrap md:justify-center md:mx-24'>
+            <div className='flex flex-wrap justify-center md:mx-24 mt-12'>
                 {data.councilMembers.map((member) => (
-                    <div key={member.email} className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8'>
+                    <div
+                        key={member.email}
+                        className='md:w-1/4 md:mx-20 flex flex-col items-center mb-8 last-of-type:mb-0'
+                    >
                         <Link to={`https://profile.intra.42.fr/users/${member.login}`} target='_blank'>
                             <Avatar className='rounded-xl size-60'>
                                 <AvatarImage src={member.profilePictureUrl} className='object-cover' />
@@ -64,7 +60,7 @@ export default function About() {
                             </Avatar>
                         </Link>
 
-                        <H3 className='mt-4'>
+                        <H3 className='mt-4 text-center'>
                             {member.firstName} {member.lastName}
                         </H3>
 

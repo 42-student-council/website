@@ -11,17 +11,16 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
     return (
-        <div className='flex flex-col h-[calc(100vh-115px)]'>
-            <div className='flex flex-col items-center justify-center flex-1'>
-                <div className='flex flex-col items-center mb-4 text-7xl md:text-8xl font-bold text-center'>
-                    <p>STUDENT</p>
-                    <p>COUNCIL</p>
-                </div>
-                <p className='text-2xl text-center mb-4'>Official Website of the 42 Vienna Student Council</p>
-                <Link to='/issues'>
-                    <Button size='lg'>What's up?</Button>
-                </Link>
-            </div>
+        <div className='flex flex-col items-center justify-center grow'>
+            <h1 className='mb-4 text-7xl md:text-8xl font-bold text-center'>
+                STUDENT
+                <br />
+                COUNCIL
+            </h1>
+            <p className='text-2xl text-center mb-4'>Official Website of the 42 Vienna Student Council</p>
+            <Link to='/issues'>
+                <Button size='lg'>What's up?</Button>
+            </Link>
         </div>
     );
 }

@@ -91,47 +91,44 @@ export default function Issues() {
 
     return (
         <Fragment>
-            <div className='flex flex-col items-center mt-4 mx-4'>
-                <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
-                    <H1 className='mb-4'>Issues</H1>
-                    <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='open'>Open</TabsTrigger>
-                            <TabsTrigger value='archived'>Archived</TabsTrigger>
-                        </TabsList>
-                        <div className='ml-auto flex items-center gap-2'>
-                            <Link to='/issues/new'>
-                                <Button size='md' className='gap-2'>
-                                    <PlusCircle className='h-5 w-5' />
-                                    <span className='hidden sm:inline whitespace-nowrap'>
-                                        I also have something to say!
-                                    </span>
-                                    <span className='sm:hidden whitespace-nowrap'>New Issue</span>
-                                </Button>
-                            </Link>
-                        </div>
+            <Tabs defaultValue={filter} onValueChange={(value) => setFilter(value)}>
+                <H1>Issues</H1>
+                <div className='flex justify-between items-center mt-4 mb-2'>
+                    <TabsList>
+                        <TabsTrigger value='open'>Open</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    </TabsList>
+                    <div className='ml-auto flex items-center gap-2'>
+                        <Link to='/issues/new'>
+                            <Button size='md' className='gap-2'>
+                                <PlusCircle className='h-5 w-5' />
+                                <span className='hidden sm:inline whitespace-nowrap'>
+                                    I also have something to say!
+                                </span>
+                                <span className='sm:hidden whitespace-nowrap'>New Issue</span>
+                            </Button>
+                        </Link>
                     </div>
-                    <TabsContent value='open' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
-                        <IssuesTable issues={visibleIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
-                            {visibleIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value='archived' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>
-                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 1
-                            week.
-                        </p>
-                        <IssuesTable issues={archivedIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
-                            {archivedIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </div>
+                </div>
+                <TabsContent value='open'>
+                    <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
+                    <IssuesTable issues={visibleIssues} />
+                    <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                        Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
+                        {visibleIssues.length === 1 ? 'issue' : 'issues'}
+                    </div>
+                </TabsContent>
+                <TabsContent value='archived'>
+                    <p className='text-muted-foreground pb-2'>
+                        Issues that have been resolved or have been open for 2 weeks and showed no activity for 1 week.
+                    </p>
+                    <IssuesTable issues={archivedIssues} />
+                    <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                        Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
+                        {archivedIssues.length === 1 ? 'issue' : 'issues'}
+                    </div>
+                </TabsContent>
+            </Tabs>
         </Fragment>
     );
 }

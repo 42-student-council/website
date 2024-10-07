@@ -194,83 +194,75 @@ export default function IssuesNew() {
 
     return (
         <Fragment>
-            <div className='flex justify-center'>
-                <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
-                    <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
-                    <Link to='/issues'>
-                        <Button className='mt-4'>
-                            <ChevronLeft />
-                            Go Back
-                        </Button>
-                    </Link>
-                </div>
+            <div className='flex justify-between items-start'>
+                <H1>Create a Public Issue</H1>
+                <Link to='/issues'>
+                    <Button>
+                        <ChevronLeft />
+                        Go Back
+                    </Button>
+                </Link>
             </div>
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='mb-2 md:w-3/5 text-xl'>
-                    Open an anonymous issue to discuss what's important to you with the community.
-                    <br />
-                    If you would like to share your issue with the student council only, please go to the{' '}
-                    <Link to='/contact' className='underline'>
-                        contact form
-                    </Link>
-                    .
-                </p>
-            </div>
-            <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <Label htmlFor='title' className='text-lg'>
-                        Issue Title
+            <p className='mt-4 text-xl'>
+                Open an anonymous issue to discuss what's important to you with the community.
+                <br />
+                If you would like to share your issue with the student council only, please go to the{' '}
+                <Link to='/contact' className='underline'>
+                    contact form
+                </Link>
+                .
+            </p>
+            <createIssueFetcher.Form className='mt-6' method='post' onSubmit={handleSubmit}>
+                <Label htmlFor='title' className='text-lg'>
+                    Issue Title
+                </Label>
+                <Input
+                    type='text'
+                    name='title'
+                    required
+                    autoComplete='off'
+                    minLength={TITLE_MIN_LENGTH}
+                    maxLength={TITLE_MAX_LENGTH}
+                    className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
+                    onChange={(e) => setTitle(e.target.value)}
+                    defaultValue={title}
+                    ref={titleRef}
+                />
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+
+                <div className='mt-4'>
+                    <Label htmlFor='description' className='text-lg'>
+                        Issue Description
                     </Label>
-                    <Input
-                        type='text'
-                        name='title'
+                    <Textarea
+                        placeholder="Please describe your issue or suggestion here...
+(Currently we don't support markdown for public issues, but we will in the future.)"
+                        name='description'
+                        className={classNames('h-48', {
+                            'border-red-600': !!createIssueFetcher.data?.errors?.description,
+                        })}
                         required
                         autoComplete='off'
-                        minLength={TITLE_MIN_LENGTH}
-                        maxLength={TITLE_MAX_LENGTH}
-                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={title}
-                        ref={titleRef}
+                        minLength={DESCRIPTION_MIN_LENGTH}
+                        maxLength={DESCRIPTION_MAX_LENGTH}
+                        onChange={(e) => setDescription(e.target.value)}
+                        defaultValue={description}
+                        ref={descriptionRef}
                     />
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.description}</FormErrorMessage>
+                </div>
 
-                    <div className='mt-4'>
-                        <Label htmlFor='description' className='text-lg'>
-                            Issue Description
-                        </Label>
-                        <Textarea
-                            placeholder="Please describe your issue or suggestion here...
-(Currently we don't support markdown for public issues, but we will in the future.)"
-                            name='description'
-                            className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
-                            })}
-                            required
-                            autoComplete='off'
-                            minLength={DESCRIPTION_MIN_LENGTH}
-                            maxLength={DESCRIPTION_MAX_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            defaultValue={description}
-                            ref={descriptionRef}
-                        />
-                        <FormErrorMessage className='mt-2'>
-                            {createIssueFetcher.data?.errors?.description}
-                        </FormErrorMessage>
-                    </div>
+                <Info title='Note' className='mt-4'>
+                    To maintain complete anonymity, the author of an issue does not get stored.
+                    <br />
+                    Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
+                </Info>
 
-                    <Info title='Note' className='mt-4 md:w-3/5'>
-                        To maintain complete anonymity, the author of an issue does not get stored.
-                        <br />
-                        Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
-                    </Info>
-
-                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
-                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
-                    </Button>
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
-                </createIssueFetcher.Form>
-            </div>
+                <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
+                    {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                </Button>
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
+            </createIssueFetcher.Form>
         </Fragment>
     );
 }
