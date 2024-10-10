@@ -70,7 +70,7 @@ function InnerLayout({ ssrTheme, children }: { ssrTheme: boolean; children: Reac
                 <Meta />
                 <Links />
             </head>
-            <body className='min-h-screen flex flex-col subpixel-antialiased'>
+            <body className='min-h-screen flex flex-col subpixel-antialiased' suppressHydrationWarning>
                 {children}
                 <ScrollRestoration />
                 <PreventFlashOnWrongTheme ssrTheme={ssrTheme} />

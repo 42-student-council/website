@@ -484,9 +484,9 @@ export default function IssueDetail() {
                 </Info>
             </div>
             <div className='mt-8'>
-                <h2 className='text-2xl font-bold'>Comments</h2>
+                <h2 className='text-2xl font-bold mb-3'>Comments</h2>
                 {issue.comments.length > 0 ? (
-                    <ul>
+                    <ul className='flex flex-col gap-4'>
                         {issue.comments.map((comment) => (
                             <li key={comment.id} id={comment.id.toString()}>
                                 <IssueComment comment={comment} issue={issue} />
