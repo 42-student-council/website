@@ -70,7 +70,7 @@ function InnerLayout({ ssrTheme, children }: { ssrTheme: boolean; children: Reac
                 <Meta />
                 <Links />
             </head>
-            <body className='h-screen' suppressHydrationWarning>
+            <body className='min-h-screen flex flex-col subpixel-antialiased'>
                 {children}
                 <ScrollRestoration />
                 <PreventFlashOnWrongTheme ssrTheme={ssrTheme} />
@@ -91,9 +91,9 @@ export function ErrorBoundary() {
                 <Meta />
                 <Links />
             </head>
-            <body>
+            <body className='min-h-screen flex flex-col subpixel-antialiased'>
                 <NavBar login='zekao?' role='USER' />
-                <div className='flex items-center justify-center h-screen'>
+                <div className='flex items-center justify-center grow'>
                     {isRouteErrorResponse(error) ? (
                         <div className='flex flex-col items-center'>
                             <H1>{error.status}</H1>

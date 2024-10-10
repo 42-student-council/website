@@ -1,13 +1,9 @@
 import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
 import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { ChevronLeft, Heart } from 'lucide-react';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Heart } from 'lucide-react';
+import { Fragment } from 'react';
 import { z } from 'zod';
-import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
-import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
 import {
@@ -22,12 +18,8 @@ import {
     AlertDialogTrigger,
 } from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
-import { Textarea } from '~/components/ui/textarea';
-import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
-import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { requireAdminSession, requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
@@ -220,85 +212,72 @@ export default function IssueDetail() {
     }
 
     return (
-        <div>
-            <NavBar login={session.login} role={session.role} />
-            <div className='md:flex md:justify-center'>
-                <div className='md:w-3/5 p-4'>
-                    <div className='flex flex-row justify-between'>
-                        <H1>Poll #{poll.id}</H1>
-                    </div>
-                    {session.role === 'ADMIN' && (
-                        <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
-                            <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
-                            <div className='flex flex-col justify-between items-center m-4'>
-                                <div className='flex items-center'>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button className='bg-rose-500 hover:bg-rose-600'>
-                                                {poll.archived ? 'Unarchive' : 'Archive'}
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    {poll.archived
-                                                        ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
-                                                        : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <Form method='POST'>
-                                                    <input
-                                                        type='hidden'
-                                                        name='_action'
-                                                        value={poll.archived ? 'unarchive' : 'archive'}
-                                                    />
-                                                    <AlertDialogAction asChild>
-                                                        <Button type='submit'>
-                                                            {poll.archived ? 'Unarchive' : 'Archive'}
-                                                        </Button>
-                                                    </AlertDialogAction>
-                                                </Form>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                    <p className='text-center text-rose-800 font-bold ml-4'>
-                                        {poll.archived ? 'This issue is closed.' : 'This issue is open for discussion.'}
-                                    </p>
-                                </div>
-                            </div>
+        <Fragment>
+            <H1>Poll #{poll.id}</H1>
+            {session.role === 'ADMIN' && (
+                <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
+                    <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
+                    <div className='flex flex-col justify-between items-center m-4'>
+                        <div className='flex items-center'>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className='bg-rose-500 hover:bg-rose-600'>
+                                        {poll.archived ? 'Unarchive' : 'Archive'}
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {poll.archived
+                                                ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
+                                                : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <Form method='POST'>
+                                            <input
+                                                type='hidden'
+                                                name='_action'
+                                                value={poll.archived ? 'unarchive' : 'archive'}
+                                            />
+                                            <AlertDialogAction asChild>
+                                                <Button type='submit'>{poll.archived ? 'Unarchive' : 'Archive'}</Button>
+                                            </AlertDialogAction>
+                                        </Form>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <p className='text-center text-rose-800 font-bold ml-4'>
+                                {poll.archived ? 'This issue is closed.' : 'This issue is open for discussion.'}
+                            </p>
                         </div>
-                    )}
-                    <div className='mt-4'>
-                        <H2 className='hyphens-auto break-words'>{poll.title}</H2>
-                    </div>
-                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
-                        {poll.description}
-                    </p>
-                    <div className='flex flex-col b-4'>
-                        <p className={classNames('text-s text-muted-foreground pb-2')}>
-                            {formatDate(new Date(poll.createdAt))}
-                        </p>
-                    </div>
-                    <div className='mt-8'>
-                        <h2 className='text-2xl font-bold'>Options</h2>
-                        {poll.options.length > 0 ? (
-                            <ul>
-                                {poll.options.map((option) => (
-                                    <li key={option.id} id={option.id.toString()}>
-                                        <PollOption option={option} poll={poll} />
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No options yet.</p>
-                        )}
                     </div>
                 </div>
+            )}
+            <H2 className='mt-4 hyphens-auto break-words'>{poll.title}</H2>
+            <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
+                {poll.description}
+            </p>
+            <div className='flex flex-col b-4'>
+                <p className='text-s text-muted-foreground pb-2'>{formatDate(new Date(poll.createdAt))}</p>
             </div>
-        </div>
+            <div className='mt-8'>
+                <h2 className='text-2xl font-bold'>Options</h2>
+                {poll.options.length > 0 ? (
+                    <ul>
+                        {poll.options.map((option) => (
+                            <li key={option.id} id={option.id.toString()}>
+                                <PollOption option={option} poll={poll} />
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No options yet.</p>
+                )}
+            </div>
+        </Fragment>
     );
 }
 
@@ -308,11 +287,11 @@ function PollOption({ option, poll }: { option: SerializeFrom<PollOption>; poll:
     const hasVoted = option.votes.length !== 0;
 
     return (
-        <div className={classNames('mt-4 bg-card p-2 rounded-md border', {})}>
-            <Link to={`#${option.id}`} className={classNames('text-xs text-muted-foreground pb-2 hover:underline', {})}>
+        <div className='mt-4 bg-card p-2 rounded-md border'>
+            <Link to={`#${option.id}`} className='text-xs text-muted-foreground pb-2 hover:underline'>
                 {formatDate(new Date(option.createdAt))}
             </Link>
-            <p className={classNames('text-base whitespace-pre-wrap break-words', {})}>{option.text}</p>
+            <p className='text-base whitespace-pre-wrap break-words'>{option.text}</p>
             <upvoteFetcher.Form method='post' className='flex w-full'>
                 <input type='hidden' name='_action' value='pollOptionVote' />
                 <input type='hidden' name='pollId' value={poll.id} />

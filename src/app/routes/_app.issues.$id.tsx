@@ -3,10 +3,9 @@ import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft, Heart } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
@@ -386,159 +385,153 @@ export default function IssueDetail() {
     }
 
     return (
-        <div>
-            <NavBar login={session.login} role={session.role} />
-            <div className='md:flex md:justify-center'>
-                <div className='md:w-3/5 p-4'>
-                    <div className='flex flex-row justify-between'>
-                        <H1>Issue #{issue.id}</H1>
-                        <BackButton archived={issue.archived} />
-                    </div>
-                    {session.role === 'ADMIN' && (
-                        <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
-                            <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
-                            <div className='flex flex-col justify-between items-center m-4'>
-                                <div className='flex items-center'>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button className='bg-rose-500 hover:bg-rose-600'>
-                                                {issue.archived ? 'Unarchive' : 'Archive'}
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    {issue.archived
-                                                        ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
-                                                        : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <Form method='POST'>
-                                                    <input
-                                                        type='hidden'
-                                                        name='_action'
-                                                        value={issue.archived ? 'unarchive' : 'archive'}
-                                                    />
-                                                    <AlertDialogAction asChild>
-                                                        <Button type='submit'>
-                                                            {issue.archived ? 'Unarchive' : 'Archive'}
-                                                        </Button>
-                                                    </AlertDialogAction>
-                                                </Form>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                    <p className='text-center text-rose-800 font-bold ml-4'>
-                                        {issue.archived
-                                            ? 'This issue is closed.'
-                                            : 'This issue is open for discussion.'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <div className='mt-4'>
-                        <H2 className='hyphens-auto break-words'>{issue.title}</H2>
-                    </div>
-                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
-                        {issue.description}
-                    </p>
-                    <div className='flex flex-col b-4'>
-                        <p className={classNames('text-s text-muted-foreground pb-2')}>
-                            {formatDate(new Date(issue.createdAt))}
-                        </p>
-                        <div className='flex flex-row items-center'>
-                            <fetcher.Form method='post' className='flex w-full'>
-                                <input type='hidden' name='id' value={issue.id} />
-
-                                <Button
-                                    type='submit'
-                                    disabled={issue.archived}
-                                    className={classNames('hover:bg-darkred-500 w-full md:w-96', {
-                                        'bg-rose-500': hasVoted,
-                                        'bg-secondary dark:bg-secondary-foreground': !hasVoted,
-                                    })}
-                                    title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
-                                >
-                                    <Heart
-                                        className={classNames('mr-2', {
-                                            'text-white fill-current': hasVoted,
-                                            'text-black': !hasVoted,
-                                        })}
-                                    />
-                                    <p
-                                        className={classNames('font-bold', {
-                                            'text-white': hasVoted,
-                                            'text-black': !hasVoted,
-                                        })}
-                                    >
-                                        {issue._count.votes}{' '}
-                                        {issue._count.votes == 1
-                                            ? 'Student upvoted this issue'
-                                            : 'Students upvoted this issue'}
-                                    </p>{' '}
-                                </Button>
-                            </fetcher.Form>
-                        </div>
-                        <Info title='Note' className='mt-4 md:w-3/5'>
-                            To ensure every student can only vote once, each vote gets stored with the user ID in a
-                            database, making votes <strong>not fully anonymous</strong> to the student council.
-                        </Info>
-                    </div>
-                    <div className='mt-8'>
-                        <h2 className='text-2xl font-bold'>Comments</h2>
-                        {issue.comments.length > 0 ? (
-                            <ul>
-                                {issue.comments.map((comment) => (
-                                    <li key={comment.id} id={comment.id.toString()}>
-                                        <IssueComment comment={comment} issue={issue} />
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No comments yet.</p>
-                        )}
-                        {!issue.archived && (
-                            <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
-                                <input type='hidden' name='_action' value='post-comment' />
-                                <Textarea
-                                    name='comment_text'
-                                    required
-                                    rows={3}
-                                    placeholder='Add a comment...'
-                                    value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
-                                    minLength={COMMENT_MIN_LENGTH}
-                                    maxLength={COMMENT_MAX_LENGTH}
-                                    ref={commentRef}
-                                />
-                                <div className='flex flex-col'>
-                                    {session.role === 'ADMIN' && (
-                                        <div className='flex items-center space-x-2 my-4'>
-                                            <Checkbox name='official_statement' id='official_statement' />
-                                            <label
-                                                htmlFor='official_statement'
-                                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                            >
-                                                Post as official statement
-                                            </label>
-                                        </div>
-                                    )}
-
-                                    <Button type='submit' className='mt-2' invalid={!isFormValid}>
-                                        Comment
+        <Fragment>
+            <div className='flex flex-row justify-between items-start'>
+                <H1>Issue #{issue.id}</H1>
+                <Link to='/issues'>
+                    <Button>
+                        <ChevronLeft />
+                        Go Back
+                    </Button>
+                </Link>
+            </div>
+            {session.role === 'ADMIN' && (
+                <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
+                    <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
+                    <div className='flex flex-col justify-between items-center m-4'>
+                        <div className='flex items-center'>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className='bg-rose-500 hover:bg-rose-600'>
+                                        {issue.archived ? 'Unarchive' : 'Archive'}
                                     </Button>
-                                </div>
-                                <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
-                            </fetcher.Form>
-                        )}
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            {issue.archived
+                                                ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
+                                                : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <Form method='POST'>
+                                            <input
+                                                type='hidden'
+                                                name='_action'
+                                                value={issue.archived ? 'unarchive' : 'archive'}
+                                            />
+                                            <AlertDialogAction asChild>
+                                                <Button type='submit'>
+                                                    {issue.archived ? 'Unarchive' : 'Archive'}
+                                                </Button>
+                                            </AlertDialogAction>
+                                        </Form>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <p className='text-center text-rose-800 font-bold ml-4'>
+                                {issue.archived ? 'This issue is closed.' : 'This issue is open for discussion.'}
+                            </p>
+                        </div>
                     </div>
                 </div>
+            )}
+            <div className='mt-4'>
+                <H2 className='hyphens-auto break-words'>{issue.title}</H2>
             </div>
-        </div>
+            <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
+                {issue.description}
+            </p>
+            <div className='flex flex-col b-4'>
+                <p className='text-s text-muted-foreground pb-2'>{formatDate(new Date(issue.createdAt))}</p>
+                <div className='flex flex-row items-center'>
+                    <fetcher.Form method='post' className='flex w-full'>
+                        <input type='hidden' name='id' value={issue.id} />
+
+                        <Button
+                            type='submit'
+                            disabled={issue.archived}
+                            className={classNames('hover:bg-darkred-500 w-full md:w-96', {
+                                'bg-rose-500': hasVoted,
+                                'bg-secondary dark:bg-secondary-foreground': !hasVoted,
+                            })}
+                            title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
+                        >
+                            <Heart
+                                className={classNames('mr-2', {
+                                    'text-white fill-current': hasVoted,
+                                    'text-black': !hasVoted,
+                                })}
+                            />
+                            <p
+                                className={classNames('font-bold', {
+                                    'text-white': hasVoted,
+                                    'text-black': !hasVoted,
+                                })}
+                            >
+                                {issue._count.votes}{' '}
+                                {issue._count.votes == 1 ? 'Student upvoted this issue' : 'Students upvoted this issue'}
+                            </p>{' '}
+                        </Button>
+                    </fetcher.Form>
+                </div>
+                <Info title='Note' className='mt-4 md:w-3/5'>
+                    To ensure every student can only vote once, each vote gets stored with the user ID in a database,
+                    making votes <strong>not fully anonymous</strong> to the student council.
+                </Info>
+            </div>
+            <div className='mt-8'>
+                <h2 className='text-2xl font-bold'>Comments</h2>
+                {issue.comments.length > 0 ? (
+                    <ul>
+                        {issue.comments.map((comment) => (
+                            <li key={comment.id} id={comment.id.toString()}>
+                                <IssueComment comment={comment} issue={issue} />
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No comments yet.</p>
+                )}
+                {!issue.archived && (
+                    <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+                        <input type='hidden' name='_action' value='post-comment' />
+                        <Textarea
+                            name='comment_text'
+                            required
+                            rows={3}
+                            placeholder='Add a comment...'
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            minLength={COMMENT_MIN_LENGTH}
+                            maxLength={COMMENT_MAX_LENGTH}
+                            ref={commentRef}
+                        />
+                        <div className='flex flex-col'>
+                            {session.role === 'ADMIN' && (
+                                <div className='flex items-center space-x-2 my-4'>
+                                    <Checkbox name='official_statement' id='official_statement' />
+                                    <label
+                                        htmlFor='official_statement'
+                                        className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                                    >
+                                        Post as official statement
+                                    </label>
+                                </div>
+                            )}
+
+                            <Button type='submit' className='mt-2' invalid={!isFormValid}>
+                                Comment
+                            </Button>
+                        </div>
+                        <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
+                    </fetcher.Form>
+                )}
+            </div>
+        </Fragment>
     );
 }
 
@@ -563,26 +556,15 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
 
     return (
         <div
-            className={classNames('mt-4 bg-card p-2 rounded-md border', {
+            className={classNames('bg-card p-2 rounded-md border', {
                 'border-primary': comment.official,
             })}
         >
             {comment.official && <p className='text-lg font-bold'>Student Council Answer</p>}
-            <Link
-                to={`#${comment.id}`}
-                className={classNames('text-xs text-muted-foreground pb-2 hover:underline', {
-                    '': comment.official,
-                })}
-            >
+            <Link to={`#${comment.id}`} className='text-xs text-muted-foreground pb-2 hover:underline'>
                 {formatDate(new Date(comment.createdAt))}
             </Link>
-            <p
-                className={classNames('text-base whitespace-pre-wrap break-words', {
-                    '': comment.official,
-                })}
-            >
-                {comment.text}
-            </p>
+            <p className='text-base whitespace-pre-wrap break-words'>{comment.text}</p>
             <upvoteFetcher.Form method='post' className='flex w-full'>
                 <input type='hidden' name='_action' value='commentVote' />
                 <input type='hidden' name='issueId' value={issue.id} />

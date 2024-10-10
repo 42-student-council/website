@@ -18,7 +18,7 @@ import {
     CalendarArrowUp,
     PlusCircle,
 } from 'lucide-react';
-import { HTMLAttributes, useEffect, useState } from 'react';
+import { Fragment, HTMLAttributes, useEffect, useState } from 'react';
 import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
@@ -28,15 +28,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
     const issues = await db.issue.findMany({
         select: {
             archived: true,
@@ -54,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session } satisfies LoaderData;
+    return { issues } satisfies LoaderData;
 }
 
 type Issue = {
@@ -69,10 +66,10 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData };
+type LoaderData = { issues: Issue[] };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues } = useLoaderData<LoaderData>();
     const archivedIssues = issues.filter((issue) => issue.archived);
     const visibleIssues = issues.filter((issue) => !issue.archived);
 
@@ -94,50 +91,46 @@ export default function Issues() {
     }, [filter, setSearchParams]);
 
     return (
-        <div>
-            <NavBar login={session.login} role={session.role} />
-            <div className='flex flex-col items-center mt-4 mx-4'>
-                <Tabs defaultValue={filter} className='w-full md:w-3/5' onValueChange={(value) => setFilter(value)}>
-                    <H1 className='mb-4'>Issues</H1>
-                    <div className='flex justify-between items-center mb-2'>
-                        <TabsList>
-                            <TabsTrigger value='open'>Open</TabsTrigger>
-                            <TabsTrigger value='archived'>Archived</TabsTrigger>
-                        </TabsList>
-                        <div className='ml-auto flex items-center gap-2'>
-                            <Link to='/issues/new'>
-                                <Button size='md' className='gap-2'>
-                                    <PlusCircle className='h-5 w-5' />
-                                    <span className='hidden sm:inline whitespace-nowrap'>
-                                        I also have something to say!
-                                    </span>
-                                    <span className='sm:hidden whitespace-nowrap'>New Issue</span>
-                                </Button>
-                            </Link>
-                        </div>
+        <Fragment>
+            <Tabs defaultValue={filter} onValueChange={(value) => setFilter(value)}>
+                <H1>Issues</H1>
+                <div className='flex justify-between items-center mt-4 mb-2'>
+                    <TabsList>
+                        <TabsTrigger value='open'>Open</TabsTrigger>
+                        <TabsTrigger value='archived'>Archived</TabsTrigger>
+                    </TabsList>
+                    <div className='ml-auto flex items-center gap-2'>
+                        <Link to='/issues/new'>
+                            <Button size='md' className='gap-2'>
+                                <PlusCircle className='h-5 w-5' />
+                                <span className='hidden sm:inline whitespace-nowrap'>
+                                    I also have something to say!
+                                </span>
+                                <span className='sm:hidden whitespace-nowrap'>New Issue</span>
+                            </Button>
+                        </Link>
                     </div>
-                    <TabsContent value='open' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
-                        <IssuesTable issues={visibleIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
-                            {visibleIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value='archived' className='flex flex-col justify-center'>
-                        <p className='text-muted-foreground pb-2'>
-                            Issues that have been resolved or have been open for 2 weeks and showed no activity for 1
-                            week.
-                        </p>
-                        <IssuesTable issues={archivedIssues} />
-                        <div className='text-xs text-muted-foreground pt-2 pl-2'>
-                            Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
-                            {archivedIssues.length === 1 ? 'issue' : 'issues'}
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </div>
-        </div>
+                </div>
+                <TabsContent value='open'>
+                    <p className='text-muted-foreground pb-2'>This is what students are currently talking about.</p>
+                    <IssuesTable issues={visibleIssues} />
+                    <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                        Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
+                        {visibleIssues.length === 1 ? 'issue' : 'issues'}
+                    </div>
+                </TabsContent>
+                <TabsContent value='archived'>
+                    <p className='text-muted-foreground pb-2'>
+                        Issues that have been resolved or have been open for 2 weeks and showed no activity for 1 week.
+                    </p>
+                    <IssuesTable issues={archivedIssues} />
+                    <div className='text-xs text-muted-foreground pt-2 pl-2'>
+                        Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
+                        {archivedIssues.length === 1 ? 'issue' : 'issues'}
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </Fragment>
     );
 }
 
@@ -383,7 +376,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 
 export function ErrorBoundary() {
     return (
-        <div>
+        <Fragment>
             <NavBar login='zekao?' role='USER' />
             <div className='mt-4 mx-4'>
                 <Warning title='Error'>
@@ -397,6 +390,6 @@ export function ErrorBoundary() {
                     </p>
                 </Warning>
             </div>
-        </div>
+        </Fragment>
     );
 }
