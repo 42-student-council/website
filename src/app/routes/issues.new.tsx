@@ -1,24 +1,24 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, useFetcher, useNavigate, Link, useLoaderData } from '@remix-run/react';
+import { json, Link, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
+import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
+import { MarkdownBadge } from '~/components/Markdown';
 import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
+import { config } from '~/utils/config.server';
 import { db } from '~/utils/db.server';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { requireSessionData, SessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
-import { ChevronLeft } from 'lucide-react';
-import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
-import { config } from '~/utils/config.server';
 
 const TITLE_MIN_LENGTH = 5;
 const TITLE_MAX_LENGTH = 50;
@@ -203,7 +203,7 @@ export default function IssuesNew() {
         <div>
             <NavBar login={data.session.login} role={data.session.role} />
             <div className='flex justify-center'>
-                <div className='flex justify-between mx-4 md:mx-0 md:w-3/5'>
+                <div className='flex justify-between mx-4 md:mx-0 w-full md:w-3/5'>
                     <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
                     <Link to='/issues'>
                         <Button className='mt-4'>
@@ -213,19 +213,24 @@ export default function IssuesNew() {
                     </Link>
                 </div>
             </div>
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='mb-2 md:w-3/5 text-xl'>
+            <div className='md:flex md:justify-center md:flex-col mx-4 md:mx-auto md:w-3/5'>
+                <p className='mb-2 text-xl'>
                     Open an anonymous issue to discuss what's important to you with the community.
-                    <br />
-                    If you would like to share your issue with the student council only, please go to the{' '}
+                </p>
+                <p className='mb-2 text-xl'>
+                    If you would like to share your issue with the Student Council only, please use the{' '}
                     <Link to='/contact' className='underline'>
                         contact form
                     </Link>
                     .
                 </p>
+                <Info title='Note' className='my-3'>
+                    To maintain complete anonymity, the author of an issue does not get stored. Consequently,{' '}
+                    <strong>you won't be able to edit</strong> an issue after submitting it.
+                </Info>
             </div>
             <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='md:w-3/5' method='post' onSubmit={handleSubmit}>
+                <createIssueFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
                     <Label htmlFor='title' className='text-lg'>
                         Issue Title
                     </Label>
@@ -242,14 +247,12 @@ export default function IssuesNew() {
                         ref={titleRef}
                     />
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
-
                     <div className='mt-4'>
                         <Label htmlFor='description' className='text-lg'>
                             Issue Description
                         </Label>
                         <Textarea
-                            placeholder="Please describe your issue or suggestion here...
-(Currently we don't support markdown for public issues, but we will in the future.)"
+                            placeholder='Please describe your issue or suggestion here...'
                             name='description'
                             className={classNames('h-48', {
                                 'border-red-600': !!createIssueFetcher.data?.errors?.description,
@@ -266,16 +269,12 @@ export default function IssuesNew() {
                             {createIssueFetcher.data?.errors?.description}
                         </FormErrorMessage>
                     </div>
-
-                    <Info title='Note' className='mt-4 md:w-3/5'>
-                        To maintain complete anonymity, the author of an issue does not get stored.
-                        <br />
-                        Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
-                    </Info>
-
-                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
-                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
-                    </Button>
+                    <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
+                        <MarkdownBadge />
+                        <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData}>
+                            {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                        </Button>
+                    </div>
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
                 </createIssueFetcher.Form>
             </div>
