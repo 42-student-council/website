@@ -214,7 +214,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function IssueDetail() {
     const { poll, session } = useLoaderData<LoaderData>();
-    const [popupMessage, setPopupMessage] = useState(null);
 
     if (!poll) {
         return <p>Loading...</p>;
@@ -299,16 +298,6 @@ export default function IssueDetail() {
                     </div>
                 </div>
             </div>
-            {popupMessage && (
-                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-                    <div className='bg-white p-6 rounded shadow-lg'>
-                        <p>{popupMessage}</p>
-                        <Button onClick={() => setPopupMessage(null)} className='mt-4'>
-                            Close
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

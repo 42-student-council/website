@@ -339,7 +339,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 export default function IssueDetail() {
     const { issue, session, hasVoted } = useLoaderData<LoaderData>();
     const fetcher = useFetcher<{ errors?: { message?: string } }>();
-    const [popupMessage, setPopupMessage] = useState(null);
     const formRef = useRef(null);
     const [commentText, setCommentText] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
@@ -539,16 +538,6 @@ export default function IssueDetail() {
                     </div>
                 </div>
             </div>
-            {popupMessage && (
-                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-                    <div className='bg-white p-6 rounded shadow-lg'>
-                        <p>{popupMessage}</p>
-                        <Button onClick={() => setPopupMessage(null)} className='mt-4'>
-                            Close
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
