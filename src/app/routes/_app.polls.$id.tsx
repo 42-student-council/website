@@ -2,7 +2,7 @@ import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-ru
 import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { Heart } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { z } from 'zod';
 import { H1 } from '~/components/ui/H1';
 import { H2 } from '~/components/ui/H2';
@@ -206,7 +206,6 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function IssueDetail() {
     const { poll, session } = useLoaderData<LoaderData>();
-    const [popupMessage, setPopupMessage] = useState(null);
 
     if (!poll) {
         return <p>Loading...</p>;
@@ -278,17 +277,6 @@ export default function IssueDetail() {
                     <p>No options yet.</p>
                 )}
             </div>
-
-            {popupMessage && (
-                <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-                    <div className='bg-white p-6 rounded shadow-lg'>
-                        <p>{popupMessage}</p>
-                        <Button onClick={() => setPopupMessage(null)} className='mt-4'>
-                            Close
-                        </Button>
-                    </div>
-                </div>
-            )}
         </Fragment>
     );
 }

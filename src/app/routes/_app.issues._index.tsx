@@ -82,7 +82,8 @@ export default function Issues() {
     const [filter, setFilter] = useState(initialIssueFilter);
 
     useEffect(() => {
-        if (filter === 'archived') {
+        if (filter === initialIssueFilter()) {
+        } else if (filter === 'archived') {
             setSearchParams({ filter: 'archived' });
         } else {
             setSearchParams({});
@@ -325,51 +326,49 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 
     return (
         <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
-            <div>
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => {
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && 'selected'}
-                                        onClick={() => navigate(`/issues/${row.original.id}`)}
-                                        className='hover:cursor-pointer'
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
                                 );
-                            })
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className='h-24 text-center'>
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                            })}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => {
+                            return (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && 'selected'}
+                                    onClick={() => navigate(`/issues/${row.original.id}`)}
+                                    className='hover:cursor-pointer'
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className='h-24 text-center'>
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
             <ScrollBar orientation='horizontal' />
         </ScrollArea>
     );
