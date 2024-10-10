@@ -16,7 +16,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Admin() {
     return (
-        <div>
+        <div className='px-4 mx-auto max-w-[calc(1280px-2rem)] '>
             <AdminCrumb />
             <Outlet />
         </div>
@@ -32,7 +32,7 @@ function AdminCrumb() {
             if (!item.length) return acc;
 
             const href = `/${pathname.slice(1, index + 1).join('/')}`;
-            const label = item.charAt(0).toUpperCase() + item.slice(1);
+            const label = item.charAt(0).toUpperCase() + item.slice(1).replaceAll('-', ' ');
 
             acc.push({ label, href });
             return acc;
@@ -43,11 +43,11 @@ function AdminCrumb() {
     breadcrumbs.unshift({ label: 'Home', href: '/' });
 
     return (
-        <Breadcrumb className='bg-white rounded-lg shadow m-4 p-2'>
+        <Breadcrumb className='p-3 my-4 rounded-lg border bg-card'>
             <BreadcrumbList>
                 {breadcrumbs.map((crumb, index) => (
                     <div key={crumb.href}>
-                        <BreadcrumbItem>
+                        <BreadcrumbItem className='capitalize'>
                             {index === breadcrumbs.length - 1 ? (
                                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                             ) : (
