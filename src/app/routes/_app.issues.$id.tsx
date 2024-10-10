@@ -1,4 +1,4 @@
-import { json, LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
+import { json, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Form, Link, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft, Heart } from 'lucide-react';
@@ -336,9 +336,14 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export default function IssueDetail() {
-    const { issue, session, hasVoted } = useLoaderData<LoaderData>();
+    const {
+        issue,
+        session: { createdAt, ...restSession },
+        hasVoted,
+    } = useLoaderData<LoaderData>();
+    const session = { ...restSession, createdAt: new Date(createdAt) };
     const fetcher = useFetcher<{ errors?: { message?: string } }>();
-    const formRef = useRef(null);
+    const formRef = useRef<HTMLFormElement>(null);
     const [commentText, setCommentText] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -358,7 +363,7 @@ export default function IssueDetail() {
 
     useEffect(() => {
         if (commentRef.current) {
-            commentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
         }
     }, [commentText]);
 
@@ -448,35 +453,7 @@ export default function IssueDetail() {
             <div className='flex flex-col b-4'>
                 <p className='text-s text-muted-foreground pb-2'>{formatDate(new Date(issue.createdAt))}</p>
                 <div className='flex flex-row items-center'>
-                    <fetcher.Form method='post' className='flex w-full'>
-                        <input type='hidden' name='id' value={issue.id} />
-
-                        <Button
-                            type='submit'
-                            disabled={issue.archived}
-                            className={classNames('hover:bg-darkred-500 w-full md:w-96', {
-                                'bg-rose-500': hasVoted,
-                                'bg-secondary dark:bg-secondary-foreground': !hasVoted,
-                            })}
-                            title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
-                        >
-                            <Heart
-                                className={classNames('mr-2', {
-                                    'text-white fill-current': hasVoted,
-                                    'text-black': !hasVoted,
-                                })}
-                            />
-                            <p
-                                className={classNames('font-bold', {
-                                    'text-white': hasVoted,
-                                    'text-black': !hasVoted,
-                                })}
-                            >
-                                {issue._count.votes}{' '}
-                                {issue._count.votes == 1 ? 'Student upvoted this issue' : 'Students upvoted this issue'}
-                            </p>{' '}
-                        </Button>
-                    </fetcher.Form>
+                    <IssueUpvoteButton issue={issue} hasVoted={hasVoted} />
                 </div>
                 <Info title='Note' className='mt-4 md:w-3/5'>
                     To ensure every student can only vote once, each vote gets stored with the user ID in a database,
@@ -497,38 +474,16 @@ export default function IssueDetail() {
                     <p>No comments yet.</p>
                 )}
                 {!issue.archived && (
-                    <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
-                        <input type='hidden' name='_action' value='post-comment' />
-                        <Textarea
-                            name='comment_text'
-                            required
-                            rows={3}
-                            placeholder='Add a comment...'
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            minLength={COMMENT_MIN_LENGTH}
-                            maxLength={COMMENT_MAX_LENGTH}
-                            ref={commentRef}
-                        />
-                        <div className='flex flex-col'>
-                            {session.role === 'ADMIN' && (
-                                <div className='flex items-center space-x-2 my-4'>
-                                    <Checkbox name='official_statement' id='official_statement' />
-                                    <label
-                                        htmlFor='official_statement'
-                                        className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                                    >
-                                        Post as official statement
-                                    </label>
-                                </div>
-                            )}
-
-                            <Button type='submit' className='mt-2' invalid={!isFormValid}>
-                                Comment
-                            </Button>
-                        </div>
-                        <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
-                    </fetcher.Form>
+                    <CommentForm
+                        issueId={issue.id}
+                        session={session}
+                        formRef={formRef}
+                        commentText={commentText}
+                        setCommentText={setCommentText}
+                        isFormValid={isFormValid}
+                        handleSubmit={handleSubmit}
+                        fetcher={fetcher}
+                    />
                 )}
             </div>
         </Fragment>
@@ -546,6 +501,105 @@ function BackButton({ archived }: { archived: boolean }) {
                 {label}
             </Button>
         </Link>
+    );
+}
+
+function IssueUpvoteButton({ issue, hasVoted }: { issue: SerializeFrom<Issue>; hasVoted: boolean }) {
+    const fetcher = useFetcher<{ message?: string }>();
+
+    return (
+        <fetcher.Form method='post' className='flex w-full'>
+            <input type='hidden' name='id' value={issue.id} />
+
+            <Button
+                type='submit'
+                disabled={issue.archived}
+                className={classNames('hover:bg-darkred-500 w-full md:w-96', {
+                    'bg-rose-500': hasVoted,
+                    'bg-secondary dark:bg-secondary-foreground': !hasVoted,
+                })}
+                title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
+            >
+                <Heart
+                    className={classNames('mr-2', {
+                        'text-white fill-current': hasVoted,
+                        'text-black': !hasVoted,
+                    })}
+                />
+                <p
+                    className={classNames('font-bold', {
+                        'text-white': hasVoted,
+                        'text-black': !hasVoted,
+                    })}
+                >
+                    {issue._count.votes}{' '}
+                    {issue._count.votes == 1 ? 'Student upvoted this issue' : 'Students upvoted this issue'}
+                </p>{' '}
+            </Button>
+        </fetcher.Form>
+    );
+}
+
+function CommentForm({
+    issueId,
+    session,
+    formRef,
+    commentText,
+    setCommentText,
+    isFormValid,
+    handleSubmit,
+    fetcher,
+}: {
+    issueId: number;
+    session: SessionData;
+    formRef: React.RefObject<HTMLFormElement>;
+    commentText: string;
+    setCommentText: React.Dispatch<React.SetStateAction<string>>;
+    isFormValid: boolean;
+    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    fetcher: any;
+}) {
+    const commentRef = useRef(null);
+
+    useEffect(() => {
+        if (commentRef.current) {
+            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, [commentText]);
+
+    return (
+        <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
+            <input type='hidden' name='_action' value='post-comment' />
+            <Textarea
+                name='comment_text'
+                required
+                rows={3}
+                placeholder='Add a comment...'
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                minLength={COMMENT_MIN_LENGTH}
+                maxLength={COMMENT_MAX_LENGTH}
+                ref={commentRef}
+            />
+            <div className='flex flex-col'>
+                {session.role === 'ADMIN' && (
+                    <div className='flex items-center space-x-2 my-4'>
+                        <Checkbox name='official_statement' id='official_statement' />
+                        <label
+                            htmlFor='official_statement'
+                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                        >
+                            Post as official statement
+                        </label>
+                    </div>
+                )}
+
+                <Button type='submit' className='mt-2' invalid={!isFormValid}>
+                    Comment
+                </Button>
+            </div>
+            <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
+        </fetcher.Form>
     );
 }
 
