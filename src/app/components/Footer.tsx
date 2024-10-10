@@ -18,14 +18,12 @@ export function Footer() {
                         Student Council
                     </Link>
                 </div>
-                <div>
-                    <Link
-                        to='https://github.com/42-student-council/website/issues'
-                        className='hover:underline flex gap-2 items-center p-2'
-                    >
-                        Found a bug? <GitHub className='size-5' />
-                    </Link>
-                </div>
+                <Link
+                    to='https://github.com/42-student-council/website/issues'
+                    className='hover:underline flex gap-2 items-center p-2'
+                >
+                    Found a bug? <GitHub className='size-5' />
+                </Link>
             </div>
         </footer>
     );
