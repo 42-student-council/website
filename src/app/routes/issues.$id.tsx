@@ -6,7 +6,6 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import Markdown, { MarkdownBadge } from '~/components/Markdown';
 import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
@@ -445,7 +444,9 @@ export default function IssueDetail() {
                     <div className='mt-4'>
                         <H2 className='hyphens-auto break-words'>{issue.title}</H2>
                     </div>
-                    <Markdown extraClassName='my-2'>{issue.description}</Markdown>
+                    <p className='text-lg lg:text-xl font-normal pb-4 whitespace-pre-wrap text-balance hyphens-auto break-words mt-2'>
+                        {issue.description}
+                    </p>
                     <div className='flex flex-col b-4'>
                         <p className={classNames('text-s text-muted-foreground pb-2')}>
                             {formatDate(new Date(issue.createdAt))}
@@ -502,7 +503,7 @@ export default function IssueDetail() {
                             <p>No comments yet.</p>
                         )}
                         {!issue.archived && (
-                            <fetcher.Form method='post' className='mt-4 md:-mx-3' ref={formRef} onSubmit={handleSubmit}>
+                            <fetcher.Form method='post' className='mt-4' ref={formRef} onSubmit={handleSubmit}>
                                 <input type='hidden' name='_action' value='post-comment' />
                                 <Textarea
                                     name='comment_text'
@@ -515,9 +516,9 @@ export default function IssueDetail() {
                                     maxLength={COMMENT_MAX_LENGTH}
                                     ref={commentRef}
                                 />
-                                <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
+                                <div className='flex flex-col'>
                                     {session.role === 'ADMIN' && (
-                                        <div className='flex items-center space-x-2'>
+                                        <div className='flex items-center space-x-2 my-4'>
                                             <Checkbox name='official_statement' id='official_statement' />
                                             <label
                                                 htmlFor='official_statement'
@@ -527,8 +528,8 @@ export default function IssueDetail() {
                                             </label>
                                         </div>
                                     )}
-                                    <MarkdownBadge />
-                                    <Button type='submit' invalid={!isFormValid}>
+
+                                    <Button type='submit' className='mt-2' invalid={!isFormValid}>
                                         Comment
                                     </Button>
                                 </div>
@@ -573,7 +574,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
 
     return (
         <div
-            className={classNames('mt-4 bg-card py-2 px-3 md:-mx-3 rounded-md border', {
+            className={classNames('mt-4 bg-card p-2 rounded-md border', {
                 'border-primary': comment.official,
             })}
         >
@@ -586,8 +587,14 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
             >
                 {formatDate(new Date(comment.createdAt))}
             </Link>
-            <Markdown extraClassName='my-2'>{comment.text}</Markdown>
-            <upvoteFetcher.Form method='post' className='flex w-full -ml-1'>
+            <p
+                className={classNames('text-base whitespace-pre-wrap break-words', {
+                    '': comment.official,
+                })}
+            >
+                {comment.text}
+            </p>
+            <upvoteFetcher.Form method='post' className='flex w-full'>
                 <input type='hidden' name='_action' value='commentVote' />
                 <input type='hidden' name='issueId' value={issue.id} />
                 <input type='hidden' name='commentId' value={comment.id} />
