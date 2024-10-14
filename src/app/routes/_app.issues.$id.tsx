@@ -393,12 +393,7 @@ export default function IssueDetail() {
         <Fragment>
             <div className='flex flex-row justify-between items-start'>
                 <H1>Issue #{issue.id}</H1>
-                <Link to='/issues'>
-                    <Button>
-                        <ChevronLeft />
-                        Go Back
-                    </Button>
-                </Link>
+                <BackButton archived={issue.archived} />
             </div>
             {session.role === 'ADMIN' && (
                 <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
