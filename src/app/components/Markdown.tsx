@@ -48,8 +48,7 @@ const limitedMarkdownPlugin: Plugin = () => {
 export default function Markdown(props: Options & { extraClassName: string }) {
     return (
         <ReactMarkdown
-            className={'text-base leading-8 text-balance hyphens-auto break-words ' + props.extraClassName || ''}
-            // allowedElements={['p', 'strong', 'em', 'del', 'a', 'ul', 'ol', 'li', 'code', 'blockquote']}
+            className={'text-base text-balance hyphens-auto break-words [&>*]:mb-2 ' + props.extraClassName || ''}
             components={{
                 a(props) {
                     const { node, ...rest } = props;
