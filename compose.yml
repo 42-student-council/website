@@ -13,7 +13,7 @@ services:
 
     app_prod:
         build:
-            context: ./src
+            context: .
             dockerfile: Dockerfile_prod
         ports:
             - '${PORT}:3000'
@@ -40,7 +40,7 @@ services:
 
     app_dev:
         build:
-            context: ./src
+            context: .
             dockerfile: Dockerfile_dev
         ports:
             - '5173:5173'
@@ -62,7 +62,7 @@ services:
             SUPER_ADMIN: ${SUPER_ADMIN}
             DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_NAME}
         volumes:
-            - ./src:/app
+            - .:/app
             - /app/node_modules
         profiles:
             - dev

@@ -1,15 +1,16 @@
 # ENVIRONMENT
 
-venv
 .env
 
 # CACHE
 
 .vscode
 .DS_Store
-*__pycache__*
+.cache/
 
 # UTILS
 
 node_modules/
 format.sh
+
+build/
