@@ -576,21 +576,23 @@ function CommentForm({
                 ref={commentRef}
             />
             <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
-                {session.role === 'ADMIN' && (
-                    <div className='flex items-center space-x-2'>
-                        <Checkbox name='official_statement' id='official_statement' />
-                        <label
-                            htmlFor='official_statement'
-                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                        >
-                            Post as official statement
-                        </label>
-                    </div>
-                )}
                 <MarkdownBadge />
-                <Button type='submit' invalid={!isFormValid}>
-                    Comment
-                </Button>
+                <div className='flex gap-3'>
+                    {session.role === 'ADMIN' && (
+                        <div className='flex items-center space-x-2'>
+                            <Checkbox name='official_statement' id='official_statement' />
+                            <label
+                                htmlFor='official_statement'
+                                className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                            >
+                                Post as official statement
+                            </label>
+                        </div>
+                    )}
+                    <Button type='submit' invalid={!isFormValid}>
+                        Comment
+                    </Button>
+                </div>
             </div>
             <FormErrorMessage className='mt-2'>{fetcher.data?.errors?.message}</FormErrorMessage>
         </fetcher.Form>
