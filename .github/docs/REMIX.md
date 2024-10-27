@@ -10,24 +10,18 @@ This section provides an overview of the Remix frontend architecture and instruc
 ## Project Structure
 Our Remix frontend project structure looks like this:
 ```
-src/
-│
-├── app/
-│ ├── components/
-│ │ ├── icon/
-│ │ ├── ui/
-│ ├── lib/
-│ ├── routes/
-│ ├── utils/
-├── public/
-│ ├── fonts/
-│ ├── img/
-├── Dockerfile
-├── components.json
-├── postcss.config.js
-├── tailwind.config.ts
-├── tsconfig.json
-└── vite.config.ts
+.
+├── app
+│   ├── components
+│   ├── lib
+│   ├── routes
+│   └── utils
+├── prisma
+│   └── migrations
+├── public
+│   ├── fonts
+│   └── img
+├── scripts
 └── ...
 ```
 

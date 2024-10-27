@@ -30,11 +30,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
-      - name: Install dependencies
-        run: npm install
+          node-version: '20'
       - name: Configure GitHub Actions bot
-        run : |
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Run Prettier
@@ -51,4 +49,4 @@ jobs:
         uses: dkershner6/reaction-action@v2.2.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          reaction: "rocket"
+          reaction: 'rocket'
