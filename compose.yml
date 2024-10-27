@@ -65,8 +65,6 @@ services:
             - ./src:/app
         profiles:
             - dev
-        depends_on:
-            - db
 
 volumes:
     db:
