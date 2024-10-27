@@ -1,5 +1,3 @@
-// function should be able to accept an icon, which is an html element and a title
-
 import { Link } from '@remix-run/react';
 import classNames from 'classnames';
 import { GraduationCap, LucideProps } from 'lucide-react';
