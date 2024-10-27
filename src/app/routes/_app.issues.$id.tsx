@@ -604,7 +604,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
 
     return (
         <div
-            className={classNames('mt-4 bg-card py-2 px-3 md:-mx-3 rounded-md border', {
+            className={classNames('bg-card py-2 px-3 md:-mx-3 rounded-md border', {
                 'border-primary': comment.official,
             })}
         >
