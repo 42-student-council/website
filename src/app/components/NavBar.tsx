@@ -2,6 +2,7 @@ import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
 import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
 import { HTMLAttributes, useState } from 'react';
+import { wrapper } from '~/lib/layout';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/button';
 import {
@@ -83,8 +84,8 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
-        <div className='hidden flex-row gap-2 justify-between items-center px-6 mx-auto w-full max-w-screen-xl md:flex'>
-            <div className='gap-2 flex'>
+        <div className={classNames(wrapper, 'hidden flex-row gap-2 justify-between items-center md:flex')}>
+            <div className='gap-2 flex -mx-2'>
                 {navItems.map((item) => (
                     <NavLink
                         key={item.href}
