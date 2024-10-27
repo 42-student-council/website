@@ -30,6 +30,18 @@ const config = {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
                 },
+                infobg: {
+                    DEFAULT: 'hsl(var(--infobg))',
+                    foreground: 'hsl(var(--infobg-foreground))',
+                },
+                infotext: {
+                    DEFAULT: 'hsl(var(--infotext))',
+                    foreground: 'hsl(var(--infotext-foreground))',
+                },
+                infoborder: {
+                    DEFAULT: 'hsl(var(--infoborder))',
+                    foreground: 'hsl(var(--infoborder-foreground))',
+                },
                 destructive: {
                     DEFAULT: 'hsl(var(--destructive))',
                     foreground: 'hsl(var(--destructive-foreground))',

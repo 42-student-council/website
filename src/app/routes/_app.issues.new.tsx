@@ -1,13 +1,12 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, Link, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
+import { json, Link, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { MarkdownBadge } from '~/components/Markdown';
-import NavBar from '~/components/NavBar';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -17,7 +16,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { db } from '~/utils/db.server';
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
+import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 const TITLE_MIN_LENGTH = 5;
@@ -57,10 +56,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     return { session };
 }
-
-type LoaderData = {
-    session: SessionData;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
     const session = await requireSessionData(request);
@@ -130,7 +125,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
-    const data = useLoaderData<LoaderData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;
@@ -200,84 +194,78 @@ export default function IssuesNew() {
     };
 
     return (
-        <div>
-            <NavBar login={data.session.login} role={data.session.role} />
-            <div className='flex justify-center'>
-                <div className='flex justify-between mx-4 md:mx-0 w-full md:w-3/5'>
-                    <H1 className='my-4 md:w-3/5'>Create a Public Issue</H1>
-                    <Link to='/issues'>
-                        <Button className='mt-4'>
-                            <ChevronLeft />
-                            Go Back
-                        </Button>
-                    </Link>
-                </div>
+        <Fragment>
+            <div className='flex justify-between items-start'>
+                <H1>Create a Public Issue</H1>
+                <Link to='/issues'>
+                    <Button>
+                        <ChevronLeft />
+                        Go Back
+                    </Button>
+                </Link>
             </div>
-            <div className='md:flex md:justify-center md:flex-col mx-4 md:mx-auto md:w-3/5'>
-                <p className='mb-2 text-xl'>
-                    Open an anonymous issue to discuss what's important to you with the community.
-                </p>
-                <p className='mb-2 text-xl'>
-                    If you would like to share your issue with the Student Council only, please use the{' '}
-                    <Link to='/contact' className='underline'>
-                        contact form
-                    </Link>
-                    .
-                </p>
-                <Info title='Note' className='my-3'>
-                    To maintain complete anonymity, the author of an issue does not get stored. Consequently,{' '}
-                    <strong>you won't be able to edit</strong> an issue after submitting it.
-                </Info>
-            </div>
-            <div className='flex justify-center mt-4 mx-4 md:mx-0'>
-                <createIssueFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <Label htmlFor='title' className='text-lg'>
-                        Issue Title
+            <p className='mt-4 text-xl'>
+                Open an anonymous issue to discuss what's important to you with the community.
+                <br />
+                If you would like to share your issue with the student council only, please go to the{' '}
+                <Link to='/contact' className='underline'>
+                    contact form
+                </Link>
+                .
+            </p>
+            <Info title='Note' className='mt-4'>
+                To maintain complete anonymity, the author of an issue does not get stored.
+                <br />
+                Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
+            </Info>
+
+            <createIssueFetcher.Form className='mt-6' method='post' onSubmit={handleSubmit}>
+                <Label htmlFor='title' className='text-lg'>
+                    Issue Title
+                </Label>
+                <Input
+                    type='text'
+                    name='title'
+                    required
+                    autoComplete='off'
+                    minLength={TITLE_MIN_LENGTH}
+                    maxLength={TITLE_MAX_LENGTH}
+                    className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
+                    onChange={(e) => setTitle(e.target.value)}
+                    defaultValue={title}
+                    ref={titleRef}
+                />
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+
+                <div className='mt-4'>
+                    <Label htmlFor='description' className='text-lg'>
+                        Issue Description
                     </Label>
-                    <Input
-                        type='text'
-                        name='title'
+                    <Textarea
+                        placeholder='Please describe your issue or suggestion here...'
+                        name='description'
+                        className={classNames('h-48', {
+                            'border-red-600': !!createIssueFetcher.data?.errors?.description,
+                        })}
                         required
                         autoComplete='off'
-                        minLength={TITLE_MIN_LENGTH}
-                        maxLength={TITLE_MAX_LENGTH}
-                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={title}
-                        ref={titleRef}
+                        minLength={DESCRIPTION_MIN_LENGTH}
+                        maxLength={DESCRIPTION_MAX_LENGTH}
+                        onChange={(e) => setDescription(e.target.value)}
+                        defaultValue={description}
+                        ref={descriptionRef}
                     />
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
-                    <div className='mt-4'>
-                        <Label htmlFor='description' className='text-lg'>
-                            Issue Description
-                        </Label>
-                        <Textarea
-                            placeholder='Please describe your issue or suggestion here...'
-                            name='description'
-                            className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
-                            })}
-                            required
-                            autoComplete='off'
-                            minLength={DESCRIPTION_MIN_LENGTH}
-                            maxLength={DESCRIPTION_MAX_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            defaultValue={description}
-                            ref={descriptionRef}
-                        />
-                        <FormErrorMessage className='mt-2'>
-                            {createIssueFetcher.data?.errors?.description}
-                        </FormErrorMessage>
-                    </div>
-                    <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
-                        <MarkdownBadge />
-                        <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData}>
-                            {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
-                        </Button>
-                    </div>
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
-                </createIssueFetcher.Form>
-            </div>
-        </div>
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.description}</FormErrorMessage>
+                </div>
+
+                <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
+                    <MarkdownBadge />
+                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData}>
+                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                    </Button>
+                </div>
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
+            </createIssueFetcher.Form>
+        </Fragment>
     );
 }
