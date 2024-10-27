@@ -14,7 +14,7 @@ services:
     app_prod:
         build:
             context: ./src
-            dockerfile: Dockerfile_prod
+            dockerfile: Dockerfile.prod
         ports:
             - '${PORT}:3000'
         environment:
@@ -41,7 +41,7 @@ services:
     app_dev:
         build:
             context: ./src
-            dockerfile: Dockerfile_dev
+            dockerfile: Dockerfile.dev
         ports:
             - '5173:5173'
         environment:
