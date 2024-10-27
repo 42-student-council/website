@@ -1,7 +1,8 @@
 import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
-import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
+import { CirclePlus, DoorOpen, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
 import { HTMLAttributes, useState } from 'react';
+import { SCIcon } from './icon/SC';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/button';
 import {
@@ -15,11 +16,6 @@ import { ScrollArea } from './ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 const navItems = [
-    {
-        label: 'Home',
-        href: '/',
-        icon: Home,
-    },
     {
         label: 'Issues',
         href: '/issues',
@@ -84,7 +80,10 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
         <div className='hidden md:flex flex-row justify-between w-full items-center gap-2 px-2'>
-            <div className='gap-2 flex'>
+            <div className='gap-2 flex content-center'>
+                <NavLink to='/' end className='text-primary flex my-auto px-2'>
+                    <SCIcon width={200} height={200} className='size-7' />
+                </NavLink>
                 {navItems.map((item) => (
                     <NavLink
                         key={item.href}
@@ -115,11 +114,16 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
         <div className='md:hidden w-full'>
             <Sheet open={open} onOpenChange={setOpen}>
                 <div className='flex flex-row items-center justify-between w-full'>
-                    <SheetTrigger asChild>
-                        <Button variant='ghost' size='icon' className='md:hidden'>
-                            <MenuIcon />
-                        </Button>
-                    </SheetTrigger>
+                    <div className='flex gap-2 items-center'>
+                        <NavLink to='/' end className='text-primary flex my-auto'>
+                            <SCIcon width={200} height={200} className='size-7' />
+                        </NavLink>
+                        <SheetTrigger asChild>
+                            <Button variant='ghost' size='icon' className='md:hidden'>
+                                <MenuIcon />
+                            </Button>
+                        </SheetTrigger>
+                    </div>
                     <div className='flex gap-2 items-center'>
                         <ThemeToggle />
                         <User login={login} role={role} />
