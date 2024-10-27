@@ -11,17 +11,16 @@ Docker is used to containerize the app, ensuring consistency across different en
 
 ### Docker Setup
 
-1. **Docker Compose File**: The [docker-compose.yml](docker-compose.yml) file defines the services, networks and volumes used in this app.
+1. **Docker Compose File**: The [compose.yml](../../compose.yml) file defines the services, networks and volumes used in this app.
 2. Building and running app: See the [Makefile docs](.github/docs/MAKEFILE.md).
 
 ### Services:
 
 1. db (Database)
-    * This service is built directly from the [docker-compose.yml](docker-compose.yml) file, as no further configuration is needed.
-    * If you need to access the database directly to run SQL commands, see [this article](https://startup-house.com/glossary/docker-exec).
-2. [frontend](src/Dockerfile)
-    * This Dockerfile builds the frontend environment and exposes the frontend server on port 3000 for users.
-
+    - This service is built directly from the [compose.yml](../../compose.yml) file, as no further configuration is needed.
+    - If you need to access the database directly to run SQL commands, see [this article](https://startup-house.com/glossary/docker-exec).
+2. [frontend](FRONTEND.md)
+    - This Dockerfile builds the frontend environment and exposes the frontend server on port 3000 for users.
 
 ## Why This Architecture?
 
@@ -31,8 +30,8 @@ Docker is used to containerize the app, ensuring consistency across different en
 4. **Ease of Deployment**: Docker Compose simplifies the process of setting up and tearing down the development and production environments. This is beneficial for both developers and contributors who need to get the app running quickly.
 5. **Security**: Nginx acts as a reverse proxy, providing an extra layer of security. It can handle SSL termination and protect the backend from direct exposure to the internet.
 6. **Modern Development Practices**: Using Remix (React) leverages modern, robust frameworks.
-7. **Community and Collaboration**: By open-sourcing the project and using widely-adopted technologies like Docker, and React, we make contribution easier and foster a collaborative environment. 
- 
+7. **Community and Collaboration**: By open-sourcing the project and using widely-adopted technologies like Docker, and React, we make contribution easier and foster a collaborative environment.
+
 ## Conclusion
 
-In summary, this architecture leverages Docker, PostgreSQL and Remix to build a robust, scalable and maintainable app. It aligns well with the student council's goal: providing a reliable and secure platform to facilitate communication.  
+In summary, this architecture leverages Docker, PostgreSQL and Remix to build a robust, scalable and maintainable app. It aligns well with the student council's goal: providing a reliable and secure platform to facilitate communication.
