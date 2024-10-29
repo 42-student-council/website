@@ -14,7 +14,7 @@ services:
     app_prod:
         build:
             context: ./src
-            dockerfile: Dockerfile_prod
+            dockerfile: Dockerfile.prod
         ports:
             - '${PORT}:3000'
         environment:
@@ -41,33 +41,30 @@ services:
     app_dev:
         build:
             context: ./src
-            dockerfile: Dockerfile_dev
+            dockerfile: Dockerfile.dev
         ports:
             - '5173:5173'
         environment:
+            PORT: 5173
+            SESSION_SECRET: ${SESSION_SECRET}
             POSTGRES_HOST: ${POSTGRES_HOST}
             POSTGRES_NAME: ${POSTGRES_NAME}
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-            PORT: 5173
+            DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_NAME}
             CLIENT_ID: ${CLIENT_ID}
             CLIENT_SECRET: ${CLIENT_SECRET}
             RATE_LIMIT: ${RATE_LIMIT}
             BASE_URL: ${BASE_URL}
-            SESSION_SECRET: ${SESSION_SECRET}
             DISCORD_WEBHOOK_ID: ${DISCORD_WEBHOOK_ID}
             DISCORD_WEBHOOK_TOKEN: ${DISCORD_WEBHOOK_TOKEN}
             COUNCIL_SERVER_ISSUE_WEBHOOK_URL: ${COUNCIL_SERVER_ISSUE_WEBHOOK_URL}
             STUDENT_SERVER_ISSUE_WEBHOOK_URL: ${STUDENT_SERVER_ISSUE_WEBHOOK_URL}
             SUPER_ADMIN: ${SUPER_ADMIN}
-            DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_NAME}
         volumes:
             - ./src:/app
-            - /app/node_modules
         profiles:
             - dev
-        depends_on:
-            - db
 
 volumes:
     db:
