@@ -278,36 +278,6 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             },
         },
         {
-            id: 'date',
-            accessorKey: 'createdAt',
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => {
-                            if (column.getIsSorted() === false) {
-                                column.toggleSorting(true);
-                            } else column.toggleSorting(column.getIsSorted() === 'asc');
-                        }}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Created at
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <CalendarArrowUp className='ml-2 h-4 w-4' />
-                            ) : (
-                                <CalendarArrowDown className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                return <span>{formatDate(new Date(row.getValue('date')))}</span>;
-            },
-        },
-        {
             id: 'activity',
             accessorKey: 'lastActivity',
             header: ({ column }) => {
