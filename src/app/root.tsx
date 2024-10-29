@@ -35,8 +35,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-    const { getTheme } = (await themeSessionResolver(request)) ?? Theme.LIGHT;
-
+    const { getTheme } = await themeSessionResolver(request);
     return {
         theme: getTheme(),
     } satisfies LoaderData;
@@ -50,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     const data = useRootLoaderData();
 
     return (
-        <ThemeProvider specifiedTheme={data?.theme ?? Theme.LIGHT} themeAction='/theme/set'>
+        <ThemeProvider specifiedTheme={data?.theme ?? null} themeAction='/theme/set'>
             <InnerLayout ssrTheme={Boolean(data?.theme)}>{children}</InnerLayout>
         </ThemeProvider>
     );
@@ -71,7 +70,7 @@ function InnerLayout({ ssrTheme, children }: { ssrTheme: boolean; children: Reac
                 <Meta />
                 <Links />
             </head>
-            <body className='h-screen' suppressHydrationWarning>
+            <body className='min-h-screen flex flex-col subpixel-antialiased' suppressHydrationWarning>
                 {children}
                 <ScrollRestoration />
                 <PreventFlashOnWrongTheme ssrTheme={ssrTheme} />
@@ -92,9 +91,9 @@ export function ErrorBoundary() {
                 <Meta />
                 <Links />
             </head>
-            <body>
+            <body className='min-h-screen flex flex-col subpixel-antialiased'>
                 <NavBar login='zekao?' role='USER' />
-                <div className='flex items-center justify-center h-screen'>
+                <div className='flex items-center justify-center grow'>
                     {isRouteErrorResponse(error) ? (
                         <div className='flex flex-col items-center'>
                             <H1>{error.status}</H1>
@@ -104,7 +103,6 @@ export function ErrorBoundary() {
                         'Unknown Error'
                     )}
                 </div>
-                <Footer />
                 <Scripts />
             </body>
         </html>

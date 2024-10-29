@@ -18,7 +18,8 @@ import {
     CalendarArrowUp,
     PlusCircle,
 } from 'lucide-react';
-import { HTMLAttributes, useEffect, useState } from 'react';
+import { Fragment, HTMLAttributes, useEffect, useState } from 'react';
+import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -27,15 +28,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
     return [{ title: 'Issues' }, { name: 'description', content: 'List of all public issues from the students.' }];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-    const session = await requireSessionData(request);
-
     const issues = await db.issue.findMany({
         select: {
             archived: true,
@@ -53,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     });
     issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    return { issues, session } satisfies LoaderData;
+    return { issues } satisfies LoaderData;
 }
 
 type Issue = {
@@ -68,10 +66,10 @@ type Issue = {
     };
 };
 
-type LoaderData = { issues: Issue[]; session: SessionData };
+type LoaderData = { issues: Issue[] };
 
 export default function Issues() {
-    const { issues, session } = useLoaderData<LoaderData>();
+    const { issues } = useLoaderData<LoaderData>();
     const archivedIssues = issues.filter((issue) => issue.archived);
     const visibleIssues = issues.filter((issue) => !issue.archived);
 
@@ -84,7 +82,8 @@ export default function Issues() {
     const [filter, setFilter] = useState(initialIssueFilter);
 
     useEffect(() => {
-        if (filter === 'archived') {
+        if (filter === initialIssueFilter()) {
+        } else if (filter === 'archived') {
             setSearchParams({ filter: 'archived' });
         } else {
             setSearchParams({});
@@ -322,7 +321,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
     const navigate = useNavigate();
 
     return (
-        <ScrollArea className='w-full whitespace-nowrap rounded-md border'>
+        <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -373,17 +372,20 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 
 export function ErrorBoundary() {
     return (
-        <div className='mt-4 mx-4'>
-            <Warning title='Error'>
-                Something went wrong whilst fetching the issues. Please try again later.
-                <p className='mt-4'>
-                    If this issue persists, please open an issue on our{' '}
-                    <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
-                        GitHub Repo
-                    </Link>
-                    .
-                </p>
-            </Warning>
-        </div>
+        <Fragment>
+            <NavBar login='zekao?' role='USER' />
+            <div className='mt-4 mx-4'>
+                <Warning title='Error'>
+                    Something went wrong whilst fetching the issues. Please try again later.
+                    <p className='mt-4'>
+                        If this issue persists, please open an issue on our{' '}
+                        <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
+                            GitHub Repo
+                        </Link>
+                        .
+                    </p>
+                </Warning>
+            </div>
+        </Fragment>
     );
 }

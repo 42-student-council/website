@@ -1,16 +1,14 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { useEffect, useState, useRef } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
-import NavBar from '~/components/NavBar';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { Separator } from '~/components/ui/separator';
 import { Textarea } from '~/components/ui/textarea';
 import { sendDiscordWebhook } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
@@ -241,146 +239,137 @@ export default function Contact() {
     };
 
     return (
-        <div>
-            <NavBar login={data.login} role={data.role} />
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <H1 className='my-4 md:w-3/5'>Contact the Student Council</H1>
-            </div>
-            <div className='md:flex md:justify-center mx-4 md:mx-0'>
-                <p className='md:w-3/5 text-xl'>
-                    Do you have an issue or suggestion you would like to tell us in private? Use this contact form.
-                </p>
-            </div>
-            <div className='flex justify-center mt-4 mb-4 mx-4 md:mx-0'>
-                <contactFetcher.Form className='w-full md:w-3/5' method='post' onSubmit={handleSubmit}>
-                    <div className='mt-2'>
-                        <Label htmlFor='message' className='text-lg'>
-                            What would you like to tell us?
-                        </Label>
-                        <Textarea
-                            placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
-                            name='message'
-                            className={classNames('h-48', {
-                                'border-red-600': !!contactFetcher.data?.errors?.message,
-                            })}
-                            required
-                            autoComplete='off'
-                            minLength={MESSAGE_MIN_LENGTH}
-                            maxLength={MESSAGE_MAX_LENGTH}
-                            onChange={(e) => setMessage(e.target.value)}
-                            value={message}
-                            ref={messageRef}
-                        />
-                        <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
-                    </div>
+        <Fragment>
+            <H1>Contact the Student Council</H1>
+            <p className='mt-4 text-xl'>
+                Do you have an issue or suggestion you would like to tell us in private? Use this contact form.
+            </p>
+            <contactFetcher.Form className='mt-4 w-full' method='post' onSubmit={handleSubmit}>
+                <div className='mt-2'>
+                    <Label htmlFor='message' className='text-lg'>
+                        What would you like to tell us?
+                    </Label>
+                    <Textarea
+                        placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
+                        name='message'
+                        className={classNames('h-48', {
+                            'border-red-600': !!contactFetcher.data?.errors?.message,
+                        })}
+                        required
+                        autoComplete='off'
+                        minLength={MESSAGE_MIN_LENGTH}
+                        maxLength={MESSAGE_MAX_LENGTH}
+                        onChange={(e) => setMessage(e.target.value)}
+                        value={message}
+                        ref={messageRef}
+                    />
+                    <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
+                </div>
 
-                    <div className='mt-4'>
-                        <Label htmlFor='anonymous' className='text-lg'>
-                            Do you wish to stay anonymous?
-                        </Label>
+                <div className='mt-4'>
+                    <Label htmlFor='anonymous' className='text-lg'>
+                        Do you wish to stay anonymous?
+                    </Label>
 
-                        <RadioGroup
-                            value={anonymousOption}
-                            name='anonymous'
-                            onValueChange={setAnonymousOption}
-                            className='pt-1'
-                        >
-                            <div className='inline-flex'>
-                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                    <RadioGroupItem value='yes' id='yes' />
-                                    <span>Yes</span>
-                                </Label>
-                            </div>
-                            <div className='inline-flex'>
-                                <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                    <RadioGroupItem value='no' id='no' />
-                                    <span>No</span>
-                                </Label>
-                            </div>
-                        </RadioGroup>
-                        {anonymousError && <FormErrorMessage className='mt-2'>{anonymousError}</FormErrorMessage>}
-
-                        <fieldset
-                            invalid={anonymousOption === 'yes'}
-                            className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
-                        >
-                            <div className='mt-4'>
-                                <Label htmlFor='contactWay' className='text-lg'>
-                                    How should we reach out to you?
-                                </Label>
-
-                                <RadioGroup
-                                    value={contactOption}
-                                    name='contactWay'
-                                    onValueChange={setContactOption}
-                                    className='pt-1'
-                                >
-                                    <div className='inline-flex'>
-                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                            <RadioGroupItem value='discord' id='discord' />
-                                            <span>Discord</span>
-                                        </Label>
-                                    </div>
-                                    <div className='inline-flex'>
-                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                            <RadioGroupItem value='email' id='email' />
-                                            <span>Email</span>
-                                        </Label>
-                                    </div>
-                                    <div className='inline-flex'>
-                                        <Label className='inline-flex items-center space-x-2 cursor-pointer'>
-                                            <RadioGroupItem value='nothing' id='nothing' />
-                                            <span>No follow-up needed</span>
-                                        </Label>
-                                    </div>
-                                </RadioGroup>
-                                {contactError && <FormErrorMessage className='mt-2'>{contactError}</FormErrorMessage>}
-
-                                {contactOption === 'email' && (
-                                    <div className='mt-2'>
-                                        <Label htmlFor='contactEmail'>
-                                            We need your info in order to get back to you:
-                                        </Label>
-                                        <Input
-                                            type='email'
-                                            name='contactEmail'
-                                            required
-                                            autoComplete='on'
-                                            maxLength={EMAIL_MAX_LENGTH}
-                                            placeholder='Please enter your email'
-                                            value={contactEmail}
-                                            onChange={(e) => setContactEmail(e.target.value)}
-                                            className={classNames({
-                                                'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
-                                            })}
-                                            ref={contactEmailRef}
-                                        />
-                                        <FormErrorMessage className='mt-2'>
-                                            {contactFetcher.data?.errors?.contactEmail}
-                                        </FormErrorMessage>
-                                    </div>
-                                )}
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    <Button
-                        type='submit'
-                        invalid={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
-                        className='mt-4'
+                    <RadioGroup
+                        value={anonymousOption}
+                        name='anonymous'
+                        onValueChange={setAnonymousOption}
+                        className='pt-1'
                     >
-                        {contactFetcher.formData ? 'Loading...' : 'Send Message'}
-                    </Button>
-                    <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
-                    {contactFetcher.data?.success && (
-                        <p className='text-green-600 text-xs mt-2'>
-                            {contactFetcher.data?.anonymous === 'no' && contactFetcher.data?.contactWay !== 'nothing'
-                                ? 'We have received your message, we will get back to you soon!'
-                                : 'We have received your message.'}
-                        </p>
-                    )}
-                </contactFetcher.Form>
-            </div>
-        </div>
+                        <div className='inline-flex'>
+                            <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                <RadioGroupItem value='yes' id='yes' />
+                                <span>Yes</span>
+                            </Label>
+                        </div>
+                        <div className='inline-flex'>
+                            <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                <RadioGroupItem value='no' id='no' />
+                                <span>No</span>
+                            </Label>
+                        </div>
+                    </RadioGroup>
+                    {anonymousError && <FormErrorMessage className='mt-2'>{anonymousError}</FormErrorMessage>}
+
+                    <fieldset
+                        invalid={anonymousOption === 'yes'}
+                        className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
+                    >
+                        <div className='mt-4'>
+                            <Label htmlFor='contactWay' className='text-lg'>
+                                How should we reach out to you?
+                            </Label>
+
+                            <RadioGroup
+                                value={contactOption}
+                                name='contactWay'
+                                onValueChange={setContactOption}
+                                className='pt-1'
+                            >
+                                <div className='inline-flex'>
+                                    <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                        <RadioGroupItem value='discord' id='discord' />
+                                        <span>Discord</span>
+                                    </Label>
+                                </div>
+                                <div className='inline-flex'>
+                                    <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                        <RadioGroupItem value='email' id='email' />
+                                        <span>Email</span>
+                                    </Label>
+                                </div>
+                                <div className='inline-flex'>
+                                    <Label className='inline-flex items-center space-x-2 cursor-pointer'>
+                                        <RadioGroupItem value='nothing' id='nothing' />
+                                        <span>No follow-up needed</span>
+                                    </Label>
+                                </div>
+                            </RadioGroup>
+                            {contactError && <FormErrorMessage className='mt-2'>{contactError}</FormErrorMessage>}
+
+                            {contactOption === 'email' && (
+                                <div className='mt-2'>
+                                    <Label htmlFor='contactEmail'>We need your info in order to get back to you:</Label>
+                                    <Input
+                                        type='email'
+                                        name='contactEmail'
+                                        required
+                                        autoComplete='on'
+                                        maxLength={EMAIL_MAX_LENGTH}
+                                        placeholder='Please enter your email'
+                                        value={contactEmail}
+                                        onChange={(e) => setContactEmail(e.target.value)}
+                                        className={classNames({
+                                            'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
+                                        })}
+                                        ref={contactEmailRef}
+                                    />
+                                    <FormErrorMessage className='mt-2'>
+                                        {contactFetcher.data?.errors?.contactEmail}
+                                    </FormErrorMessage>
+                                </div>
+                            )}
+                        </div>
+                    </fieldset>
+                </div>
+
+                <Button
+                    type='submit'
+                    invalid={!isFormValid || !!contactFetcher.formData || !!contactFetcher.data?.success}
+                    className='mt-4'
+                >
+                    {contactFetcher.formData ? 'Loading...' : 'Send Message'}
+                </Button>
+                <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.discordError}</FormErrorMessage>
+                {contactFetcher.data?.success && (
+                    <p className='text-green-600 text-xs mt-2'>
+                        {contactFetcher.data?.anonymous === 'no' && contactFetcher.data?.contactWay !== 'nothing'
+                            ? 'We have received your message, we will get back to you soon!'
+                            : 'We have received your message.'}
+                    </p>
+                )}
+            </contactFetcher.Form>
+        </Fragment>
     );
 }

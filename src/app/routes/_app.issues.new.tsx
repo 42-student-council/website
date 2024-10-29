@@ -1,9 +1,9 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
-import { json, Link, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
+import { json, Link, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { Info } from '~/components/alert/Info';
@@ -15,7 +15,7 @@ import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { db } from '~/utils/db.server';
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
-import { requireSessionData, SessionData } from '~/utils/session.server';
+import { requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
 const TITLE_MIN_LENGTH = 5;
@@ -55,10 +55,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     return { session };
 }
-
-type LoaderData = {
-    session: SessionData;
-};
 
 export async function action({ request }: ActionFunctionArgs) {
     const session = await requireSessionData(request);
@@ -128,7 +124,6 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function IssuesNew() {
-    const data = useLoaderData<LoaderData>();
     const createIssueFetcher = useFetcher<{
         errors?: { title?: string; description?: string; message?: string };
         id?: number;
@@ -199,77 +194,73 @@ export default function IssuesNew() {
 
     return (
         <Fragment>
-            <div className='mx-auto max-w-prose'>
-                <Link to='/issues'>
-                    <Button variant='link' className='-ml-6'>
-                        <ChevronLeft />
-                        Back to open issues
-                    </Button>
+            <Link to='/issues'>
+                <Button variant='link' className='-ml-6'>
+                    <ChevronLeft />
+                    Back to open issues
+                </Button>
+            </Link>
+            <H1 className='my-4'>Create a Public Issue</H1>
+            <p className='mb-2 text-xl'>
+                Open an anonymous issue to discuss what's important to you with the community.
+                <br />
+                If you would like to share your issue with the student council only, please go to the{' '}
+                <Link to='/contact' className='underline'>
+                    contact form
                 </Link>
-                <H1 className='my-4'>Create a Public Issue</H1>
-                <p className='mb-2 text-xl'>
-                    Open an anonymous issue to discuss what's important to you with the community.
-                    <br />
-                    If you would like to share your issue with the student council only, please go to the{' '}
-                    <Link to='/contact' className='underline'>
-                        contact form
-                    </Link>
-                    .
-                </p>
-                <createIssueFetcher.Form method='post' onSubmit={handleSubmit}>
-                    <Label htmlFor='title' className='text-lg'>
-                        Issue Title
+                .
+            </p>
+            <createIssueFetcher.Form method='post' onSubmit={handleSubmit}>
+                <Label htmlFor='title' className='text-lg'>
+                    Issue Title
+                </Label>
+                <Input
+                    type='text'
+                    name='title'
+                    required
+                    autoComplete='off'
+                    minLength={TITLE_MIN_LENGTH}
+                    maxLength={TITLE_MAX_LENGTH}
+                    className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
+                    onChange={(e) => setTitle(e.target.value)}
+                    defaultValue={title}
+                    ref={titleRef}
+                />
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+
+                <div className='mt-4'>
+                    <Label htmlFor='description' className='text-lg'>
+                        Issue Description
                     </Label>
-                    <Input
-                        type='text'
-                        name='title'
+                    <Textarea
+                        placeholder="Please describe your issue or suggestion here...
+(Currently we don't support markdown for public issues, but we will in the future.)"
+                        name='description'
+                        className={classNames('h-48', {
+                            'border-red-600': !!createIssueFetcher.data?.errors?.description,
+                        })}
                         required
                         autoComplete='off'
-                        minLength={TITLE_MIN_LENGTH}
-                        maxLength={TITLE_MAX_LENGTH}
-                        className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
-                        onChange={(e) => setTitle(e.target.value)}
-                        defaultValue={title}
-                        ref={titleRef}
+                        minLength={DESCRIPTION_MIN_LENGTH}
+                        maxLength={DESCRIPTION_MAX_LENGTH}
+                        onChange={(e) => setDescription(e.target.value)}
+                        defaultValue={description}
+                        ref={descriptionRef}
                     />
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
+                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.description}</FormErrorMessage>
+                </div>
 
-                    <div className='mt-4'>
-                        <Label htmlFor='description' className='text-lg'>
-                            Issue Description
-                        </Label>
-                        <Textarea
-                            placeholder="Please describe your issue or suggestion here...
-(Currently we don't support markdown for public issues, but we will in the future.)"
-                            name='description'
-                            className={classNames('h-48', {
-                                'border-red-600': !!createIssueFetcher.data?.errors?.description,
-                            })}
-                            required
-                            autoComplete='off'
-                            minLength={DESCRIPTION_MIN_LENGTH}
-                            maxLength={DESCRIPTION_MAX_LENGTH}
-                            onChange={(e) => setDescription(e.target.value)}
-                            defaultValue={description}
-                            ref={descriptionRef}
-                        />
-                        <FormErrorMessage className='mt-2'>
-                            {createIssueFetcher.data?.errors?.description}
-                        </FormErrorMessage>
-                    </div>
+                <Info title='Note' className='mt-4'>
+                    To maintain complete anonymity, the author of an issue does not get stored.
+                    <br />
+                    Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
+                </Info>
 
-                    <Info title='Note' className='mt-4'>
-                        To maintain complete anonymity, the author of an issue does not get stored.
-                        <br />
-                        Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
-                    </Info>
-
-                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
-                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
-                    </Button>
-                    <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
-                </createIssueFetcher.Form>
-            </div>
-        </div>
+                <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
+                    {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                </Button>
+                <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
+            </createIssueFetcher.Form>
+        </Fragment>
     );
 }
