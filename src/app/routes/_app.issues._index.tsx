@@ -309,14 +309,16 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
         },
     ];
 
-    const [sorting, setSorting] = useState<ColumnSort[]>([]);
+    function initialSorting() {
+        if (typeof window === 'undefined') return [];
 
-    useEffect(() => {
-        if (window === undefined) return;
+        const savedSorting = JSON.parse(localStorage?.getItem('tableSorting') || 'null');
+        if (savedSorting) return savedSorting;
 
-        const savedSorting = localStorage.getItem('tableSorting');
-        if (savedSorting) setSorting(JSON.parse(savedSorting));
-    }, []);
+        return [{ id: 'activity', desc: true }];
+    }
+
+    const [sorting, setSorting] = useState<ColumnSort[]>(initialSorting());
 
     useEffect(() => {
         if (window === undefined) return;
