@@ -304,7 +304,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 );
             },
             cell: ({ row }) => {
-                return <span>{formatDate(new Date(row.getValue('activity')))}</span>;
+                return <span className='pl-4'>{formatDate(new Date(row.getValue('activity')))}</span>;
             },
         },
     ];
