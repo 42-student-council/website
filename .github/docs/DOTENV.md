@@ -8,40 +8,7 @@ A .env file is a text file containing environment variables. These are used to c
 
 ## What Variables Do I Need?
 
-We got you!
-
-```.env
-# These can be set to anything when building locally.
-POSTGRES_DB=mydatabase
-POSTGRES_USER=myuser
-POSTGRES_PASSWORD=mypassword
-
-# Do not change these even when building locally!
-POSTGRES_HOST=db                       # Name of the database service.
-POSTGRES_PORT=5432                     # Default postgres port.
-
-# These are used for globally configuring your IP adress.
-BASE_URL="http://<IP>:5173"            # Frontend base URL. Set port to 3000 in prod.
-
-# This is not needed for building locally.
-# You can set it to an empty string.
-SESSION_SECRET=""
-
-# Set this to any value except production or development
-NODE_ENV="anything"
-
-# These are needed for 42OAuth configuration.
-# See 'Set Up 42OAuth'.
-CLIENT_ID=""
-CLIENT_SECRET=""
-
-# These are needed for the contact form.
-# You can set these to empty strings, unless you need to test
-# the contact form functionality locally.
-# If that is the case, see 'Set Up Discord Webhook'.
-DISCORD_WEBHOOK_ID=""
-DISCORD_WEBHOOK_TOKEN=""
-```
+We got you! Check the [.env.example](../../.env.example).
 
 ## Set Up 42-OAuth
 

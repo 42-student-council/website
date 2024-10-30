@@ -1,9 +1,10 @@
-import { HTMLAttributes, useState } from 'react';
-import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { MenuIcon, Home, Info, TriangleAlert, MessageCircle, DoorOpen, Settings, CirclePlus } from 'lucide-react';
 import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
+import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
+import { HTMLAttributes, useState } from 'react';
+import { wrapper } from '~/lib/layout';
+import { ThemeToggle } from './ThemeToggle';
+import { Button } from './ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { ScrollArea } from './ui/scroll-area';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 
 const navItems = [
     {
@@ -39,22 +41,25 @@ const navItems = [
         href: '/about',
         icon: Info,
     },
+    {
+        label: 'Election',
+        href: '/polls/1',
+        icon: Vote,
+    },
 ];
 
 function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLAttributes<HTMLDivElement>) {
     const location = useLocation();
 
     return (
-        <div className='font-bold text-slate-500'>
+        <div className='font-bold'>
             <DropdownMenu>
-                <DropdownMenuTrigger className='flex flex-row items-center font-bold text-slate-600 hover:text-slate-800 transition-colors duration-300'>
-                    <span className='mr-2'>{login}</span>
-                </DropdownMenuTrigger>
+                <DropdownMenuTrigger className='p-2 hover:bg-accent rounded-md'>{login}</DropdownMenuTrigger>
                 <DropdownMenuContent>
                     {role === 'ADMIN' && (
                         <>
                             <Link to='/admin'>
-                                <DropdownMenuItem className='font-bold hover:underline hover:cursor-pointer'>
+                                <DropdownMenuItem className='font-bold hover:cursor-pointer'>
                                     <Settings className='size-5 mr-2' /> Admin
                                 </DropdownMenuItem>
                             </Link>
@@ -79,15 +84,15 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
-        <div className='hidden md:flex flex-row justify-between w-full items-center'>
-            <div className='mr-4 gap-2 flex'>
-                {navItems.map((item, index) => (
+        <div className={classNames(wrapper, 'hidden flex-row gap-2 justify-between items-center md:flex')}>
+            <div className='gap-2 flex -mx-2'>
+                {navItems.map((item) => (
                     <NavLink
                         key={item.href}
                         to={item.href}
-                        className={({ isActive, isPending }) => {
-                            return classNames('text-primary underline-offset-4 hover:underline', 'px-2 py-2', {
-                                ' underline font-bold': isActive,
+                        className={({ isActive }) => {
+                            return classNames('underline-offset-4 hover:underline', 'p-2', {
+                                'underline font-bold': isActive,
                             });
                         }}
                         end
@@ -96,7 +101,10 @@ function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                     </NavLink>
                 ))}
             </div>
-            <User login={login} role={role} />
+            <div className='flex gap-2 items-center'>
+                <ThemeToggle />
+                <User login={login} role={role} />
+            </div>
         </div>
     );
 }
@@ -113,33 +121,35 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
                             <MenuIcon />
                         </Button>
                     </SheetTrigger>
-                    <User login={login} role={role} />
+                    <div className='flex gap-2 items-center'>
+                        <ThemeToggle />
+                        <User login={login} role={role} />
+                    </div>
                 </div>
 
                 <SheetContent side='left'>
                     <ScrollArea className='w-full h-full'>
                         <div className='flex flex-col items-start'>
-                            <div className='mb-6 font-bold uppercase text-gray-600'>Student Council</div>
-                            <div className='flex flex-col justify-between	'>
-                                <div>
-                                    {navItems.map((item, index) => (
-                                        <NavLink
-                                            key={index}
-                                            to={item.href}
-                                            className={({ isActive, isPending }) => {
-                                                return classNames('mb-4 flex flex-row items-center', {
-                                                    'font-bold': isActive,
-                                                });
-                                            }}
-                                            onClick={() => {
-                                                setOpen(false);
-                                            }}
-                                            end
-                                        >
-                                            <item.icon className='size-5 mr-4' /> <p>{item.label}</p>
-                                        </NavLink>
-                                    ))}
-                                </div>
+                            <div className='mb-6 font-bold uppercase'>Student Council</div>
+                            <div className='flex flex-col justify-between'>
+                                {navItems.map((item, index) => (
+                                    <NavLink
+                                        key={index}
+                                        to={item.href}
+                                        className={({ isActive }) => {
+                                            return classNames('mb-4 flex flex-row items-center', {
+                                                'font-bold': isActive,
+                                            });
+                                        }}
+                                        onClick={() => {
+                                            setOpen(false);
+                                        }}
+                                        end
+                                    >
+                                        <item.icon className='size-5 mr-4' />
+                                        <p>{item.label}</p>
+                                    </NavLink>
+                                ))}
                             </div>
                         </div>
                     </ScrollArea>
@@ -152,59 +162,10 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
 export default function NavBar({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
         <header className='w-full border-b'>
-            <div className='flex h-14 items-center px-4'>
+            <div className='flex items-center px-2 h-14 md:px-0'>
                 <MainNav login={login} role={role} />
                 <MobileNav login={login} role={role} />
             </div>
         </header>
     );
 }
-
-// import { NavLink } from "@remix-run/react";
-// import classNames from "classnames";
-// import { Handshake, HardHat, Info } from "lucide-react";
-
-// export function Header() {
-
-// 	return (
-// 		<header className="mt-2 border-b pb-2 px-2">
-// 			<nav className="flex flex-row justify-between items-center mx-2 md:mx-10">
-// 				<ul className="flex flex-row font-bold text-slate-600 space-x-3 md:space-x-5 ">
-// 					<li>
-// 						<NavLink
-// 							to="/about"
-// 							className={({ isActive, isPending }) =>
-// 								classNames({
-// 									"text-slate-600 hover:text-blue-600 transition-colors duration-300":
-// 										!isActive && !isPending,
-// 									"text-blue-600": isActive,
-// 									"text-blue-600 animate-pulse": isPending,
-// 								})
-// 							}
-// 						>
-// 							<Info className="size-5 mr-1" /> About
-// 						</NavLink>
-// 					</li>
-// 					<li>
-// 						<NavLink
-// 							to="/issues"
-// 							className={({ isActive, isPending }) =>
-// 								classNames({
-// 									"text-slate-600 hover:text-green-500 transition-colors duration-300":
-// 										!isActive && !isPending,
-// 									"text-green-500": isActive,
-// 									"text-green-500 animate-pulse": isPending,
-// 								})
-// 							}
-// 						>
-// 							<HardHat className="size-5 mr-1" />
-// 							Issues
-// 						</NavLink>
-// 					</li>
-// 				</ul>
-// 			</nav>
-// 		</header>
-// 	);
-// }
-
-// export default Header;

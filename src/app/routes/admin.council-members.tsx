@@ -157,15 +157,15 @@ function CouncilMember({
     login,
     firstName,
     lastName,
-    ...props
+    className,
 }: { login: string; firstName: string; lastName: string } & React.HTMLAttributes<HTMLDivElement>) {
     const deleteFetcher = useFetcher<{ errors?: { login?: string } }>();
 
     return (
-        <div {...props}>
-            <div className='flex flex-row justify-between'>
-                <div>
-                    {firstName} {lastName} - {login}
+        <>
+            <li className={classNames('flex flex-row justify-between', className)}>
+                <div className='flex items-baseline'>
+                    <pre>{login.padEnd(9)}</pre> {firstName} {lastName}
                 </div>
                 <deleteFetcher.Form method='post'>
                     <input type='hidden' name='_action' value='delete' />
@@ -174,10 +174,9 @@ function CouncilMember({
                         <Trash2 className='text-red-500' />
                     </button>
                 </deleteFetcher.Form>
-            </div>
-
+            </li>
             <FormErrorMessage className='mt-2'>{deleteFetcher.data?.errors?.login}</FormErrorMessage>
-        </div>
+        </>
     );
 }
 
@@ -201,58 +200,51 @@ export default function AdminCouncilMembers() {
     }, [newLogin, addCouncilMemberFetcher.data]);
 
     return (
-        <div className='flex flex-col items-center'>
-            <div className='md:size-6/12'>
-                <div className='flex flex-col m-4'>
-                    <H3 className='mb-4'>Add Council Member</H3>
-                    <addCouncilMemberFetcher.Form method='post'>
-                        <div className='flex flex-row'>
-                            <Input
-                                placeholder='Login'
-                                name='newLogin'
-                                autoComplete='off'
-                                required
-                                minLength={LOGIN_MIN_LENGTH}
-                                maxLength={LOGIN_MAX_LENGTH}
-                                value={newLogin}
-                                onChange={(e) => setNewLogin(e.target.value)}
-                            />
-                            <Button type='submit' name='_action' value='add' className='ml-4' invalid={isButtonInvalid}>
-                                Add
-                            </Button>
-                        </div>
-                        <FormErrorMessage className='mt-2'>
-                            {addCouncilMemberFetcher.data?.errors?.newLogin}
-                        </FormErrorMessage>
-                        <p></p>
-                    </addCouncilMemberFetcher.Form>
-                    <Alert variant='destructive' className='mt-4 w-auto'>
-                        <Info className='h-4 w-4' />
-                        <AlertTitle>Warning!</AlertTitle>
-                        <AlertDescription>
-                            Student Council members will automatically have{' '}
-                            <span className='font-bold uppercase'>Administrator</span> access to this website.
-                            <br />
-                            Please make sure to only add real student council members, and don't add someone for
-                            trolling.
-                        </AlertDescription>
-                    </Alert>
+        <div className='flex flex-col gap-y-4'>
+            <H3>Add Council Member</H3>
+            <addCouncilMemberFetcher.Form method='post'>
+                <div className='flex flex-row'>
+                    <Input
+                        placeholder='Login'
+                        name='newLogin'
+                        autoComplete='off'
+                        required
+                        minLength={LOGIN_MIN_LENGTH}
+                        maxLength={LOGIN_MAX_LENGTH}
+                        value={newLogin}
+                        onChange={(e) => setNewLogin(e.target.value)}
+                    />
+                    <Button type='submit' name='_action' value='add' className='ml-4' invalid={isButtonInvalid}>
+                        Add
+                    </Button>
                 </div>
-                <div className='flex flex-col m-4'>
-                    <H3 className='mb-2'>Current Council Members</H3>
-                    {data.map((member, i) => (
-                        <CouncilMember
-                            key={member.login}
-                            login={member.login}
-                            firstName={member.firstName}
-                            lastName={member.lastName}
-                            className={classNames('p-2 rounded', {
-                                'bg-gray-100': i % 2 === 0,
-                            })}
-                        />
-                    ))}
-                </div>
-            </div>
+                <FormErrorMessage className='mt-2'>{addCouncilMemberFetcher.data?.errors?.newLogin}</FormErrorMessage>
+            </addCouncilMemberFetcher.Form>
+            <Alert variant='destructive'>
+                <Info className='h-4 w-4' />
+                <AlertTitle>Warning!</AlertTitle>
+                <AlertDescription>
+                    Student Council members will automatically have{' '}
+                    <span className='font-bold uppercase'>Administrator</span> access to this website.
+                    <br />
+                    Please make sure to only add real student council members, and don't add someone for trolling.
+                </AlertDescription>
+            </Alert>
+
+            <H3>Current Council Members</H3>
+            <ul>
+                {data.map((member, i) => (
+                    <CouncilMember
+                        key={member.login}
+                        login={member.login}
+                        firstName={member.firstName}
+                        lastName={member.lastName}
+                        className={classNames('p-2 rounded', {
+                            'bg-secondary': i % 2 === 0,
+                        })}
+                    />
+                ))}
+            </ul>
         </div>
     );
 }
