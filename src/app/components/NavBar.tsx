@@ -2,6 +2,7 @@ import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
 import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
 import { HTMLAttributes, useState } from 'react';
+import { wrapper } from '~/lib/layout';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/button';
 import {
@@ -83,8 +84,8 @@ function User({ login, role }: { login: string; role: 'ADMIN' | 'USER' } & HTMLA
 
 function MainNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
-        <div className='hidden md:flex flex-row justify-between w-full items-center gap-2 px-2'>
-            <div className='gap-2 flex'>
+        <div className={classNames(wrapper, 'hidden flex-row gap-2 justify-between items-center md:flex')}>
+            <div className='gap-2 flex -mx-2'>
                 {navItems.map((item) => (
                     <NavLink
                         key={item.href}
@@ -161,7 +162,7 @@ function MobileNav({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
 export default function NavBar({ login, role }: { login: string; role: 'ADMIN' | 'USER' }) {
     return (
         <header className='w-full border-b'>
-            <div className='flex h-14 items-center px-4'>
+            <div className='flex items-center px-2 h-14 md:px-0'>
                 <MainNav login={login} role={role} />
                 <MobileNav login={login} role={role} />
             </div>
