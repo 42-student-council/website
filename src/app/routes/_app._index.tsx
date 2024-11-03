@@ -18,7 +18,7 @@ export default function Index() {
                 COUNCIL
             </h1>
             <p className='text-2xl text-center mb-4'>Official Website of the 42 Vienna Student Council</p>
-            <Link to='/polls/1'>
+            <Link to='/issues'>
                 <Button size='lg'>What's up?</Button>
             </Link>
         </div>
