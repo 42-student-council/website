@@ -1,6 +1,6 @@
 import { Form, Link, NavLink, useLocation } from '@remix-run/react';
 import classNames from 'classnames';
-import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert, Vote } from 'lucide-react';
+import { CirclePlus, DoorOpen, Home, Info, MenuIcon, MessageCircle, Settings, TriangleAlert } from 'lucide-react';
 import { HTMLAttributes, useState } from 'react';
 import { wrapper } from '~/lib/layout';
 import { ThemeToggle } from './ThemeToggle';
@@ -40,11 +40,6 @@ const navItems = [
         label: 'About',
         href: '/about',
         icon: Info,
-    },
-    {
-        label: 'Election',
-        href: '/polls/1',
-        icon: Vote,
     },
 ];
 
