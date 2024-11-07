@@ -36,8 +36,13 @@ const limitedMarkdownPlugin: Plugin = () => {
             }
 
             parent.children[index] = {
-                type: 'text',
-                value,
+                type: 'paragraph',
+                children: [
+                    {
+                        type: 'text',
+                        value,
+                    },
+                ],
             } as any;
 
             return [SKIP, index] as const;
