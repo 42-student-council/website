@@ -19,7 +19,6 @@ import {
     PlusCircle,
 } from 'lucide-react';
 import { Fragment, HTMLAttributes, useEffect, useState } from 'react';
-import NavBar from '~/components/NavBar';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -388,14 +387,13 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
 export function ErrorBoundary() {
     return (
         <Fragment>
-            <NavBar login='zekao?' role='USER' />
-            <div className='mt-4 mx-4'>
+            <div className='mx-4 py-4 my-auto'>
                 <Warning title='Error'>
                     Something went wrong whilst fetching the issues. Please try again later.
                     <p className='mt-4'>
-                        If this issue persists, please open an issue on our{' '}
+                        If this issue persists, please open an issue on{' '}
                         <Link to='https://github.com/42-student-council/website' target='_blank' className='underline'>
-                            GitHub Repo
+                            GitHub
                         </Link>
                         .
                     </p>
