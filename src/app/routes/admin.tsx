@@ -2,6 +2,7 @@ import { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Outlet, useLocation } from '@remix-run/react';
 import { ChevronRight } from 'lucide-react';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage } from '~/components/ui/breadcrumb';
+import { wrapper } from '~/lib/layout';
 import { requireAdmin } from '~/utils/session.server';
 
 export const meta: MetaFunction = () => {
@@ -16,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Admin() {
     return (
-        <div className='px-4 mx-auto max-w-[calc(1280px-2rem)] '>
+        <div className={wrapper}>
             <AdminCrumb />
             <Outlet />
         </div>
@@ -43,7 +44,7 @@ function AdminCrumb() {
     breadcrumbs.unshift({ label: 'Home', href: '/' });
 
     return (
-        <Breadcrumb className='p-3 my-4 rounded-lg border bg-card'>
+        <Breadcrumb className='p-3 mb-6 rounded-lg border bg-card -mx-3'>
             <BreadcrumbList>
                 {breadcrumbs.map((crumb, index) => (
                     <div key={crumb.href}>

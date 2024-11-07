@@ -41,6 +41,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
             title: true,
             description: true,
             createdAt: true,
+            comments: {
+                orderBy: [{ createdAt: 'desc' }],
+                take: 1,
+                select: {
+                    createdAt: true,
+                },
+            },
             _count: {
                 select: {
                     votes: true,
@@ -49,7 +56,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
             },
         },
     });
-    issues.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    issues.forEach(
+        (issue) => (issue.lastActivity = issue.comments.length ? issue.comments[0].createdAt : issue.createdAt),
+    );
+
+    issues.sort((a, b) => new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime());
 
     return { issues } satisfies LoaderData;
 }
@@ -57,6 +69,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 type Issue = {
     archived: boolean;
     createdAt: Date;
+    lastActivity: Date;
     description: string;
     id: number;
     title: string;
@@ -261,8 +274,8 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
             },
         },
         {
-            id: 'date',
-            accessorKey: 'createdAt',
+            id: 'activity',
+            accessorKey: 'lastActivity',
             header: ({ column }) => {
                 return (
                     <Button
@@ -276,7 +289,7 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                             'mr-6': column.getIsSorted() === false,
                         })}
                     >
-                        Created at
+                        Last Activity
                         {column.getIsSorted() !== false &&
                             (column.getIsSorted() === 'asc' ? (
                                 <CalendarArrowUp className='ml-2 h-4 w-4' />
@@ -287,19 +300,21 @@ function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: Se
                 );
             },
             cell: ({ row }) => {
-                return <span>{formatDate(new Date(row.getValue('date')))}</span>;
+                return <span className='pl-4'>{formatDate(new Date(row.getValue('activity')))}</span>;
             },
         },
     ];
 
-    const [sorting, setSorting] = useState<ColumnSort[]>([]);
+    function initialSorting() {
+        if (typeof window === 'undefined') return [];
 
-    useEffect(() => {
-        if (window === undefined) return;
+        const savedSorting = JSON.parse(localStorage?.getItem('tableSorting') || 'null');
+        if (savedSorting) return savedSorting;
 
-        const savedSorting = localStorage.getItem('tableSorting');
-        if (savedSorting) setSorting(JSON.parse(savedSorting));
-    }, []);
+        return [{ id: 'activity', desc: true }];
+    }
+
+    const [sorting, setSorting] = useState<ColumnSort[]>(initialSorting());
 
     useEffect(() => {
         if (window === undefined) return;
