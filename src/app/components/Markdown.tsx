@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import ReactMarkdown, { Options } from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
@@ -53,7 +54,7 @@ const limitedMarkdownPlugin: Plugin = () => {
 export default function Markdown(props: Options & { extraClassName: string }) {
     return (
         <ReactMarkdown
-            className={'text-base text-balance hyphens-auto break-words [&>*]:mb-2 ' + props.extraClassName || ''}
+            className={classNames('text-lg text-balance hyphens-auto break-words [&>*]:mb-3', props.extraClassName)}
             components={{
                 a(props) {
                     const { node, ...rest } = props;
@@ -61,15 +62,15 @@ export default function Markdown(props: Options & { extraClassName: string }) {
                 },
                 ul(props) {
                     const { node, ...rest } = props;
-                    return <ul className='my-4 ml-5 list-disc' {...rest} />;
+                    return <ul className='ml-5 list-disc' {...rest} />;
                 },
                 ol(props) {
                     const { node, ...rest } = props;
-                    return <ul className='my-4 ml-5 list-decimal' {...rest} />;
+                    return <ul className='ml-5 list-decimal' {...rest} />;
                 },
                 li(props) {
                     const { node, ...rest } = props;
-                    return <li className='mt-2' {...rest} />;
+                    return <li className='mb-1' {...rest} />;
                 },
                 blockquote(props) {
                     const { node, ...rest } = props;
