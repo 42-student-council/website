@@ -11,7 +11,6 @@ import {
 } from '@remix-run/react';
 import { PreventFlashOnWrongTheme, Theme, ThemeProvider, useTheme } from 'remix-themes';
 import stylesheet from '~/tailwind.css?url';
-import { Footer } from './components/Footer';
 import NavBar from './components/NavBar';
 import { H1 } from './components/ui/H1';
 import { themeSessionResolver } from './utils/theme.server';
@@ -74,7 +73,6 @@ function InnerLayout({ ssrTheme, children }: { ssrTheme: boolean; children: Reac
                 {children}
                 <ScrollRestoration />
                 <PreventFlashOnWrongTheme ssrTheme={ssrTheme} />
-                <Footer />
                 <Scripts />
             </body>
         </html>

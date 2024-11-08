@@ -21,6 +21,7 @@ services:
             PORT: 3000
             HOST: ${HOST}
             BASE_URL: ${BASE_URL}
+            GIT_COMMIT: ${GIT_COMMIT}
             SESSION_SECRET: ${SESSION_SECRET}
             POSTGRES_HOST: ${POSTGRES_HOST}
             POSTGRES_NAME: ${POSTGRES_NAME}
@@ -46,6 +47,7 @@ services:
             - '5173:5173'
         environment:
             PORT: 5173
+            GIT_COMMIT: ${GIT_COMMIT}
             SESSION_SECRET: ${SESSION_SECRET}
             POSTGRES_HOST: ${POSTGRES_HOST}
             POSTGRES_NAME: ${POSTGRES_NAME}

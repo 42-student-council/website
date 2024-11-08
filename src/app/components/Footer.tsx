@@ -1,10 +1,13 @@
-import { Link } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { Heart } from 'lucide-react';
+import { GitCommitHorizontal, Heart } from 'lucide-react';
 import { wrapper } from '~/lib/layout';
+import { LoaderData } from '~/routes/_app';
 import { GitHub } from './icon/GitHub';
 
 export function Footer() {
+    const { commit } = useLoaderData<LoaderData>();
+
     return (
         <footer
             className='sticky border-t'
@@ -25,12 +28,23 @@ export function Footer() {
                         Student Council
                     </Link>
                 </div>
-                <Link
-                    to='https://github.com/42-student-council/website/issues'
-                    className='hover:underline flex gap-2 items-center'
-                >
-                    <GitHub className='size-4' /> Found a bug?
-                </Link>
+
+                <div className='flex gap-4'>
+                    <Link
+                        to={`https://github.com/42-student-council/website/commits/${commit}`}
+                        className='hover:underline flex gap-1.5 items-center text-muted-foreground'
+                    >
+                        <GitCommitHorizontal className='size-4' />
+                        {commit}
+                    </Link>
+
+                    <Link
+                        to='https://github.com/42-student-council/website/issues'
+                        className='hover:underline flex gap-2 items-center'
+                    >
+                        <GitHub className='size-4' /> Found a bug?
+                    </Link>
+                </div>
             </div>
         </footer>
     );
