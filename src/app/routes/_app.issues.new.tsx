@@ -6,6 +6,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
+import { MarkdownBadge } from '~/components/Markdown';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
@@ -212,6 +213,12 @@ export default function IssuesNew() {
                 </Link>
                 .
             </p>
+            <Info title='Note' className='mt-4'>
+                To maintain complete anonymity, the author of an issue does not get stored.
+                <br />
+                Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
+            </Info>
+
             <createIssueFetcher.Form className='mt-6' method='post' onSubmit={handleSubmit}>
                 <Label htmlFor='title' className='text-lg'>
                     Issue Title
@@ -235,8 +242,7 @@ export default function IssuesNew() {
                         Issue Description
                     </Label>
                     <Textarea
-                        placeholder="Please describe your issue or suggestion here...
-(Currently we don't support markdown for public issues, but we will in the future.)"
+                        placeholder='Please describe your issue or suggestion here...'
                         name='description'
                         className={classNames('h-48', {
                             'border-red-600': !!createIssueFetcher.data?.errors?.description,
@@ -252,15 +258,12 @@ export default function IssuesNew() {
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.description}</FormErrorMessage>
                 </div>
 
-                <Info title='Note' className='mt-4'>
-                    To maintain complete anonymity, the author of an issue does not get stored.
-                    <br />
-                    Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
-                </Info>
-
-                <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData} className='mt-4'>
-                    {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
-                </Button>
+                <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
+                    <MarkdownBadge />
+                    <Button type='submit' invalid={!isFormValid || !!createIssueFetcher.formData}>
+                        {createIssueFetcher.formData ? 'Loading...' : 'Submit Issue'}
+                    </Button>
+                </div>
                 <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.message}</FormErrorMessage>
             </createIssueFetcher.Form>
         </Fragment>
