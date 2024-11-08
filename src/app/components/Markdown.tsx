@@ -24,6 +24,7 @@ const limitedMarkdownPlugin: Plugin = () => {
                     'list',
                     'listItem',
                     'blockquote',
+                    'code',
                 ].includes(node.type) ||
                 !node.position
             ) {
