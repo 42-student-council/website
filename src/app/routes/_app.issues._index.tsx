@@ -1,30 +1,13 @@
 import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
-import { Link, useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
-import {
-    ColumnDef,
-    ColumnSort,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
-import classNames from 'classnames';
-import {
-    ArrowDown10,
-    ArrowDownAZ,
-    ArrowUp10,
-    ArrowUpAZ,
-    CalendarArrowDown,
-    CalendarArrowUp,
-    PlusCircle,
-} from 'lucide-react';
-import { Fragment, HTMLAttributes, useEffect, useState } from 'react';
+import { Link, useLoaderData, useSearchParams } from '@remix-run/react';
+import { Calendar, Heart, MessageCircle, PlusCircle } from 'lucide-react';
+import { Fragment, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
-import { ScrollArea, ScrollBar } from '~/components/ui/scroll-area';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/components/ui/card';
+import { Label } from '~/components/ui/label';
+import { ToggleGroup, ToggleGroupItem } from '~/components/ui/toggle-group';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
 
@@ -80,18 +63,24 @@ type Issue = {
 
 type LoaderData = { issues: Issue[] };
 
+type filters = 'open' | 'archived';
+type sortings = 'activity' | 'votes' | 'comments';
+
 export default function Issues() {
+    const defaultFilter = 'open';
+    const defaultSorting = 'activity';
+
     const { issues } = useLoaderData<LoaderData>();
-    const archivedIssues = issues.filter((issue) => issue.archived);
-    const visibleIssues = issues.filter((issue) => !issue.archived);
 
     const [searchParams, setSearchParams] = useSearchParams();
 
     const initialIssueFilter = () => {
-        return searchParams.get('filter') ?? 'open';
+        const searchSorting = searchParams.get('filter');
+        if (searchSorting === 'archived') return searchSorting;
+        return defaultFilter;
     };
 
-    const [filter, setFilter] = useState(initialIssueFilter);
+    const [filter, setFilter] = useState<filters>(initialIssueFilter);
 
     useEffect(() => {
         if (filter === initialIssueFilter()) {
@@ -102,15 +91,59 @@ export default function Issues() {
         }
     }, [filter, setSearchParams]);
 
+    const [sorting, setSorting] = useState<sortings>(defaultSorting);
+
+    function getFilteredIssues() {
+        return issues.filter(
+            (issue) => (filter === 'archived' && issue.archived) || (filter === 'open' && !issue.archived),
+        );
+    }
+
+    function getSortedIssues() {
+        const getters = {
+            activity: (issue: Issue) => new Date(issue.lastActivity).getTime(),
+            votes: (issue: Issue) => issue._count.votes,
+            comments: (issue: Issue) => issue._count.comments,
+        };
+
+        const getter = getters[sorting];
+
+        return filteredIssues.sort((a, b) => getter(b) - getter(a));
+    }
+
+    const filteredIssues = useMemo(getFilteredIssues, [filter]);
+    const sortedIssues = useMemo(getSortedIssues, [filter, sorting]);
+
     return (
-        <Tabs defaultValue={filter} onValueChange={(value) => setFilter(value)}>
+        <>
             <H1 className='mb-4'>Issues</H1>
-            <div className='flex justify-between items-center mb-2'>
-                <TabsList>
-                    <TabsTrigger value='open'>Open</TabsTrigger>
-                    <TabsTrigger value='archived'>Archived</TabsTrigger>
-                </TabsList>
-                <div className='flex gap-2 items-center ml-auto'>
+            <div className='flex justify-between items-end gap-4'>
+                <div className='flex flex-col gap-2'>
+                    <Label>Filter</Label>
+                    <ToggleGroup
+                        type='single'
+                        variant='outline'
+                        onValueChange={(newValue) => setFilter(newValue || filter)}
+                        value={filter}
+                    >
+                        <ToggleGroupItem value='open'>Open</ToggleGroupItem>
+                        <ToggleGroupItem value='archived'>Archived</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+                <div className='flex flex-col gap-2'>
+                    <Label>Sort by</Label>
+                    <ToggleGroup
+                        type='single'
+                        variant='outline'
+                        onValueChange={(newValue) => setSorting(newValue || sorting)}
+                        value={sorting}
+                    >
+                        <ToggleGroupItem value='activity'>Last Activity</ToggleGroupItem>
+                        <ToggleGroupItem value='votes'>Votes</ToggleGroupItem>
+                        <ToggleGroupItem value='comments'>Comments</ToggleGroupItem>
+                    </ToggleGroup>
+                </div>
+                <div className='ml-auto'>
                     <Link to='/issues/new'>
                         <Button size='md' className='gap-2'>
                             <PlusCircle className='w-5 h-5' />
@@ -120,267 +153,56 @@ export default function Issues() {
                     </Link>
                 </div>
             </div>
-            <TabsContent value='open' className='flex flex-col justify-center'>
-                <p className='pb-2 text-muted-foreground'>This is what students are currently talking about.</p>
-                <IssuesTable issues={visibleIssues} />
-                <div className='pt-2 pl-2 text-xs text-muted-foreground'>
-                    Showing <span className='font-bold'>{visibleIssues.length}</span>{' '}
-                    {visibleIssues.length === 1 ? 'issue' : 'issues'}
-                </div>
-            </TabsContent>
-            <TabsContent value='archived' className='flex flex-col justify-center'>
-                <p className='pb-2 text-muted-foreground'>
-                    Issues that have been resolved or have been open for 2 weeks and showed no activity for 1 week.
-                </p>
-                <IssuesTable issues={archivedIssues} />
-                <div className='pt-2 pl-2 text-xs text-muted-foreground'>
-                    Showing <span className='font-bold'>{archivedIssues.length}</span> archived{' '}
-                    {archivedIssues.length === 1 ? 'issue' : 'issues'}
-                </div>
-            </TabsContent>
-        </Tabs>
+            <p className='py-2 text-muted-foreground'>
+                Showing <span className='font-bold'>{sortedIssues.length}</span>{' '}
+                {sortedIssues.length === 1 ? 'issue' : 'issues'}{' '}
+                {filter === 'open'
+                    ? 'students are currently talking about.'
+                    : 'that have been resolved or have been open for 2 weeks and showed no activity for 1 week.'}
+            </p>
+            <IssuesList issues={sortedIssues} />
+        </>
     );
 }
 
-function IssuesTable({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
-    const columns: ColumnDef<SerializeFrom<Issue>>[] = [
-        {
-            accessorKey: 'title',
-            sortingFn: (rowA, rowB) => {
-                const titleA: string = rowA.getValue('title');
-                const titleB: string = rowB.getValue('title');
-
-                if (!titleA.localeCompare(titleB)) {
-                    const dateA = new Date(rowA.getValue('date')).getTime();
-                    const dateB = new Date(rowB.getValue('date')).getTime();
-                    return dateB - dateA;
-                }
-                return titleA.localeCompare(titleB);
-            },
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Title
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <ArrowDownAZ className='ml-2 h-4 w-4' />
-                            ) : (
-                                <ArrowUpAZ className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const id = row.original.id;
-                const title = row.getValue<string>('title');
-                return (
-                    <span>
-                        <Link to={`/issues/${id}`} className='hover:underline'>
-                            {title}
-                        </Link>
-                    </span>
-                );
-            },
-        },
-        {
-            id: 'votes',
-            accessorKey: '_count.votes',
-            sortingFn: (rowA, rowB) => {
-                const votesA: number = rowA.getValue('votes');
-                const votesB: number = rowB.getValue('votes');
-
-                if (votesA === votesB) {
-                    const dateA = new Date(rowA.getValue('date')).getTime();
-                    const dateB = new Date(rowB.getValue('date')).getTime();
-                    return dateA - dateB;
-                }
-                return votesA - votesB;
-            },
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => {
-                            if (column.getIsSorted() === false) {
-                                column.toggleSorting(true);
-                            } else column.toggleSorting(column.getIsSorted() === 'asc');
-                        }}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Votes
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <ArrowUp10 className='ml-2 h-4 w-4' />
-                            ) : (
-                                <ArrowDown10 className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const votes = row.getValue('votes') as number;
-                return <div className='pl-7'>{votes}</div>;
-            },
-        },
-        {
-            id: 'comments',
-            accessorKey: '_count.comments',
-            sortingFn: (rowA, rowB) => {
-                const commentsA: number = rowA.getValue('comments');
-                const commentsB: number = rowB.getValue('comments');
-
-                if (commentsA === commentsB) {
-                    const dateA = new Date(rowA.getValue('date')).getTime();
-                    const dateB = new Date(rowB.getValue('date')).getTime();
-                    return dateA - dateB;
-                }
-                return commentsA - commentsB;
-            },
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => {
-                            if (column.getIsSorted() === false) {
-                                column.toggleSorting(true);
-                            } else column.toggleSorting(column.getIsSorted() === 'asc');
-                        }}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Comments
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <ArrowUp10 className='ml-2 h-4 w-4' />
-                            ) : (
-                                <ArrowDown10 className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                const comments = row.getValue('comments') as number;
-                return <div className='pl-12'>{comments}</div>;
-            },
-        },
-        {
-            id: 'activity',
-            accessorKey: 'lastActivity',
-            header: ({ column }) => {
-                return (
-                    <Button
-                        variant='ghost'
-                        onClick={() => {
-                            if (column.getIsSorted() === false) {
-                                column.toggleSorting(true);
-                            } else column.toggleSorting(column.getIsSorted() === 'asc');
-                        }}
-                        className={classNames('flex flex-row', {
-                            'mr-6': column.getIsSorted() === false,
-                        })}
-                    >
-                        Last Activity
-                        {column.getIsSorted() !== false &&
-                            (column.getIsSorted() === 'asc' ? (
-                                <CalendarArrowUp className='ml-2 h-4 w-4' />
-                            ) : (
-                                <CalendarArrowDown className='ml-2 h-4 w-4' />
-                            ))}
-                    </Button>
-                );
-            },
-            cell: ({ row }) => {
-                return <span className='pl-4'>{formatDate(new Date(row.getValue('activity')))}</span>;
-            },
-        },
-    ];
-
-    function initialSorting() {
-        if (typeof window === 'undefined') return [];
-
-        const savedSorting = JSON.parse(localStorage?.getItem('tableSorting') || 'null');
-        if (savedSorting) return savedSorting;
-
-        return [{ id: 'activity', desc: true }];
-    }
-
-    const [sorting, setSorting] = useState<ColumnSort[]>(initialSorting());
-
-    useEffect(() => {
-        if (window === undefined) return;
-
-        if (sorting.length > 0) localStorage.setItem('tableSorting', JSON.stringify(sorting));
-    }, [sorting]);
-
-    const table = useReactTable({
-        data: issues,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        state: {
-            sorting,
-        },
-    });
-
-    const navigate = useNavigate();
-
+function IssuesList({ issues }: HTMLAttributes<HTMLTableElement> & { issues: SerializeFrom<Issue[]> }) {
     return (
-        <ScrollArea className='whitespace-nowrap rounded-md border w-full'>
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(header.column.columnDef.header, header.getContext())}
-                                    </TableHead>
-                                );
-                            })}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => {
-                            return (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && 'selected'}
-                                    onClick={() => navigate(`/issues/${row.original.id}`)}
-                                    className='hover:cursor-pointer'
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            );
-                        })
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className='h-24 text-center'>
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-            <ScrollBar orientation='horizontal' />
-        </ScrollArea>
+        <ul className='grid grid-cols-1 gap-2'>
+            {issues.map((issue) => (
+                <li key={issue.id}>
+                    <a href={`/issues/${issue.id}`}>
+                        <Card className='grow flex flex-col'>
+                            <CardHeader className='p-4 pb-0'>
+                                <CardTitle className='text-xl'>
+                                    <span className='text-muted-foreground'>#{issue.id}</span> {issue.title}
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className='py-2 px-4 flex flex-col gap-2 grow'>
+                                <p className='truncate'>{issue.description.slice(0, 120)}</p>
+                            </CardContent>
+                            <CardFooter className='p-4 pt-0 flex gap-4 wrap justify-between text-sm'>
+                                <p className='text-muted-foreground flex items-center'>
+                                    <Calendar className='mr-1 size-4' />
+                                    <time dateTime={new Date(issue.createdAt).toISOString()}>
+                                        {formatDate(new Date(issue.createdAt))}
+                                    </time>
+                                </p>
+                                <div className='flex gap-4'>
+                                    <p className='text-muted-foreground flex items-center'>
+                                        <Heart className='mr-1 size-4' />
+                                        <p>{issue._count.votes}</p>
+                                    </p>
+                                    <p className='text-muted-foreground flex items-center'>
+                                        <MessageCircle className='mr-1 size-4' />
+                                        <p>{issue._count.comments}</p>
+                                    </p>
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </a>
+                </li>
+            ))}
+        </ul>
     );
 }
 
