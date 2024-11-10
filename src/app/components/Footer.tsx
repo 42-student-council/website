@@ -30,13 +30,15 @@ export function Footer() {
                 </div>
 
                 <div className='flex gap-4'>
-                    <Link
-                        to={`https://github.com/42-student-council/website/commits/${commit}`}
-                        className='hover:underline flex gap-1.5 items-center text-muted-foreground'
-                    >
-                        <GitCommitHorizontal className='size-4' />
-                        {commit}
-                    </Link>
+                    {!!commit.length && (
+                        <Link
+                            to={`https://github.com/42-student-council/website/commits/${commit}`}
+                            className='hover:underline flex gap-1.5 items-center text-muted-foreground'
+                        >
+                            <GitCommitHorizontal className='size-4' />
+                            {commit}
+                        </Link>
+                    )}
 
                     <Link
                         to='https://github.com/42-student-council/website/issues'
