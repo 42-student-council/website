@@ -3,17 +3,20 @@ import { Outlet, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
 import { LoaderFunctionArgs } from 'react-router';
 import { Fragment } from 'react/jsx-runtime';
+import { Footer } from '~/components/Footer';
 import NavBar from '~/components/NavBar';
 import { wrapper } from '~/lib/layout';
 import { requireSessionData } from '~/utils/session.server';
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await requireSessionData(request);
-    return { session };
+    const commit = process.env.GIT_COMMIT || '';
+    return { session, commit } satisfies LoaderData;
 }
 
-type LoaderData = {
+export type LoaderData = {
     session: SessionData;
+    commit: string;
 };
 
 export default function Admin() {
@@ -25,6 +28,7 @@ export default function Admin() {
             <main className={classNames(wrapper, 'lg:py-6 xl:p-8 grow flex flex-col')}>
                 <Outlet />
             </main>
+            <Footer />
         </Fragment>
     );
 }
