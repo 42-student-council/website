@@ -596,7 +596,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
             })}
         >
             {comment.official && <p className='text-lg font-bold'>Student Council Answer</p>}
-            <Link to={`#${comment.id}`} className='text-xs text-muted-foreground pb-2 hover:underline'>
+            <Link to={`#${comment.id}`} className='text-sm text-muted-foreground pb-2 hover:underline'>
                 {formatDate(new Date(comment.createdAt))}
             </Link>
             <Markdown extraClassName='my-2'>{comment.text}</Markdown>
