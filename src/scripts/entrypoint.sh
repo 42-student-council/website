@@ -8,6 +8,7 @@ done
 npx prisma migrate deploy
 
 echo NODE_ENV=$NODE_ENV
+echo GIT_COMMIT=$GIT_COMMIT
 
 if [ "$NODE_ENV" = "production" ]; then
   npm run start
