@@ -19,33 +19,42 @@ jobs:
         uses: xt0rted/pull-request-comment-branch@v2
         if: github.event_name == 'issue_comment'
         id: comment-branch
+
       - name: Checkout Pull Request head ref
         uses: actions/checkout@v3
         if: github.event_name == 'issue_comment'
         with:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
+
       - name: Checkout default head ref
         uses: actions/checkout@v3
         if: github.event_name != 'issue_comment'
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '14'
+
       - name: Install dependencies
         run: npm install
+
       - name: Configure GitHub Actions bot
         run : |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Run Prettier
         id: prettier
         run: npx prettier --config .prettierrc --write "**/*.{js,jsx,ts,tsx,html,css,scss}"
+
       - name: Commit changes
         run: |
           git diff --exit-code || git commit -am "bot: apply Prettier formatting"
+
       - name: Push changes
         run: |
           git push
+
       - name: Comment reaction
         if: github.event_name == 'issue_comment'
         uses: dkershner6/reaction-action@v2.2.1
