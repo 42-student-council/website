@@ -17,9 +17,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Run Prettier
         id: prettier
         run: npx prettier --config .prettierrc --check "**/*.{js,jsx,ts,tsx,html,css,scss}"
