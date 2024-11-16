@@ -153,7 +153,7 @@ export default function Issues() {
                     </Link>
                 </div>
             </div>
-            <p className='py-2 text-muted-foreground'>
+            <p className='py-4 text-muted-foreground'>
                 Showing <span className='font-bold'>{sortedIssues.length}</span>{' '}
                 {sortedIssues.length === 1 ? 'issue' : 'issues'}{' '}
                 {filter === 'open'
