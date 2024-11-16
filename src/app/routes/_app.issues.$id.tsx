@@ -504,28 +504,26 @@ function IssueUpvoteButton({ issue, hasVoted }: { issue: SerializeFrom<Issue>; h
 
             <Button
                 type='submit'
+                variant='outline'
                 disabled={issue.archived}
-                className={classNames('w-full hover:bg-darkred-500 md:w-96', {
+                className={classNames('w-full hover:bg-darkred-500', {
                     'bg-rose-500': hasVoted,
-                    'bg-secondary dark:bg-secondary-foreground': !hasVoted,
                 })}
                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
             >
                 <Heart
                     className={classNames('mr-2', {
-                        'text-white fill-current': hasVoted,
-                        'text-black': !hasVoted,
+                        'text-white': hasVoted,
                     })}
                 />
                 <p
                     className={classNames('font-bold', {
                         'text-white': hasVoted,
-                        'text-black': !hasVoted,
                     })}
                 >
                     {issue._count.votes}{' '}
-                    {issue._count.votes == 1 ? 'Student upvoted this issue' : 'Students upvoted this issue'}
-                </p>{' '}
+                    {issue._count.votes == 1 ? 'student upvoted this issue' : 'students upvoted this issue'}
+                </p>
             </Button>
         </fetcher.Form>
     );
