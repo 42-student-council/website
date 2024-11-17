@@ -25,7 +25,7 @@ export default function Admin() {
     return (
         <Fragment>
             <NavBar login={data.session.login} role={data.session.role} />
-            <main className={classNames(wrapper, 'lg:py-6 xl:p-8 grow flex flex-col')}>
+            <main className={classNames(wrapper, 'grow flex flex-col')}>
                 <Outlet />
             </main>
             <Footer />
