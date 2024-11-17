@@ -117,41 +117,40 @@ export default function Issues() {
     return (
         <>
             <H1 className='mb-4'>Issues</H1>
-            <div className='flex justify-between items-end gap-4'>
-                <div className='flex flex-col gap-2'>
-                    <Label>Filter</Label>
-                    <ToggleGroup
-                        type='single'
-                        variant='outline'
-                        onValueChange={(newValue) => setFilter(newValue || filter)}
-                        value={filter}
-                    >
-                        <ToggleGroupItem value='open'>Open</ToggleGroupItem>
-                        <ToggleGroupItem value='archived'>Archived</ToggleGroupItem>
-                    </ToggleGroup>
+            <div className='flex items-end justify-between flex-wrap gap-4'>
+                <div className='flex flex-wrap gap-4'>
+                    <div className='flex flex-col gap-2'>
+                        <Label>Filter</Label>
+                        <ToggleGroup
+                            type='single'
+                            variant='outline'
+                            onValueChange={(newValue) => setFilter(newValue || filter)}
+                            value={filter}
+                        >
+                            <ToggleGroupItem value='open'>Open</ToggleGroupItem>
+                            <ToggleGroupItem value='archived'>Archived</ToggleGroupItem>
+                        </ToggleGroup>
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <Label>Sort by</Label>
+                        <ToggleGroup
+                            type='single'
+                            variant='outline'
+                            onValueChange={(newValue) => setSorting(newValue || sorting)}
+                            value={sorting}
+                        >
+                            <ToggleGroupItem value='activity'>Last Activity</ToggleGroupItem>
+                            <ToggleGroupItem value='votes'>Votes</ToggleGroupItem>
+                            <ToggleGroupItem value='comments'>Comments</ToggleGroupItem>
+                        </ToggleGroup>
+                    </div>
                 </div>
-                <div className='flex flex-col gap-2'>
-                    <Label>Sort by</Label>
-                    <ToggleGroup
-                        type='single'
-                        variant='outline'
-                        onValueChange={(newValue) => setSorting(newValue || sorting)}
-                        value={sorting}
-                    >
-                        <ToggleGroupItem value='activity'>Last Activity</ToggleGroupItem>
-                        <ToggleGroupItem value='votes'>Votes</ToggleGroupItem>
-                        <ToggleGroupItem value='comments'>Comments</ToggleGroupItem>
-                    </ToggleGroup>
-                </div>
-                <div className='ml-auto'>
-                    <Link to='/issues/new'>
-                        <Button size='md' className='gap-2'>
-                            <PlusCircle className='w-5 h-5' />
-                            <span className='hidden whitespace-nowrap sm:inline'>I also have something to say!</span>
-                            <span className='whitespace-nowrap sm:hidden'>New Issue</span>
-                        </Button>
-                    </Link>
-                </div>
+                <Link to='/issues/new'>
+                    <Button size='md' className='gap-2'>
+                        <PlusCircle className='w-5 h-5' />
+                        <span className='whitespace-nowrap'>New Issue</span>
+                    </Button>
+                </Link>
             </div>
             <p className='py-4 text-muted-foreground'>
                 Showing <span className='font-bold'>{sortedIssues.length}</span>{' '}
