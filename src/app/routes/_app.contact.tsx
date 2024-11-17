@@ -10,7 +10,8 @@ import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
 import { Textarea } from '~/components/ui/textarea';
-import { sendDiscordWebhook } from '~/utils/discord.server';
+import { config } from '~/utils/config.server';
+import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
 import { validateForm } from '~/utils/validation';
 
@@ -79,7 +80,7 @@ export async function action({ request }: ActionFunctionArgs) {
             }
 
             try {
-                await sendDiscordWebhook({
+                await sendDiscordWebhookWithUrl(config.discord.contactWebhookUrl, {
                     embeds: [embed],
                     username: 'Webportal',
                     wait: true,

@@ -1,8 +1,7 @@
 export const config = {
     baseUrl: requireEnv('BASE_URL'),
     discord: {
-        webhookId: requireEnv('DISCORD_WEBHOOK_ID'),
-        webhookToken: requireEnv('DISCORD_WEBHOOK_TOKEN'),
+        contactWebhookUrl: requireEnv('CONTACT_WEBHOOK_URL'),
         councilServerIssueWebhookUrl: requireEnv('COUNCIL_SERVER_ISSUE_WEBHOOK_URL'),
         studentServerIssueWebhookUrl: requireEnv('STUDENT_SERVER_ISSUE_WEBHOOK_URL'),
     },
