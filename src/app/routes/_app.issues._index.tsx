@@ -1,6 +1,15 @@
 import { LoaderFunctionArgs, MetaFunction, SerializeFrom } from '@remix-run/node';
 import { Link, useLoaderData, useSearchParams } from '@remix-run/react';
-import { Calendar, Heart, MessageCircle, PlusCircle } from 'lucide-react';
+import {
+    ArrowDown10,
+    ArrowUp10,
+    Calendar,
+    CalendarArrowDown,
+    CalendarArrowUp,
+    Heart,
+    MessageCircle,
+    PlusCircle,
+} from 'lucide-react';
 import { Fragment, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { Warning } from '~/components/alert/Warning';
 import { H1 } from '~/components/ui/H1';
@@ -92,6 +101,7 @@ export default function Issues() {
     }, [filter, setSearchParams]);
 
     const [sorting, setSorting] = useState<sortings>(defaultSorting);
+    const [descending, setDescending] = useState<boolean>(true);
 
     function getFilteredIssues() {
         return issues.filter(
@@ -107,12 +117,28 @@ export default function Issues() {
         };
 
         const getter = getters[sorting];
-
-        return filteredIssues.sort((a, b) => getter(b) - getter(a));
+        if (descending) return filteredIssues.sort((a, b) => getter(b) - getter(a));
+        return filteredIssues.sort((a, b) => getter(a) - getter(b));
     }
 
     const filteredIssues = useMemo(getFilteredIssues, [filter]);
-    const sortedIssues = useMemo(getSortedIssues, [filter, sorting]);
+    const sortedIssues = useMemo(getSortedIssues, [filter, sorting, descending]);
+
+    function SortingToggle({ children, value, type }: { children: string; value: sortings; type: 'date' | 'number' }) {
+        const icons = {
+            date: { desc: CalendarArrowDown, asc: CalendarArrowUp },
+            number: { desc: ArrowDown10, asc: ArrowUp10 },
+        };
+
+        const Icon = icons[type][descending ? 'desc' : 'asc'];
+
+        return (
+            <ToggleGroupItem value={value}>
+                {value === sorting && <Icon />}
+                {children}
+            </ToggleGroupItem>
+        );
+    }
 
     return (
         <>
@@ -126,22 +152,37 @@ export default function Issues() {
                             variant='outline'
                             onValueChange={(newValue) => setFilter(newValue || filter)}
                             value={filter}
+                            size='sm'
                         >
                             <ToggleGroupItem value='open'>Open</ToggleGroupItem>
                             <ToggleGroupItem value='archived'>Archived</ToggleGroupItem>
                         </ToggleGroup>
                     </div>
                     <div className='flex flex-col gap-2'>
-                        <Label>Sort by</Label>
+                        <Label>Sort by {descending}</Label>
                         <ToggleGroup
                             type='single'
                             variant='outline'
-                            onValueChange={(newValue) => setSorting(newValue || sorting)}
+                            onValueChange={(newValue) => {
+                                if (newValue === '') {
+                                    setDescending(!descending);
+                                    return;
+                                }
+                                setSorting(newValue || sorting);
+                                setDescending(true);
+                            }}
                             value={sorting}
+                            size='sm'
                         >
-                            <ToggleGroupItem value='activity'>Last Activity</ToggleGroupItem>
-                            <ToggleGroupItem value='votes'>Votes</ToggleGroupItem>
-                            <ToggleGroupItem value='comments'>Comments</ToggleGroupItem>
+                            <SortingToggle value='activity' type='date'>
+                                Last Activity
+                            </SortingToggle>
+                            <SortingToggle value='votes' type='number'>
+                                Votes
+                            </SortingToggle>
+                            <SortingToggle value='comments' type='number'>
+                                Comments
+                            </SortingToggle>
                         </ToggleGroup>
                     </div>
                 </div>
