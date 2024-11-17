@@ -250,9 +250,10 @@ export default function Contact() {
                         What would you like to tell us?
                     </Label>
                     <Textarea
+                        id='message'
                         placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
                         name='message'
-                        className={classNames('h-48', {
+                        className={classNames('h-48 mt-2', {
                             'border-red-600': !!contactFetcher.data?.errors?.message,
                         })}
                         required
@@ -275,7 +276,7 @@ export default function Contact() {
                         value={anonymousOption}
                         name='anonymous'
                         onValueChange={setAnonymousOption}
-                        className='pt-1'
+                        className='mt-2'
                     >
                         <div className='inline-flex'>
                             <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -293,7 +294,7 @@ export default function Contact() {
                     {anonymousError && <FormErrorMessage className='mt-2'>{anonymousError}</FormErrorMessage>}
 
                     <fieldset
-                        invalid={anonymousOption === 'yes'}
+                        disabled={anonymousOption === 'yes'}
                         className={`${anonymousOption === 'yes' ? 'opacity-50 pointer-events-none' : ''}`}
                     >
                         <div className='mt-4'>
@@ -305,7 +306,7 @@ export default function Contact() {
                                 value={contactOption}
                                 name='contactWay'
                                 onValueChange={setContactOption}
-                                className='pt-1'
+                                className='mt-2'
                             >
                                 <div className='inline-flex'>
                                     <Label className='inline-flex items-center space-x-2 cursor-pointer'>
@@ -329,9 +330,10 @@ export default function Contact() {
                             {contactError && <FormErrorMessage className='mt-2'>{contactError}</FormErrorMessage>}
 
                             {contactOption === 'email' && (
-                                <div className='mt-2'>
+                                <div className='mt-3'>
                                     <Label htmlFor='contactEmail'>We need your info in order to get back to you:</Label>
                                     <Input
+                                        id='contactEmail'
                                         type='email'
                                         name='contactEmail'
                                         required
@@ -340,7 +342,7 @@ export default function Contact() {
                                         placeholder='Please enter your email'
                                         value={contactEmail}
                                         onChange={(e) => setContactEmail(e.target.value)}
-                                        className={classNames({
+                                        className={classNames('mt-1', {
                                             'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
                                         })}
                                         ref={contactEmailRef}
