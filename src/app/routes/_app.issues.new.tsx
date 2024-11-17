@@ -3,8 +3,9 @@ import { json, Link, useFetcher, useNavigate } from '@remix-run/react';
 import classNames from 'classnames';
 import { ChevronLeft } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { z } from 'zod';
+import { AutosizeTextarea } from '~/components/AutosizeTextarea';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { MarkdownBadge } from '~/components/Markdown';
 import { Info } from '~/components/alert/Info';
@@ -12,7 +13,6 @@ import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { db } from '~/utils/db.server';
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
@@ -134,9 +134,6 @@ export default function IssuesNew() {
     const [description, setDescription] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const titleRef = useRef(null);
-    const descriptionRef = useRef(null);
-
     useEffect(() => {
         if (createIssueFetcher.data?.id != undefined) {
             localStorage.removeItem('create-issue-title');
@@ -151,15 +148,6 @@ export default function IssuesNew() {
         if (savedTitle) setTitle(savedTitle);
         if (savedDescription) setDescription(savedDescription);
     }, []);
-
-    useEffect(() => {
-        if (titleRef.current) {
-            titleRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (descriptionRef.current) {
-            descriptionRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }, [title, description]);
 
     useEffect(() => {
         localStorage.setItem('create-issue-title', title);
@@ -233,7 +221,6 @@ export default function IssuesNew() {
                     className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
                     onChange={(e) => setTitle(e.target.value)}
                     defaultValue={title}
-                    ref={titleRef}
                 />
                 <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.title}</FormErrorMessage>
 
@@ -241,10 +228,10 @@ export default function IssuesNew() {
                     <Label htmlFor='description' className='text-lg'>
                         Issue Description
                     </Label>
-                    <Textarea
+                    <AutosizeTextarea
                         placeholder='Please describe your issue or suggestion here...'
                         name='description'
-                        className={classNames('h-48', {
+                        className={classNames('min-h-20', {
                             'border-red-600': !!createIssueFetcher.data?.errors?.description,
                         })}
                         required
@@ -253,7 +240,6 @@ export default function IssuesNew() {
                         maxLength={DESCRIPTION_MAX_LENGTH}
                         onChange={(e) => setDescription(e.target.value)}
                         defaultValue={description}
-                        ref={descriptionRef}
                     />
                     <FormErrorMessage className='mt-2'>{createIssueFetcher.data?.errors?.description}</FormErrorMessage>
                 </div>

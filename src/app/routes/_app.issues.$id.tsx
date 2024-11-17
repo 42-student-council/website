@@ -5,6 +5,7 @@ import { ChevronLeft, Heart } from 'lucide-react';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
+import { AutosizeTextarea } from '~/components/AutosizeTextarea';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import Markdown, { MarkdownBadge } from '~/components/Markdown';
 import { Info } from '~/components/alert/Info';
@@ -23,7 +24,6 @@ import {
 } from '~/components/ui/alert-dialog';
 import { Button } from '~/components/ui/button';
 import { Checkbox } from '~/components/ui/checkbox';
-import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { formatDate } from '~/utils/date';
 import { db } from '~/utils/db.server';
@@ -348,8 +348,6 @@ export default function IssueDetail() {
     const [commentText, setCommentText] = useState('');
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const commentRef = useRef(null);
-
     useEffect(() => {
         if (fetcher.state === 'idle' && fetcher.data && !fetcher.data?.errors?.message) {
             formRef.current?.reset();
@@ -361,12 +359,6 @@ export default function IssueDetail() {
         const savedCommentText = localStorage.getItem(`issue-${issue.id}-comment-text`);
         if (savedCommentText) setCommentText(savedCommentText);
     }, []);
-
-    useEffect(() => {
-        if (commentRef.current) {
-            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }, [commentText]);
 
     useEffect(() => {
         localStorage.setItem(`issue-${issue.id}-comment-text`, commentText);
@@ -553,27 +545,19 @@ function CommentForm({
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     fetcher: any;
 }) {
-    const commentRef = useRef(null);
-
-    useEffect(() => {
-        if (commentRef.current) {
-            (commentRef.current as HTMLTextAreaElement).dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }, [commentText]);
-
     return (
         <fetcher.Form method='post' className='mt-4 md:-mx-3' ref={formRef} onSubmit={handleSubmit}>
             <input type='hidden' name='_action' value='post-comment' />
-            <Textarea
+            <AutosizeTextarea
                 name='comment_text'
                 required
-                rows={3}
                 placeholder='Add a comment...'
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 minLength={COMMENT_MIN_LENGTH}
                 maxLength={COMMENT_MAX_LENGTH}
-                ref={commentRef}
+                className='min-h-14'
+                minHeight={58}
             />
             <div className='flex flex-row gap-5 mt-3 flex-wrap justify-between'>
                 <MarkdownBadge />
