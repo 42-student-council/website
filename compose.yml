@@ -10,6 +10,7 @@ services:
         profiles:
             - dev
             - prod
+        restart: always
 
     app_prod:
         build:
@@ -37,6 +38,7 @@ services:
             SUPER_ADMIN: ${SUPER_ADMIN}
         profiles:
             - prod
+        restart: always
 
     app_dev:
         build:
