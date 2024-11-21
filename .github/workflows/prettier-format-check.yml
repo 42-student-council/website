@@ -1,21 +1,26 @@
 name: Prettier Format Check
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
-      - name: Install dependencies
-        run: npm install
+          node-version: "22"
+
       - name: Run Prettier
         id: prettier
         run: npx prettier --config .prettierrc --check "**/*.{js,jsx,ts,tsx,html,css,scss}"
+
       - name: Display Prettier Output
         if: failure()
         run: cat $GITHUB_WORKSPACE/.github/workflows/prettier.log
