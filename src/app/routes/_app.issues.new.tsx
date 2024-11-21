@@ -231,13 +231,14 @@ export default function IssuesNew() {
                     <AutosizeTextarea
                         placeholder='Please describe your issue or suggestion here...'
                         name='description'
-                        className={classNames('min-h-20', {
+                        className={classNames('no-resize', {
                             'border-red-600': !!createIssueFetcher.data?.errors?.description,
                         })}
                         required
                         autoComplete='off'
                         minLength={DESCRIPTION_MIN_LENGTH}
                         maxLength={DESCRIPTION_MAX_LENGTH}
+                        minHeight={78}
                         onChange={(e) => setDescription(e.target.value)}
                         defaultValue={description}
                     />

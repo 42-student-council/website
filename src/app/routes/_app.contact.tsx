@@ -241,13 +241,14 @@ export default function Contact() {
                     <AutosizeTextarea
                         placeholder='Please describe your issue or suggestion here... (Markdown is supported)'
                         name='message'
-                        className={classNames('min-h-20', {
+                        className={classNames('no-resize', {
                             'border-red-600': !!contactFetcher.data?.errors?.message,
                         })}
                         required
                         autoComplete='off'
                         minLength={MESSAGE_MIN_LENGTH}
                         maxLength={MESSAGE_MAX_LENGTH}
+                        minHeight={78}
                         onChange={(e) => setMessage(e.target.value)}
                         value={message}
                     />
