@@ -1,18 +1,19 @@
-# .env File
+# .env file
 
 In order to build the website yourself, you will need to create a .env file.
 
-## What is a .env File?
+## What is a .env file?
 
 A .env file is a text file containing environment variables. These are used to configure your app's settings, such as credentials, which should _never_ be hard-coded in your source code.
 
-## What Variables Do I Need?
+## What variables do I need?
 
 We got you! Check the [.env.example](../../.env.example).
 
-## Set Up 42-OAuth
+## Set up 42 OAuth
 
 Here is how OAuth Authentification works:
+
 1. **User Initiates Authentication**: When a user tries to log in, they are redirected to the 42 Network's authentication page.
 2. **User Authorizes Application**: The user logs in and authorizes the application to access their information.
 3. **Provider Redirects Back**: Upon successful authentication, the 42 Network redirects the user back to your application's callback URL with an authorization code.
@@ -26,32 +27,37 @@ You will be asked for a **Redirect URI**. This is the URI the user will be redir
 This should be as follows: `http://<IP>:5173/oauth/callback`
 
 Once you are done, you will get a UID and a secret, which you can use for authenticating your app. You can then add these to your .env file as follows:
+
 ```.env
 CLIENT_ID=<UID>
 CLIENT_SECRET=<SECRET>
 ```
 
-## Set Up Discord Webhook
+## Set up Discord Webhooks
 
 1. Create a Discord Server:
-    * If you do not already have a server, create a new one. This can be your personal development server.
+    - If you do not already have a server, create a new one. This can be your personal development server.
 2. Create a Webhook:
-    * Navigate to the channel where you want to receive the messages.
-    * Click on the settings icon next to the channel name.
-    * In the channel settings, go to the 'Integrations' tab.
-    * Click on 'Create Webhook'.
+    - Navigate to the channel where you want to receive the messages. The webhook integration has been specifically designed for forum channels.
+    - Click on the settings icon next to the channel name.
+    - In the channel settings, go to the 'Integrations' tab.
+    - Click on 'Create Webhook'.
 3. Copy the Webhook URL:
-    * It should look something like this:
+    - It should look something like this:
+
 ```
 https://discord.com/api/webhooks/<WEBHOOK_ID>/<WEBHOOK_TOKEN>
 ```
+
 4. Add the Webhook ID and Token to Your .env File:
-    * Split the webhook URL to extract the <WEBHOOK_ID> and <WEBHOOK_TOKEN>.
-    * Add these to your .env file:
-```.env
-DISCORD_WEBHOOK_ID=<WEBHOOK_ID>
-DISCORD_WEBHOOK_TOKEN=<WEBHOOK_TOKEN>
+    - Add these to your .env file:
+
+```sh
+CONTACT_WEBHOOK_URL=<WEBHOOK_URL>
+COUNCIL_SERVER_ISSUE_WEBHOOK_URL=<WEBHOOK_URL>
+STUDENT_SERVER_ISSUE_WEBHOOK_URL=<WEBHOOK_URL>
 ```
 
 # REMINDER
+
 Pushing private credentials on an open source project poses a **huge** security issue. We _will_ deny any pull request containing them and we _might_ prank you using your credentials 😉.
