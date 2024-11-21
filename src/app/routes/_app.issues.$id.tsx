@@ -9,7 +9,6 @@ import { FormErrorMessage } from '~/components/FormErrorMessage';
 import Markdown, { MarkdownBadge } from '~/components/Markdown';
 import { Info } from '~/components/alert/Info';
 import { H1 } from '~/components/ui/H1';
-import { H2 } from '~/components/ui/H2';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -392,69 +391,57 @@ export default function IssueDetail() {
 
     return (
         <Fragment>
-            <div className='flex flex-row justify-between items-start'>
-                <H1>Issue #{issue.id}</H1>
+            <div className='flex justify-between mb-2'>
                 <BackButton archived={issue.archived} />
+                {session.role === 'ADMIN' && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button className='bg-rose-500 hover:bg-rose-600 font-bold'>
+                                {issue.archived ? 'Unarchive' : 'Archive'}
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {issue.archived
+                                        ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
+                                        : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <Form method='POST'>
+                                    <input
+                                        type='hidden'
+                                        name='_action'
+                                        value={issue.archived ? 'unarchive' : 'archive'}
+                                    />
+                                    <AlertDialogAction asChild>
+                                        <Button type='submit'>{issue.archived ? 'Unarchive' : 'Archive'}</Button>
+                                    </AlertDialogAction>
+                                </Form>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
             </div>
-            {session.role === 'ADMIN' && (
-                <div className='w-full mt-4 bg-rose-200 rounded flex flex-col'>
-                    <p className='text-center text-rose-800 font-bold text-lg mt-4'>Admin Menu</p>
-                    <div className='flex flex-col justify-between items-center m-4'>
-                        <div className='flex items-center'>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button className='bg-rose-500 hover:bg-rose-600'>
-                                        {issue.archived ? 'Unarchive' : 'Archive'}
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            {issue.archived
-                                                ? 'You are about to unarchive this issue. This will make the issue open to discussion again.'
-                                                : 'You are about to archive this issue. Students cannot comment and vote on archived issues.'}
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <Form method='POST'>
-                                            <input
-                                                type='hidden'
-                                                name='_action'
-                                                value={issue.archived ? 'unarchive' : 'archive'}
-                                            />
-                                            <AlertDialogAction asChild>
-                                                <Button type='submit'>
-                                                    {issue.archived ? 'Unarchive' : 'Archive'}
-                                                </Button>
-                                            </AlertDialogAction>
-                                        </Form>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            <p className='text-center text-rose-800 font-bold ml-4'>
-                                {issue.archived ? 'This issue is closed.' : 'This issue is open for discussion.'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            )}
-            <div className='mt-4'>
-                <H2 className='hyphens-auto break-words'>{issue.title}</H2>
-            </div>
+            <H1 className='text-2xl lg:text-4xl font-medium'>
+                <span className='text-muted-foreground'>#{issue.id}</span> {issue.title}
+            </H1>
+            <p className='py-2 text-sm text-muted-foreground'>{formatDate(new Date(issue.createdAt))}</p>
             <Markdown extraClassName='my-2'>{issue.description}</Markdown>
-            <div className='flex flex-col b-4'>
-                <p className='text-s text-muted-foreground pb-2'>{formatDate(new Date(issue.createdAt))}</p>
-                <div className='flex flex-row items-center'>
-                    <IssueUpvoteButton issue={issue} hasVoted={hasVoted} />
-                </div>
-                <Info title='Note' className='mt-4 md:w-3/5'>
+            <IssueUpvoteButton issue={issue} hasVoted={hasVoted} />
+            <details className='my-4'>
+                <summary className='cursor-pointer text-center text-muted-foreground'>
+                    Votes are not fully anonymous
+                </summary>
+                <Info className='mt-4'>
                     To ensure every student can only vote once, each vote gets stored with the user ID in a database,
                     making votes <strong>not fully anonymous</strong> to the student council.
                 </Info>
-            </div>
-            <div className='mt-8'>
+            </details>
+            <div className='mt-4'>
                 <h2 className='text-2xl font-bold mb-3'>Comments</h2>
                 {issue.comments.length > 0 ? (
                     <ul className='flex flex-col gap-4'>
@@ -490,7 +477,7 @@ function BackButton({ archived }: { archived: boolean }) {
 
     return (
         <Link to={`/issues${archived ? '?filter=archived' : ''}`}>
-            <Button>
+            <Button variant='link' className='-ml-6'>
                 <ChevronLeft />
                 {label}
             </Button>
@@ -507,28 +494,26 @@ function IssueUpvoteButton({ issue, hasVoted }: { issue: SerializeFrom<Issue>; h
 
             <Button
                 type='submit'
+                variant='outline'
                 disabled={issue.archived}
-                className={classNames('hover:bg-darkred-500 w-full md:w-96', {
+                className={classNames('w-full hover:bg-darkred-500', {
                     'bg-rose-500': hasVoted,
-                    'bg-secondary dark:bg-secondary-foreground': !hasVoted,
                 })}
                 title={hasVoted ? 'You have upvoted this issue' : 'Upvote this issue'}
             >
                 <Heart
                     className={classNames('mr-2', {
-                        'text-white fill-current': hasVoted,
-                        'text-black': !hasVoted,
+                        'text-white': hasVoted,
                     })}
                 />
                 <p
                     className={classNames('font-bold', {
                         'text-white': hasVoted,
-                        'text-black': !hasVoted,
                     })}
                 >
                     {issue._count.votes}{' '}
-                    {issue._count.votes == 1 ? 'Student upvoted this issue' : 'Students upvoted this issue'}
-                </p>{' '}
+                    {issue._count.votes == 1 ? 'student upvoted this issue' : 'students upvoted this issue'}
+                </p>
             </Button>
         </fetcher.Form>
     );
@@ -611,7 +596,7 @@ function IssueComment({ comment, issue }: { comment: SerializeFrom<Comment>; iss
             })}
         >
             {comment.official && <p className='text-lg font-bold'>Student Council Answer</p>}
-            <Link to={`#${comment.id}`} className='text-xs text-muted-foreground pb-2 hover:underline'>
+            <Link to={`#${comment.id}`} className='text-sm text-muted-foreground pb-2 hover:underline'>
                 {formatDate(new Date(comment.createdAt))}
             </Link>
             <Markdown extraClassName='my-2'>{comment.text}</Markdown>

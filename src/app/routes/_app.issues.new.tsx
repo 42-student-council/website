@@ -195,42 +195,42 @@ export default function IssuesNew() {
 
     return (
         <Fragment>
-            <div className='flex justify-between items-start'>
-                <H1>Create a Public Issue</H1>
-                <Link to='/issues'>
-                    <Button>
-                        <ChevronLeft />
-                        Go Back
-                    </Button>
-                </Link>
-            </div>
-            <p className='mt-4 text-xl'>
+            <Link to='/issues'>
+                <Button variant='link' className='-ml-6'>
+                    <ChevronLeft />
+                    Back to open issues
+                </Button>
+            </Link>
+            <H1 className='mb-4'>Create a Public Issue</H1>
+            <p className='mb-2 text-xl'>
                 Open an anonymous issue to discuss what's important to you with the community.
-                <br />
+            </p>
+            <p className='mb-2 text-xl'>
                 If you would like to share your issue with the student council only, please go to the{' '}
                 <Link to='/contact' className='underline'>
                     contact form
                 </Link>
                 .
             </p>
-            <Info title='Note' className='mt-4'>
-                To maintain complete anonymity, the author of an issue does not get stored.
-                <br />
-                Consequently, <strong>you won't be able to edit</strong> an issue after submitting it.
+            <Info title='Note' className='my-4'>
+                To maintain complete anonymity, the author of an issue does not get stored. Consequently,{' '}
+                <strong>you won't be able to edit</strong> an issue after submitting it.
             </Info>
 
-            <createIssueFetcher.Form className='mt-6' method='post' onSubmit={handleSubmit}>
+            <createIssueFetcher.Form method='post' onSubmit={handleSubmit}>
                 <Label htmlFor='title' className='text-lg'>
-                    Issue Title
+                    Title
                 </Label>
                 <Input
+                    id='title'
                     type='text'
                     name='title'
                     required
+                    placeholder={`Enter a meaningful title (max ${TITLE_MAX_LENGTH} characters)`}
                     autoComplete='off'
                     minLength={TITLE_MIN_LENGTH}
                     maxLength={TITLE_MAX_LENGTH}
-                    className={classNames({ 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
+                    className={classNames('mt-2', { 'border-red-600': !!createIssueFetcher.data?.errors?.title })}
                     onChange={(e) => setTitle(e.target.value)}
                     defaultValue={title}
                     ref={titleRef}
@@ -239,12 +239,13 @@ export default function IssuesNew() {
 
                 <div className='mt-4'>
                     <Label htmlFor='description' className='text-lg'>
-                        Issue Description
+                        Description
                     </Label>
                     <Textarea
-                        placeholder='Please describe your issue or suggestion here...'
+                        id='description'
+                        placeholder={`Describe your issue or suggestion (max ${DESCRIPTION_MAX_LENGTH} characters)`}
                         name='description'
-                        className={classNames('h-48', {
+                        className={classNames('h-48 mt-2', {
                             'border-red-600': !!createIssueFetcher.data?.errors?.description,
                         })}
                         required
