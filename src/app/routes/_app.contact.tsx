@@ -1,15 +1,15 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { json, useFetcher, useLoaderData } from '@remix-run/react';
 import classNames from 'classnames';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { z } from 'zod';
+import { AutosizeTextarea } from '~/components/AutosizeTextarea';
 import { FormErrorMessage } from '~/components/FormErrorMessage';
 import { H1 } from '~/components/ui/H1';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { Textarea } from '~/components/ui/textarea';
 import { config } from '~/utils/config.server';
 import { sendDiscordWebhookWithUrl } from '~/utils/discord.server';
 import { SessionData, requireSessionData } from '~/utils/session.server';
@@ -128,9 +128,6 @@ export default function Contact() {
     const [anonymousError, setAnonymousError] = useState<string | null>(null);
     const [contactError, setContactError] = useState<string | null>(null);
 
-    const messageRef = useRef(null);
-    const contactEmailRef = useRef(null);
-
     useEffect(() => {
         if (contactFetcher.data?.success) {
             setMessage('');
@@ -155,15 +152,6 @@ export default function Contact() {
         const savedContactEmail = localStorage.getItem('contact-email');
         if (savedContactEmail) setContactEmail(savedContactEmail);
     }, []);
-
-    useEffect(() => {
-        if (messageRef.current) {
-            messageRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (contactEmailRef.current) {
-            contactEmailRef.current.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-    }, [message, contactEmail]);
 
     useEffect(() => {
         localStorage.setItem('contact-message', message);
@@ -250,19 +238,19 @@ export default function Contact() {
                     <Label htmlFor='message' className='text-lg'>
                         What would you like to tell us?
                     </Label>
-                    <Textarea
-                        placeholder='Please describe your issue or suggestion here... (Markdown is supported.)'
+                    <AutosizeTextarea
+                        placeholder='Please describe your issue or suggestion here... (Markdown is supported)'
                         name='message'
-                        className={classNames('h-48', {
+                        className={classNames('no-resize', {
                             'border-red-600': !!contactFetcher.data?.errors?.message,
                         })}
                         required
                         autoComplete='off'
                         minLength={MESSAGE_MIN_LENGTH}
                         maxLength={MESSAGE_MAX_LENGTH}
+                        minHeight={78}
                         onChange={(e) => setMessage(e.target.value)}
                         value={message}
-                        ref={messageRef}
                     />
                     <FormErrorMessage className='mt-2'>{contactFetcher.data?.errors?.message}</FormErrorMessage>
                 </div>
@@ -344,7 +332,6 @@ export default function Contact() {
                                         className={classNames({
                                             'border-red-600': !!contactFetcher.data?.errors?.contactEmail,
                                         })}
-                                        ref={contactEmailRef}
                                     />
                                     <FormErrorMessage className='mt-2'>
                                         {contactFetcher.data?.errors?.contactEmail}
